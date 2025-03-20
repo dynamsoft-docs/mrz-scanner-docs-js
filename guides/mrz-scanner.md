@@ -13,7 +13,7 @@ permalink: /guides/mrz-scanner.html
 
 This user guide will walk you through a Hello World sample web application that scans MRZ documents using the MRZ Scanner JavaScript Edition SDK. We recommend using this sample as a reference when creating your own application.
 
-**Important**: Please visit the [Introduction]({{ site.introduction }}index.md) page to learn about the MRZ document formats, the architecture of the MRZ Scanner with respect to other Dynamsoft products, and the system requirements of the MRZ Scanner JavaScript Edition.
+**Important**: Please visit the [Introduction]({{ site.introduction }}index.html) page to learn about the MRZ document formats, the architecture of the MRZ Scanner with respect to other Dynamsoft products, and the system requirements of the MRZ Scanner JavaScript Edition.
 
 ## License
 
@@ -167,7 +167,7 @@ Let's now go through the code of the Hello World sample to understand how the co
 </html>
 ```
 
-The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier section [Quick Start](#quick-start---including-the-sdk-and-creating-hello-world) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
+The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier section [Quick Start](#quick-start---hello-world) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
 
 MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it creates a container which it populates with the **Ready-to-Use UI**.
 
