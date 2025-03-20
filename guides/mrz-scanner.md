@@ -13,7 +13,8 @@ permalink: /guides/mrz-scanner.html
 
 This user guide will walk you through a Hello World sample web application that scans MRZ documents using the MRZ Scanner JavaScript Edition SDK. We recommend using this sample as a reference when creating your own application.
 
-**Important**: Please visit the [Introduction]({{ site.introduction }}index.html) page to learn about the MRZ document formats, the architecture of the MRZ Scanner with respect to other Dynamsoft products, and the system requirements of the MRZ Scanner JavaScript Edition.
+> [!TIP]
+> Please visit the [Introduction]({{ site.introduction }}index.html) page to learn about the MRZ document formats, the architecture of the MRZ Scanner with respect to other Dynamsoft products, and the system requirements of the MRZ Scanner JavaScript Edition.
 
 ## License
 
@@ -21,7 +22,8 @@ This user guide will walk you through a Hello World sample web application that 
 
 When getting started with MRZ Scanner, we recommend getting your own 30-day trial license through the [customer portal](https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=guide&package=js). The trial license can be renewed via the same customer portal twice, each time for another 15 days, giving you a total of 60 days to develop your own application using the solution. Please contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) if you need more time for a full evaluation.
 
-> Note: The **MRZ Scanner** license contains a license for the **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and the **Dynamsoft Camera Enhancer** since the MRZ Scanner builds on top of those three products.
+> [!NOTE]
+> The **MRZ Scanner** license contains a license for the **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and the **Dynamsoft Camera Enhancer** since the MRZ Scanner builds on top of those three products.
 
 ### Full License
 
@@ -60,9 +62,8 @@ When using a framework such as **React**, **Vue** or **Angular**, we recommend a
   yarn add dynamsoft-mrz-scanner@2.0.0 -E
   ```
 
-**Important Note:**
-
-When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
+> [!WARNING]
+> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
 
 Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
 
@@ -93,7 +94,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
 </html>
 ```
 
->Note:
+> [!NOTE]
 >
 > This code is identical to the Hello World file mentioned in *Build from Source*, except for the script source.
 >
@@ -236,7 +237,8 @@ Here is a quick breakdown of the constituent UI elements of the result view:
 
 4. **Done Button**: This button closes the scanner and destroys the **MRZScanner** instance, and returns the result object containing the MRZ scan. At that point, the application goes back to the landing page. You can additionally dictate further actions upon the button click, such as allowing the user to perform some extra actions with the MRZ result, navigating to another page, passing the result object for further processing, and more.
 
-  >Note: In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.
+> [!NOTE]
+>  In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.
 
 ## Next Steps
 
