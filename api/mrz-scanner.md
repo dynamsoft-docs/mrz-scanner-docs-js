@@ -115,7 +115,7 @@ To get the full picture on how to use *MRZScannerConfig*, please visit the [Cust
 ```ts
 interface MRZScannerConfig {
   license?: string; // license is absolutely required to be set at initialization
-  container?: HTMLElement | string; // 
+  container?: HTMLElement | string; //
 
   // Resource/Template specific configuration
   templateFilePath?: string;
@@ -152,7 +152,7 @@ const mrzConfig = {
     license: "YOUR_LICENSE_KEY_HERE",
     mrzFormatType: ["passport", "td1"], // set the MRTD formats to just passport and ID (TD1)
     showResultView: false, // hide the final MRZResultView and go back to landing page once the MRZ result is in
-    // engineResourcePaths typically is only assigned when using a framework like React/Angular/Vue where the resources are not in the same location as the script reference 
+    // engineResourcePaths typically is only assigned when using a framework like React/Angular/Vue where the resources are not in the same location as the script reference
     engineResourcePaths: {
         std: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-std/dist/",
         dip: "https://cdn.jsdelivr.net/npm/dynamsoft-image-processing/dist/",

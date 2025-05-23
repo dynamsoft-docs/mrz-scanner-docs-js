@@ -66,7 +66,7 @@ In some more rare cases, an ID card can have a MRZ that conforms to the **TD2** 
 
 We designed the **MRZ Scanner JavaScript Edition** with three core principles in mind:
 
-1. **Minimal Code** - High-level API provide full recognition and parsing functionality with **just a few lines of code**, significantly reducing development and maintenance costs. 
+1. **Minimal Code** - High-level API provide full recognition and parsing functionality with **just a few lines of code**, significantly reducing development and maintenance costs.
 2. **Ready-To-Use UI** - Pre-integrated components and a pre-designed UI simplify the process even more for any developer, enabling a **quick setup and saving any time and effort needed for the UI design**.
 3. **Effortless Customization** - Tailored configuration interfaces allow for **quick and simple customization** of the scanner settings and performance.
 
@@ -78,7 +78,7 @@ The **MRZ Scanner JavaScript Edition** is reliant on two core views, the **`MRZS
 
 #### `MRZScannerView`
 
-The **`MRZScannerView`** is the main view of the solution which displays the camera view, along with some UI elements that control the scanner and camera settings, along with icons to allow the user to load in a photo from the photo library as well as close the scanner. This view comes with a scan guide frame in the center to better guide the user on where to place the MRZ document for best results. 
+The **`MRZScannerView`** is the main view of the solution which displays the camera view, along with some UI elements that control the scanner and camera settings, along with icons to allow the user to load in a photo from the photo library as well as close the scanner. This view comes with a scan guide frame in the center to better guide the user on where to place the MRZ document for best results.
 
 Here is a quick screenshot at default look of the **`MRZScannerView`**:
 
@@ -88,7 +88,7 @@ Here is a quick screenshot at default look of the **`MRZScannerView`**:
 
 #### `MRZResultView`
 
-The **`MRZResultView`** is responsible for displaying the final parsed results of the MRZ recognition process. The final parsed results, along with their corresponding field names, appear as a scrollable form view underneath the original image of the MRZ document. 
+The **`MRZResultView`** is responsible for displaying the final parsed results of the MRZ recognition process. The final parsed results, along with their corresponding field names, appear as a scrollable form view underneath the original image of the MRZ document.
 
 Included with those two things are two buttons, one that allows the user to scan again if needed, and the other to wrap up the scanning process and proceed to the next step (like navigating to another page).
 

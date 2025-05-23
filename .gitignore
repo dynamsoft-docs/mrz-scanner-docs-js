@@ -1,9 +1,19 @@
 .DS_Store
 /.vs
-Gemfile
-Hide_Tree_Page.md
-sitemap.xml
-_includes/productNav/*
+
+# Layout templates
+_layouts/
+
+# Assets
+assets/font-face/
+assets/img-icon/
+assets/js/**
+!assets/js/setLatestVersion.js
+assets/scripts/
+assets/css/
+
+# Includes
+_includes/productNav/
 _includes/auto-version-list.html
 _includes/head.html
 _includes/liquid_autoGenerateHistoryList.html
@@ -18,12 +28,14 @@ _includes/productNav_OLD.html
 _includes/productNav.html
 _includes/search-input.html
 _includes/trialLicense.html
-_layouts/*
-_plugins/*
-assets/css/*
-assets/font-face/*
-assets/img-icon/*
-assets/js/*
-assets/scripts/*
-_site/*
+
+# Plugins
+_plugins/
+
+# Site resources
+_site/
+
+sitemap.xml
+Hide_Tree_Page.md
 Gemfile.lock
+Gemfile

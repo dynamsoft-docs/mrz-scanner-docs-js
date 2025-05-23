@@ -36,7 +36,7 @@ Hello World represents the most basic implementation of the MRZ Scanner. One of 
       });
       (async () => {
         // Launch the scanner and wait for the result
-        const result = await mrzScanner.launch({});
+        const result = await mrzScanner.launch();
       })();
     </script>
   </body>

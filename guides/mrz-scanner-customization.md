@@ -15,6 +15,17 @@ permalink: /guides/mrz-scanner-customization.html
 >
 >Before going into the ways that you can customize the MRZ Scanner, please read the [MRZ Scanner JavaScript Edition User Guide]({{ site.guides }}mrz-scanner.html).
 
+## Quick Links
+
+- [Setting Available MRTD formats](#setting-available-mrtd-formats)
+- [Hiding the Result View](#hiding-the-result-view)
+- [Changing the Scan Guide Frame](#changing-the-scan-guide-frame)
+- [Reading Static Images and PDFs using the MRZ Scanner](#reading-static-images-and-pdfs-using-the-mrz-scanner)
+- [Configuring the `onDone` Callback](#configuring-the-ondone-callback)
+- [Enable Result Editing](#enable-result-editing)
+
+## Introduction
+
 This guide expands on the User Guide that explored the MRZ Scanner Hello World sample project. Here we explore ways to customize the UI as well as the performance of the MRZ Scanner. We will walk through the three main configuration interfaces - [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig), [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig), and [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig). These configuration interfaces make customizing the MRZ Scanner as easy as adding or changing a few properties in the instance constructor. Every sample is a variation on the previous Hello World sample with a few additional properties defined in the configuration interfaces, and so we only show the differing portion rather than all the code.
 
 ## `MRZScannerConfig` Overview
@@ -146,9 +157,9 @@ The `MRZScannerView` provides a guide frame for each of the three MRTD formats. 
 
 Please contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) for any further inquiries, or to customize the frame guide selection logic.
 
-### Reading Static Images using the MRZ Scanner
+### Reading Static Images and PDFs using the MRZ Scanner
 
-Starting from v2.1 of the MRZ Scanner, the library is now able to read MRZs **directly** from static images and PDFs. To support this, the MRZScannerViewConfig will need to be configured to support that, especially for PDFs.
+Starting from **v2.1** of the MRZ Scanner, the library is now able to read MRZs **directly** from static images and PDFs. To support this, the MRZScannerViewConfig will need to be configured to support that, especially for PDFs.
 
 To learn more on how to create a web application that supports static image/PDF reading using the MRZ Scanner, please refer to this [guide]({{ site.guides }}mrz-scanner-static-image.html). Furthermore, please refer to the full File Input Sample that the previously linked guide walks you through.
 

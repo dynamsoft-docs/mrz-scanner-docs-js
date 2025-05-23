@@ -91,7 +91,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
       });
       (async () => {
         // Launch the scanner and wait for the result
-        const result = await mrzScanner.launch({});
+        const result = await mrzScanner.launch();
       })();
     </script>
   </body>
@@ -100,8 +100,8 @@ Below is the complete Hello World sample page that uses the precompiled script s
 
 > [!NOTE]
 >
-> This code is identical to the Hello World file mentioned in *Build from Source*, except for the script source.
->
+> This code is a more simplified version of the Hello World file that is hosted on [Github](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/hello-world.html). 
+> The file hosted on Github contains more code for a better final UI, but that extra code is not necessary to successfully launching the MRZ Scanner. All you need is the code shown above.
 > Please do not forget to replace `YOUR_LICENSE_KEY_HERE` with your own license key, whether it is trial or full.
 
 To run the sample, create a new file called `hello-world.html`, then copy and paste the code above into the file. Next, serve the page directly by deploying it to a server.
@@ -176,30 +176,40 @@ The first step in setting up the HTML in the Hello World project is to include t
 
 MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it creates a container which it populates with the **Ready-to-Use UI**.
 
-<!-- The main DOM element that is required in the `<body>` is a `<div>` element where the MRZ result (or lack thereof) and the original image of the MRZ document will be displayed once the user clicks *Done* in the result view. Feel free to customize the styling of the `<div>` element to your liking. -->
-
 ### Step 2: Initializing the MRZ Scanner
 
-```js
-// Initialize the Dynamsoft MRZ Scanner
-const mrzscanner = new Dynamsoft.MRZScanner({
-  license: "YOUR_LICENSE_KEY_HERE",
-});
+```html
+<body>
+  <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
+
+  <script>
+    // Initialize the Dynamsoft MRZ Scanner
+    const mrzScanner = new Dynamsoft.MRZScanner({
+      license: "YOUR_LICENSE_KEY_HERE",
+    });
+  </script>
+</body>
 ```
 
 Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner). Note the configuration object used to set the behaviour of the MRZ Scanner instance. The single property that is **required** to be defined in this configuration object is the **license key**. Without a valid license, the MRZ Scanner view fails to launch, and the user will be met with a license key error message. Please refer to the [licensing](#license) section of the guide for instructions on acquiring a license key.
 
 ### Step 3: Launching the MRZ Scanner
 
-```js
-(async () => {
-  // Launch the scanner and wait for the result
-  const result = await mrzscanner.launch({});
-  console.log(result); 
-})();
+```html
+<script>
+  // Initialize the Dynamsoft MRZ Scanner
+  const mrzScanner = new Dynamsoft.MRZScanner({
+    license: "YOUR_LICENSE_KEY_HERE",
+  });
+  (async () => {
+    // Launch the scanner and wait for the result
+    const result = await mrzscanner.launch();
+    console.log(result);
+  })();
+</script>
 ```
 
-Now that the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner) has been initialized and configured, it is ready to be launched! Upon launch, the MRZ Scanner presents the main **`MRZScannerView`** UI in its container on the page, and is ready to start scanning. Upon scanning an MRZ (via video or static image), the MRZ Scanner then switches to the **`MRZResultView`** , which displays a cropped image of the MRZ document as well as the parsed fields of the MRZ text. Let's break down these two Views:
+Now that the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner) has been initialized and configured, it is ready to be launched! Upon launch, the MRZ Scanner presents the main **`MRZScannerView`** UI in its container on the page, and is ready to start scanning. Upon scanning an MRZ (via video or static image), the MRZ Scanner then switches to the **`MRZResultView`**, which displays a cropped image of the MRZ document as well as the parsed fields of the MRZ text. Let's break down these two Views:
 
 #### `MRZScannerView`
 

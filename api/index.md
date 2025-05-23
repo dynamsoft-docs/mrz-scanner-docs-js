@@ -20,7 +20,7 @@ Please read through the [**full API reference**](mrz-scanner.md), but you can fi
 
 2. MRZScannerView - Represents the main view of the MRZ Scanner where the scanning operation occurs.
 
-3. MRZResultView - Displays the parsed MRZ result in human readable fields, along with a cropped image of the MRZ document. 
+3. MRZResultView - Displays the parsed MRZ result in human readable fields, along with a cropped image of the MRZ document.
 
 ## Interfaces
 
@@ -32,11 +32,11 @@ Please read through the [**full API reference**](mrz-scanner.md), but you can fi
 
 4. [MRZResultViewToolbarButtonsConfig](mrz-scanner.md#mrzresultviewtoolbarbuttonsconfig) - Configures the toolbar buttons of the **MRZResultView**.
 
-4. [MRZResult](mrz-scanner.md#mrzresult) - Represents a typical MRZ result along with all of the parsed fields that come with it.
+5. [MRZResult](mrz-scanner.md#mrzresult) - Represents a typical MRZ result along with all of the parsed fields that come with it.
 
-5. [MRZData](mrz-scanner.md#mrzdata) - Represents the parsed MRZ data that is part of the `MRZResult`.
+6. [MRZData](mrz-scanner.md#mrzdata) - Represents the parsed MRZ data that is part of the `MRZResult`.
 
-6. [MRZDate](mrz-scanner.md#mrzdate) - Represents a date in the MRZ fields - which is usually used for date of birth and the date of expiry.
+7. [MRZDate](mrz-scanner.md#mrzdate) - Represents a date in the MRZ fields - which is usually used for date of birth and the date of expiry.
 
 ## Enumerations
 

@@ -53,6 +53,7 @@ Besides using the CDN, you can also download the SDKs and host related files on 
 
 **Step 1** - Download the SDKs:
 {% comment %}
+
 - From the website
 
   [Download the JavaScript ZIP package](https://www.dynamsoft.com/mobile-web-capture/downloads/)
@@ -69,7 +70,8 @@ Besides using the CDN, you can also download the SDKs and host related files on 
   yarn add dynamsoft-image-processing@2.2.10
   yarn add dynamsoft-camera-enhancer@4.0.2
   ```
-{% endcomment %}
+
+  {% endcomment %}
 
 - npm
 
@@ -84,31 +86,31 @@ Besides using the CDN, you can also download the SDKs and host related files on 
   npm install dynamsoft-camera-enhancer@4.0.2
   ```
 
-
-
 **Step 2** - Include the SDKs
 
 Depending on where you put them, you can typically include them like this:
 {% comment %}
-  ```html
-  <script src="./distributables/dynamsoft-document-viewer@2.0.0/dist/ddv.js"></script>
-  <script src="./distributables/dynamsoft-core@3.2.10/dist/core.js"></script>
-  <script src="./distributables/dynamsoft-license@3.2.10/dist/license.js"></script>
-  <script src="./distributables/dynamsoft-document-normalizer@2.2.10/dist/ddn.js"></script>
-  <script src="./distributables/dynamsoft-capture-vision-router@2.2.10/dist/cvr.js"></script>
-  <script src="./distributables/dynamsoft-camera-enhancer@4.0.2/dist/dce.js"></script>
-  ```
+
+```html
+<script src="./distributables/dynamsoft-document-viewer@2.0.0/dist/ddv.js"></script>
+<script src="./distributables/dynamsoft-core@3.2.10/dist/core.js"></script>
+<script src="./distributables/dynamsoft-license@3.2.10/dist/license.js"></script>
+<script src="./distributables/dynamsoft-document-normalizer@2.2.10/dist/ddn.js"></script>
+<script src="./distributables/dynamsoft-capture-vision-router@2.2.10/dist/cvr.js"></script>
+<script src="./distributables/dynamsoft-camera-enhancer@4.0.2/dist/dce.js"></script>
+```
 
 or
 {% endcomment %}
-  ```html
-  <script src="./node_modules/dynamsoft-document-viewer/dist/ddv.js"></script>
-  <script src="./node_modules/dynamsoft-core/dist/core.js"></script>
-  <script src="./node_modules/dynamsoft-license/dist/license.js"></script>
-  <script src="./node_modules/dynamsoft-document-normalizer/dist/ddn.js"></script>
-  <script src="./node_modules/dynamsoft-capture-vision-router/dist/cvr.js"></script>
-  <script src="./node_modules/dynamsoft-camera-enhancer/dist/dce.js"></script>
-  ```
+
+```html
+<script src="./node_modules/dynamsoft-document-viewer/dist/ddv.js"></script>
+<script src="./node_modules/dynamsoft-core/dist/core.js"></script>
+<script src="./node_modules/dynamsoft-license/dist/license.js"></script>
+<script src="./node_modules/dynamsoft-document-normalizer/dist/ddn.js"></script>
+<script src="./node_modules/dynamsoft-capture-vision-router/dist/cvr.js"></script>
+<script src="./node_modules/dynamsoft-camera-enhancer/dist/dce.js"></script>
+```
 
 **Step 3** Specify the location of the engine files(optinal)
 
@@ -116,31 +118,47 @@ If you would like to use the SDKs completely offline, please refer to [Use your 
 
 ## Specify the location of the engine files
 
-This is usually only required with frameworks like Angular or React, etc. where the referenced JavaScript files such as cvr.js, ddn.js are compiled into another file, or hosting the engine files and using the SDKs completely offline. The purpose is to tell the SDK where to find the engine files (*.worker.js, *.wasm.js and *.wasm, etc.).
+This is usually only required with frameworks like Angular or React, etc. where the referenced JavaScript files such as cvr.js, ddn.js are compiled into another file, or hosting the engine files and using the SDKs completely offline. The purpose is to tell the SDK where to find the engine files (_.worker.js, _.wasm.js and \*.wasm, etc.).
 
 ### Use the jsDelivr CDN with frameworks like Angular or React, etc.
-  ```typescript
-  Dynamsoft.DDV.Core.engineResourcePath = "https://cdn.jsdelivr.net/npm/dynamsoft-document-viewer@2.0.0/dist/engine";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.core = "https://cdn.jsdelivr.net/npm/dynamsoft-core@3.2.10/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.license = "https://cdn.jsdelivr.net/npm/dynamsoft-license@3.2.10/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.ddn = "https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@2.2.10/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.cvr = "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.2.10/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.std = "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-std@1.2.0/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.dip = "https://cdn.jsdelivr.net/npm/dynamsoft-image-processing@2.2.10/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.dce = "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@4.0.2/dist/";
-  ```
+
+```typescript
+Dynamsoft.DDV.Core.engineResourcePath =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-document-viewer@2.0.0/dist/engine";
+Dynamsoft.Core.CoreModule.engineResourcePaths.core =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-core@3.2.10/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.license =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-license@3.2.10/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.ddn =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@2.2.10/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.cvr =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@2.2.10/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.std =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-std@1.2.0/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.dip =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-image-processing@2.2.10/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.dce =
+  "https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@4.0.2/dist/";
+```
 
 ### Use your own hosted engine files
 
-  ```typescript
-  //Feel free to change it to your own location of these files
-  Dynamsoft.DDV.Core.engineResourcePath = "./node_modules/dynamsoft-document-viewer/dist/engine";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.core = "./node_modules/dynamsoft-core/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.license = "./node_modules/dynamsoft-license/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.ddn = "./node_modules/dynamsoft-document-normalizer/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.cvr = "./node_modules/dynamsoft-capture-vision-router/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.std = "./node_modules/dynamsoft-capture-vision-std/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.dip = "./node_modules/dynamsoft-image-processing/dist/";
-  Dynamsoft.Core.CoreModule.engineResourcePaths.dce = "./node_modules/dynamsoft-camera-enhancer/dist/";
-  ```
-  
+```typescript
+//Feel free to change it to your own location of these files
+Dynamsoft.DDV.Core.engineResourcePath =
+  "./node_modules/dynamsoft-document-viewer/dist/engine";
+Dynamsoft.Core.CoreModule.engineResourcePaths.core =
+  "./node_modules/dynamsoft-core/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.license =
+  "./node_modules/dynamsoft-license/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.ddn =
+  "./node_modules/dynamsoft-document-normalizer/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.cvr =
+  "./node_modules/dynamsoft-capture-vision-router/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.std =
+  "./node_modules/dynamsoft-capture-vision-std/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.dip =
+  "./node_modules/dynamsoft-image-processing/dist/";
+Dynamsoft.Core.CoreModule.engineResourcePaths.dce =
+  "./node_modules/dynamsoft-camera-enhancer/dist/";
+```
