@@ -47,7 +47,7 @@ The **MRZ Scanner JavaScript Edition** has been redesigned and redeveloped to no
 
 MRZ Scanner JavaScript Edition is organized into configurable UI views. Below is a quick overview of the two main views:
 
-[!TIP]
+> [!TIP]
 > Learn more about these views and how to configure them in the [User Guide]({{ site.guides }}mrz-scanner.html) and the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html).
 
 ### MRZ Scanner View
