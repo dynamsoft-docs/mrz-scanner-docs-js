@@ -17,10 +17,10 @@ The MRZ Scanner JavaScript Edition solution is built upon the JavaScript edition
 1. **Secure context (HTTPS deployment)**
 
     When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
-  
+
   - Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
     > Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and testing.
-  
+
   - Dynamsoft licenses require a secure context to work, unless a special offline license is used.
 
 2. **`WebAssembly`, `Blob`, `URL`/`createObjectURL`, `Web Workers`**
