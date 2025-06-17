@@ -12,6 +12,21 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 3.0.0 (06/17/2025)
+
+## Highlighted Features
+
+- Updated the underlying Capture Vision bundle to `3.0.3001` for major improvements in reading accuracy and speed.
+- Optimized the algorithm to achieve a **30% increase in read rate** as well as 
+- Added support for `TD2` and `TD3` Visa.
+- Added a `emptyResultMessage` property to the `ResultViewConfig` interface in order to change the string message that is displayed when no result is found.
+
+## Fixes
+
+- Fixed the issue where the camera select icon cuts off on browsers in iOS.
+- Optimized the resource loading process of the library. 
+- Replaced the re-scan button of the result view with a cancel button when the MRZ scanner is launched with a static file.
+
 ## 2.1.0 (05/16/2025)
 
 ## Highlighted Features

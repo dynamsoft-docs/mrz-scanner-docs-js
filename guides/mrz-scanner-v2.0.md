@@ -33,7 +33,7 @@ The trial license can be renewed via the [customer portal](https://www.dynamsoft
 
 If you are fully satisfied with the solution and would like to move forward with a full license, please contact the [Dynamsoft Sales Team](https://www.dynamsoft.com/company/contact/).
 
-## Quick Start - Including the Library
+## Quick Start - Hello World
 
 As mentioned previously, the purpose of this guide is to help you implement a Hello World application using the MRZ Scanner solution. To showcase this, we will be using vanilla JS. You can find the full code in the [samples Github repo](https://github.com/Dynamsoft/mrz-scanner-javascript).
 
@@ -49,21 +49,21 @@ The simplest way to include the SDK is to use either the [**jsDelivr**](https://
 - jsDelivr
 
   ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
   ```
 
 - UNPKG
 
   ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
   ```
 
 When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
 
   ```sh
-  npm i dynamsoft-mrz-scanner@3.0.0 -E
+  npm i dynamsoft-mrz-scanner@2.0.0 -E
   # or
-  yarn add dynamsoft-mrz-scanner@3.0.0 -E
+  yarn add dynamsoft-mrz-scanner@2.0.0 -E
   ```
 
 > [!WARNING]
@@ -78,7 +78,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -115,11 +115,9 @@ Alternatively, you can use other methods like `IIS` or `Apache` to serve the pro
 <div class="multi-panel-start"></div>
 <div class="multi-panel-title">Build from Source</div>
 
-While using the pre-compiled script is the easiest way to get started with the MRZ Scanner, we do also allow you to build the MRZ Scanner SDK from source. Building from source gives you the advantage of performing in-depth SDK customization.
+While using the pre-compiled script is the easiest way to get started with the MRZ Scanner, we do also allow you to build the MRZ Scanner SDK from source. Building from source gives you the advantage of performing in-depth SDK customization. The MRZ Scanner is built using three constituent Dynamsoft products: **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and **Dynamsoft Camera Enhancer**, so any MRZ Scanner customization involves working with these products.
 
-The MRZ Scanner is built using three constituent Dynamsoft products: [**Dynamsoft Label Recognizer**]({{ site.dlr_js }}), [**Dynamsoft Code Parser**]({{ site.dcp_js }}api-reference/code-parser-module.html?lang=javascript), and [**Dynamsoft Camera Enhancer**]({{ site.dce_js }}api-reference/index.html?lang=javascript), so any MRZ Scanner customization involves working with the foundational API of these products.
-
-The first step to building the SDK from source is retrieving the **MRZ Scanner JavaScript Edition** source files from the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiling them into a distributable package, and then runs a *ready-made* Hello World sample page that is already included in the repo.
+Building the SDK from source involves retrieving the **MRZ Scanner JavaScript Edition** source files from the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiles them into a distributable package, and then runs a *ready-made* Hello World sample page that is already included in the repo.
 
 Follow these steps in order to build from the source:
 
@@ -146,42 +144,6 @@ Follow these steps in order to build from the source:
     npm run serve
     ```
 Once the server is running, open the application in a browser using the address provided in the terminal output from running `npm run serve`.
-
-<div class="multi-panel-end"></div>
-
-<div class="multi-panel-start"></div>
-<div class="multi-panel-title">Self-hosting the Library Resources</div>
-
-There could be situations where you don't want to connect to the CDN repository in order to include the library in your application. We also provide the option to download the library's resource files, and then placing them into your own server so that the users of your application would only need to connect to your server.
-
-The first step is to get a copy of the resources. There are two ways which you can do this:
-
-- Go to the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript). Download the repository as a ZIP and the library resources are in the *dist* folder. So all you need is just a copy of this *dist* folder.
-  
-- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.0 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
-
-Once you have the dist folder, the next step is to deploy it to a server of your choice. There are a couple of considerations to take into account when setting up the server:
-
-- Secure context (HTTPS deployment)
-
-  When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
-  
-  - Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
-  > Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and test.
-  
-  - Dynamsoft License requires a secure context to work.
- 
--  Set the MIME type for `.wasm` as `application/wasm`
-   
-   The goal is to configure your server to send the correct Content-Type header for the wasm file so that it is processed correctly by the browser.
-     
-     Different types of webservers are configured differently, for example:
-
-     + <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Apache_Configuration_htaccess#media_types_and_character_encodings" title="Apache">Apache</a>
-     + <a target="_blank" href="https://docs.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap" title="IIS">IIS</a>
-     + <a target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/examples/full/#mime-types" title="NGINX">NGINX</a>
-
-Once you are done with the server setup and the library resources are placed in their desired location on the server - the final thing is to tell the library where to find the resources at runtime. This is done by configuring the *engineResourcePaths* of the `MRZScannerConfig` object. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*. The *engineResourcePaths* needs to be set to the location of the library resources on the server that you just set up.
 
 <div class="multi-panel-end"></div>
 

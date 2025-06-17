@@ -13,7 +13,7 @@ permalink: /guides/mrz-scanner-static-image.html
 
 In the main [MRZ Scanner JS User Guide]({{ site.guides }}mrz-scanner.html), we explored how to use the default UI of the MRZ Scanner to read MRZs via interactive video stream while at the same time including the ability to read from photos in your photo library via the Load Image button that is part of the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview).
 
-With the arrival of **v2.1** of the MRZ Scanner, the library has introduced the ability to read MRZs directly from static images without the need to use the file/photo picker that is a default part of the mobile device or the computer. In this guide, we will explore how to use the MRZ Scanner API in order to read MRZs from multiple image formats, as well as PDFs.
+In **v2.1** (and beyond) of the MRZ Scanner, the library has introduced the ability to read MRZs directly from static images without the need to use the file/photo picker that is a default part of the mobile device or the computer. In this guide, we will explore how to use the MRZ Scanner API in order to read MRZs from multiple image formats, as well as PDFs.
 
 > [!NOTE]
 > In order to follow with this guide, please refer to the [**use-file-input sample**](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/scenarios/use-file-input.html) that is hosted on the main Github repo of the MRZ Scanner source files.
