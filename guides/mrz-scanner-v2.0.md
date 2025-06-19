@@ -6,7 +6,7 @@ noTitleIndex: false
 title: Dynamsoft MRZ Scanner JavaScript Edition
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition,
 description: Dynamsoft MRZ Scanner User Guide
-permalink: /guides/mrz-scanner.html
+permalink: /guides/mrz-scanner-v2.0.html
 ---
 
 # User Guide for the MRZ Scanner JavaScript Edition
@@ -33,7 +33,7 @@ The trial license can be renewed via the [customer portal](https://www.dynamsoft
 
 If you are fully satisfied with the solution and would like to move forward with a full license, please contact the [Dynamsoft Sales Team](https://www.dynamsoft.com/company/contact/).
 
-## Quick Start - Hello World
+## Quick Start - Including the Library
 
 As mentioned previously, the purpose of this guide is to help you implement a Hello World application using the MRZ Scanner solution. To showcase this, we will be using vanilla JS. You can find the full code in the [samples Github repo](https://github.com/Dynamsoft/mrz-scanner-javascript).
 
@@ -67,7 +67,7 @@ When using a framework such as **React**, **Vue** or **Angular**, we recommend a
   ```
 
 > [!WARNING]
-> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
+> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner-v2.0.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
 
 Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
 
@@ -162,7 +162,7 @@ Let's now go through the code of the Hello World sample to understand how the co
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@2.0.0/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -172,7 +172,7 @@ Let's now go through the code of the Hello World sample to understand how the co
 </html>
 ```
 
-The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier [Quick Start](#quick-start---hello-world) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
+The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier [Quick Start](#quick-start---including-the-library) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
 
 MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it creates a container which it populates with the **Ready-to-Use UI**.
 
@@ -191,7 +191,7 @@ MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it 
 </body>
 ```
 
-Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner). Note the configuration object used to set the behaviour of the MRZ Scanner instance. The single property that is **required** to be defined in this configuration object is the **license key**. Without a valid license, the MRZ Scanner view fails to launch, and the user will be met with a license key error message. Please refer to the [licensing](#license) section of the guide for instructions on acquiring a license key.
+Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscanner). Note the configuration object used to set the behaviour of the MRZ Scanner instance. The single property that is **required** to be defined in this configuration object is the **license key**. Without a valid license, the MRZ Scanner view fails to launch, and the user will be met with a license key error message. Please refer to the [licensing](#license) section of the guide for instructions on acquiring a license key.
 
 ### Step 3: Launching the MRZ Scanner
 
@@ -209,21 +209,21 @@ Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }
 </script>
 ```
 
-Now that the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner) has been initialized and configured, it is ready to be launched! Upon launch, the MRZ Scanner presents the main **`MRZScannerView`** UI in its container on the page, and is ready to start scanning. Upon scanning an MRZ (via video or static image), the MRZ Scanner then switches to the **`MRZResultView`**, which displays a cropped image of the MRZ document as well as the parsed fields of the MRZ text. Let's break down these two Views:
+Now that the [**`MRZScanner`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscanner) has been initialized and configured, it is ready to be launched! Upon launch, the MRZ Scanner presents the main **`MRZScannerView`** UI in its container on the page, and is ready to start scanning. Upon scanning an MRZ (via video or static image), the MRZ Scanner then switches to the **`MRZResultView`**, which displays a cropped image of the MRZ document as well as the parsed fields of the MRZ text. Let's break down these two Views:
 
 #### `MRZScannerView`
 
-The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig), which is composed of the following UI elements:
+The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscannerviewconfig), which is composed of the following UI elements:
 
 1. **Camera View**: The Camera View is the camera viewfinder UI component within the `MRZScannerView`. This viewfinder occupies the majority of the space within the MRZScannerView to give the user a clear view and precise control of the image being scanned.
 
-2. **Scan Guide Frame**: The Scan Guide Frame is an overlay placed on top of the Camera View that guides the user to place the MRZ document in the middle of the Camera View, in order to achieve a fast and accurate scan. The guide frame is enabled **by default**, but may be hidden via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) interface. Note that if scan guide frame is enabled, the scanner also crops out the region outside the guide frame.
+2. **Scan Guide Frame**: The Scan Guide Frame is an overlay placed on top of the Camera View that guides the user to place the MRZ document in the middle of the Camera View, in order to achieve a fast and accurate scan. The guide frame is enabled **by default**, but may be hidden via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscannerviewconfig) interface. Note that if scan guide frame is enabled, the scanner also crops out the region outside the guide frame.
 
     <div align="center">
        <img src="../assets/imgs/mrz-scan-guides.png" alt="Scan Guide Frames" width="80%" />
     </div><br />
 
-3. **Format Selector**: Below the scan guide frame, you will also notice a selector box that allows the user to choose which formats the MRZ Scanner should recognize. The formats that show up in the format selector are configurable via the [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface, while the visibility of the format selector itself is configurable via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) interface. To learn about MRZ formats, please refer to the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats) page.
+3. **Format Selector**: Below the scan guide frame, you will also notice a selector box that allows the user to choose which formats the MRZ Scanner should recognize. The formats that show up in the format selector are configurable via the [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscannerconfig) interface, while the visibility of the format selector itself is configurable via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v2.0.html#mrzscannerviewconfig) interface. To learn about MRZ formats, please refer to the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats) page.
 
     <div align="center">
        <img src="../assets/imgs/format-selector.png" alt="Scan Guide Frames" width="40%" />
@@ -240,11 +240,11 @@ The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.ap
 8. **Close Scanner Button**: This button closes the MRZ Scanner and takes the user back to the landing page.
 
 > [!NOTE]
-> To learn more on how to customize the MRZScannerView and its corresponding UI elements, we recommend reading the [Customizaton Guide]({{ site.guides }}mrz-scanner-customization.html) as that will shed a lot more light on how to customize the scanner UI to fit your needs.
+> To learn more on how to customize the MRZScannerView and its corresponding UI elements, we recommend reading the [Customizaton Guide]({{ site.guides }}mrz-scanner-customization-v2.0.html) as that will shed a lot more light on how to customize the scanner UI to fit your needs.
 
 #### `MRZResultView`
 
-Here is a quick breakdown of the constituent UI elements of the result view, controlled by [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig):
+Here is a quick breakdown of the constituent UI elements of the result view, controlled by [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner-v2.0.html#mrzresultviewconfig):
 
 1. **Original Image**: A cropped image of the scanned MRZ document - this gets displayed at the top of the `MRZResultView` by default.
 
@@ -261,5 +261,4 @@ Here is a quick breakdown of the constituent UI elements of the result view, con
 
 Now that you got the most basic functionality of the MRZ Scanner up and running, it's time to explore the many ways in which the MRZ Scanner can be used, including customization and the ability to read directly from static images and PDFs. To learn more about those two topics, please visit the following articles
 
-- [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization.html)
-- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) 
+- [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization-v2.0.html)

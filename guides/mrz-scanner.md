@@ -117,7 +117,7 @@ Alternatively, you can use other methods like `IIS` or `Apache` to serve the pro
 
 While using the pre-compiled script is the easiest way to get started with the MRZ Scanner, we do also allow you to build the MRZ Scanner SDK from source. Building from source gives you the advantage of performing in-depth SDK customization.
 
-The MRZ Scanner is built using three constituent Dynamsoft products: [**Dynamsoft Label Recognizer**]({{ site.dlr_js }}), [**Dynamsoft Code Parser**]({{ site.dcp_js }}api-reference/code-parser-module.html?lang=javascript), and [**Dynamsoft Camera Enhancer**]({{ site.dce_js }}api-reference/index.html?lang=javascript), so any MRZ Scanner customization involves working with the foundational API of these products.
+The MRZ Scanner is built using three constituent Dynamsoft products: [**Dynamsoft Label Recognizer**]({{ site.dlr_js }}api-reference/label-recognizer-module.html?lang=javascript), [**Dynamsoft Code Parser**]({{ site.dcp_js }}api-reference/code-parser-module.html?lang=javascript), and [**Dynamsoft Camera Enhancer**]({{ site.dce_js }}api-reference/index.html?lang=javascript), so any MRZ Scanner customization involves working with the foundational API of these products.
 
 The first step to building the SDK from source is retrieving the **MRZ Scanner JavaScript Edition** source files from the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiling them into a distributable package, and then runs a *ready-made* Hello World sample page that is already included in the repo.
 
@@ -210,7 +210,7 @@ Let's now go through the code of the Hello World sample to understand how the co
 </html>
 ```
 
-The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier [Quick Start](#quick-start---hello-world) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
+The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier [Quick Start](#quick-start---including-the-library) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
 
 MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it creates a container which it populates with the **Ready-to-Use UI**.
 
@@ -241,7 +241,7 @@ Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }
   });
   (async () => {
     // Launch the scanner and wait for the result
-    const result = await mrzscanner.launch();
+    const result = await mrzScanner.launch();
     console.log(result);
   })();
 </script>
@@ -291,6 +291,8 @@ Here is a quick breakdown of the constituent UI elements of the result view, con
 3. **Re-take Button**: This button discards the previous scan and parsed data, then takes the user back to the **`MRZScannerView`** to scan another MRZ document.
 
 4. **Done Button**: This button closes the scanner and destroys the **`MRZScanner`** instance, and returns the result object containing the MRZ scan. At that point, the application goes back to the landing page. You can additionally dictate further actions upon the button click, such as allowing the user to perform some extra actions with the MRZ result, navigating to another page, passing the result object for further processing, and more.
+
+5. **Cancel Button**: When the scanner is launched with a static file instead of using the default camera UI, this button will appear in the result view in place of the re-take button. Once this button is clicked, the MRZ result is discarded and the user returns to the landing page. You can dictate the action(s) that happen once the button is clicked using the `onCancel` callback function of the [`MRZResultViewConfig`]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) in case you do not want the user to go back to the same landing page they were on. 
 
   > [!NOTE]
   >  In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.

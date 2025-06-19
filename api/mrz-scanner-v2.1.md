@@ -182,7 +182,7 @@ The MRZScannerViewConfig is used to configure the UI elements of the **MRZScanne
 
 ```ts
 interface MRZScannerViewConfig {
-  uiPath?: string;
+  cameraEnhancerUIPath?: string;
   container?: HTMLElement | string;
 
   showScanGuide?: boolean;
@@ -255,10 +255,8 @@ interface MRZResultViewConfig {
   showOriginalImage?: boolean;
   allowResultEditing?: boolean; // New option to control if result fields can be edited
   showMRZText?: boolean;
-  emptyResultMessage?: string;
 
   onDone?: (result: MRZResult) => Promise<void>;
-  onCancel?: (result: MRZResult) => Promise<void>;
 }
 ```
 
@@ -271,9 +269,7 @@ interface MRZResultViewConfig {
 | `showOriginalImage`     | `boolean`                | Determines whether the cropped image of the MRZ document will be displayed in the result view or not.              |
 | `allowResultEditing`    | `boolean`                | Enables/disables the ability to edit the MRZ info after it is scanned.  |
 | `showMRZText`    | `boolean`                | Shows/hides the raw MRZ text as one of the fields in the result view.  |
-| `emptyResultMessage`    | `string`                | Sets the message to be displayed in the result view when no MRZ is detected.  |
 | `onDone`      | `Promise<void>`     | Defines the action(s) to take once the user clicks the "Done" button in the result view.      |
-| `onCancel`      | `Promise<void>`     | Defines the action(s) to take once the user clicks the "Cancel" button in the result view when the MRZ scanner is launched with a static file.      |
 
 #### Example
 
@@ -282,7 +278,6 @@ const mrzResultViewConfig = {
     showOriginalImage: false, // Hides the cropped image of the MRZ document in the result view; true by default
     allowResultEditing: true, // Allows the user to manually edit the text of the parsed result fields; false by default
     showMRZText: false, // Hides the raw MRZ text as a field in the result view; true by default
-    emptyResultMessage: "No MRZ is detected. Please try again.", // Change the message if there is no MRZ is detected. The default message is "The necessary information couldn't be detected. Please try again."
     toolbarButtonsConfig: {
         retake: {
             label: "Re-scan", // Changes the text label of the retake button to "Re-scan"; string is "Re-take" by default
@@ -291,10 +286,6 @@ const mrzResultViewConfig = {
         done: {
             label: "Return Home", // Changes the text label of the done button to "Return Home"; string is "Done" by default
             isHidden: false // Hides the done button; false by default
-        },
-        cancel: {
-            label: "Try Again", // Changes the text label of the cancel button; string is "Cancel" by default
-            isHidden: false // Hides the cancel button; false by default.
         }
     },
     /* onDone is a callback that allows you to define the action(s) to take once the user clicks the Done button and the scanner is closed. By default, nothing happens and the app goes back to the landing page. */
@@ -302,10 +293,6 @@ const mrzResultViewConfig = {
         console.log(result.status.message);
         console.log(result.data.firstName);
     },
-    /* onCancel is a callback that allows you to define the action(s) that will happen once the user clicks the Cancel button which only shows up if the MRZ scanner is launched with a static file rather than with the camera view. By default, nothing happens and the app goes back to the landing page */
-    onCancel: (result) => {
-        /* implement the code to redirect the user to a new page should you not want them to go back to the landing page since that is the default behaviour */
-    }
 };
 
 const mrzConfig = {
@@ -324,7 +311,6 @@ The `MRZResultViewToolbarButtonsConfig` is used to configure the buttons of the 
 interface MRZResultViewToolbarButtonsConfig {
   retake?: ToolbarButtonConfig;
   done?: ToolbarButtonConfig;
-  cancel?: ToolbarButtonConfig;
 }
 ```
 
@@ -334,7 +320,6 @@ interface MRZResultViewToolbarButtonsConfig {
 | ----------------------- | ------------------------------ | --------------------------------------------------------------- |
 | `retake`    | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the re-scan button of the toolbar.   |
 | `done`      | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the done button of the toolbar.  |
-| `cancel`      | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the cancel button of the toolbar (which only shows up if the MRZ Scanner is launched with a static file instead of the standard camera UI).  |
 
 #### Example
 
@@ -346,10 +331,6 @@ const mrzButtonConfig = {
     },
     done: {
         label: "Return Home",
-        isHidden: false
-    },
-    cancel: {
-        label: "Try Again",
         isHidden: false
     }
 };
