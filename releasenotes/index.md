@@ -17,7 +17,7 @@ permalink: /releasenotes/index.html
 ## Highlighted Features
 
 - Updated the underlying Capture Vision bundle to `3.0.3001` for major improvements in reading accuracy and speed.
-- Optimized the algorithm to achieve a **30% increase in read rate** as well as 
+- Optimized the algorithm to achieve a **30% increase in read rate** as well as a **15% increase in accuracy**.
 - Added support for `TD2` and `TD3` Visa.
 - Added a `emptyResultMessage` property to the `ResultViewConfig` interface in order to change the string message that is displayed when no result is found.
 

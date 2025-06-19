@@ -235,6 +235,7 @@ interface MRZResultViewConfig {
 | `container`             | `HTMLElement \ string`  | The container element or selector for the `MRZResultView` UI. |
 | `toolbarButtonsConfig`  | `MRZResultViewToolbarButtonsConfig`  | Configures the main bottom toolbar of the result view.  |
 | `showOriginalImage`     | `boolean`                | Determines whether the cropped image of the MRZ document will be displayed in the result view or not.              |
+| `showMRZText`    | `boolean`                | Displays/hides the raw MRZ text as one of the result fields in the result view.  |
 | `allowResultEditing`    | `boolean`                | Enables/disables the ability to edit the MRZ info after it is scanned.  |
 | `onDone`      | `Promise<void>`     | Defines the action(s) to take once the user clicks the "Done" button in the result view.      |
 
@@ -243,6 +244,7 @@ interface MRZResultViewConfig {
 ```ts
 const mrzResultViewConfig = {
     showOriginalImage: false, // Hides the cropped image of the MRZ document in the result view; true by default
+    showMRZText: false, // Hides the raw MRZ text as a result field.
     toolbarButtonsConfig: {
         retake: {
             label: "Re-scan", // Changes the text label of the retake button to "Re-scan"; string is "Re-take" by default
@@ -403,8 +405,8 @@ export interface MRZData {
 | `lastName`        | `string`  | The last name of the MRZ document holder.      |
 | `age`             | `string`  | The age of the MRZ document holder.      |
 | `sex`             | `string`  | The sex of the MRZ document holder.      |
-| `issuingState`    | `string`  | The issuing state (represented as the full name of the country/region) of the MRZ document.     |
-| `nationality`     | `string`  | The nationality (represented as the full name of the country/region) of the MRZ document holder.      |
+| `issuingState`    | `string`  | The issuing state of the MRZ document.     |
+| `nationality`     | `string`  | The nationality of the MRZ document holder.      |
 | `dateOfBirth`     | `MRZDate` | The date of birth of the MRZ document holder.      |
 | `dateOfExpiry`    | `MRZDate` | The date of expiry of the MRZ document.      |
 
