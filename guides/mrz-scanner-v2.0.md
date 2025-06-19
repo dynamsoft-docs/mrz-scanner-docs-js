@@ -7,6 +7,7 @@ title: Dynamsoft MRZ Scanner JavaScript Edition
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition,
 description: Dynamsoft MRZ Scanner User Guide
 permalink: /guides/mrz-scanner-v2.0.html
+
 ---
 
 # User Guide for the MRZ Scanner JavaScript Edition
