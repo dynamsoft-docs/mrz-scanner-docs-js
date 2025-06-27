@@ -181,7 +181,6 @@ The **`MRZResultView`** user interface displays the parsed MRZ results as well a
 
 7. **`onCancel`** - set a callback function to be executed upon cancelling the MRZ Scanner process *when the scanner is launched with a static file instead of the default camera UI*. When the cancel button is clicked, the MRZ result is discarded and the user is redirected back to the landing page. However, if you wish for a different behaviour than going back to the landing page, then this callback is where you define the behaviour that you are looking to implement. Read more on how to implement this callback in the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) section of the API reference.
 
-
 ### Using the `MRZResultViewConfig`
 
 Now that we have learned about the properties of the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) interface, let's now demonstrate how to use it in a simple code snippet:

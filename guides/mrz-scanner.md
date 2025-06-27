@@ -152,36 +152,77 @@ Once the server is running, open the application in a browser using the address 
 <div class="multi-panel-start"></div>
 <div class="multi-panel-title">Self-hosting the Library Resources</div>
 
-There could be situations where you don't want to connect to the CDN repository in order to include the library in your application. We also provide the option to download the library's resource files, and then placing them into your own server so that the users of your application would only need to connect to your server.
+If you are looking to have a **completely offline setup**, we also provide the option to download the library's resource files, and then configuring them into your own server so that the users of your application would only need to connect to your server.
+
+### Acquiring the Resource Files
 
 The first step is to get a copy of the resources. There are two ways which you can do this:
 
 - Go to the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript). Download the repository as a ZIP and the library resources are in the *dist* folder. So all you need is just a copy of this *dist* folder.
-  
+
 - If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.0 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
+
+### Modify the Build Script
+
+If you are working with a npm-dependent project (e.g. a *React* or *Angular* app), the build script in `package.json` needs to be modified to allow for the local source files to be copied over during the build process.
+
+Update the `scripts` section in `package.json` to automatically copy the libraries during the build process:
+
+```json
+"scripts": {
+    "serve": "node dev-server/index.js",
+    "build": "rollup -c && npm run copy-libs",
+    "copy-libs": "npx mkdirp dist/libs && npx cpx \"node_modules/dynamsoft-*/**/*\" dist/libs/ --dereference",
+    "build:production": "rollup -c --environment BUILD:production"
+},
+```
+
+### Update the Engine Resource Paths
+
+By default, the engine resource paths of the libraries are usually set to the CDN links for each library. Once you modify the build script, the library resource files are then available locally so the engine resource paths can now be set to the path defined in the previous step.
+
+```ts
+const mrzScanner = new Dynamsoft.DocumentScanner({
+    license: "YOUR_LICENSE_KEY_HERE",
+    scannerViewConfig: {
+        uiPath: "./dist/mrz-scanner.ui.html", // Use the local file
+    },
+    engineResourcePaths: {
+        std: "./dist/libs/dynamsoft-capture-vision-std/dist/",
+        dip: "./dist/libs/dynamsoft-image-processing/dist/",
+        core: "./dist/libs/dynamsoft-core/dist/",
+        license: "./dist/libs/dynamsoft-license/dist/",
+        cvr: "./dist/libs/dynamsoft-capture-vision-router/dist/",
+        dlr: "./dist/libs/dynamsoft-label-recognizer/dist/",
+        dcp: "./dist/libs/dynamsoft-code-parser/dist/"
+    },
+});
+```
+> [!TIP]
+> Please see [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for more info on the full configuration.
+
+### Server Requirements for Deployment
 
 Once you have the dist folder, the next step is to deploy it to a server of your choice. There are a couple of considerations to take into account when setting up the server:
 
-- Secure context (HTTPS deployment)
+#### Secure context (HTTPS deployment)
 
-  When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
+When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
+
+- Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
+> Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and test.
+
+- Dynamsoft License requires a secure context to work.
+    
+#### Set the MIME type for `.wasm` as `application/wasm`
+      
+The goal is to configure your server to send the correct Content-Type header for the wasm file so that it is processed correctly by the browser.
   
-  - Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
-  > Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and test.
-  
-  - Dynamsoft License requires a secure context to work.
- 
--  Set the MIME type for `.wasm` as `application/wasm`
-   
-   The goal is to configure your server to send the correct Content-Type header for the wasm file so that it is processed correctly by the browser.
-     
-     Different types of webservers are configured differently, for example:
+Different types of webservers are configured differently, for example:
 
-     + <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Apache_Configuration_htaccess#media_types_and_character_encodings" title="Apache">Apache</a>
-     + <a target="_blank" href="https://docs.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap" title="IIS">IIS</a>
-     + <a target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/examples/full/#mime-types" title="NGINX">NGINX</a>
-
-Once you are done with the server setup and the library resources are placed in their desired location on the server - the final thing is to tell the library where to find the resources at runtime. This is done by configuring the *engineResourcePaths* of the `MRZScannerConfig` object. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*. The *engineResourcePaths* needs to be set to the location of the library resources on the server that you just set up.
+  + <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Apache_Configuration_htaccess#media_types_and_character_encodings" title="Apache">Apache</a>
+  + <a target="_blank" href="https://docs.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap" title="IIS">IIS</a>
+  + <a target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/examples/full/#mime-types" title="NGINX">NGINX</a>
 
 <div class="multi-panel-end"></div>
 
