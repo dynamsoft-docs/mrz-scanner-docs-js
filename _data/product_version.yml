@@ -3,10 +3,12 @@ useGroupedVersion: true
 version_info_list:
   - value: latest version(3.0.0)
   - value: 3.x
+    child:
+      - 3.0.0
   - value: 2.x
     child:
-      - 2.1
-      - 2.0
+      - 2.1.0
+      - 2.0.0
   - value: 1.x
     child:
-      - 1.1
+      - 1.1.0
