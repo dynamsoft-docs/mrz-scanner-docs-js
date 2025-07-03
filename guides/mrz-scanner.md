@@ -232,6 +232,9 @@ Different types of webservers are configured differently, for example:
 
 Let's now go through the code of the Hello World sample to understand how the code works in detail.
 
+> [!NOTE]
+> If you are using a framework like React/Angular/Vue, please refer to the [framework samples]({{ site.codegallery }}index.html#frameworks) built by the development team.
+
 ### Step 1: Setting up the HTML and Including the MRZ Scanner
 
 ```html
