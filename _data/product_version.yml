@@ -1,6 +1,6 @@
 useGroupedVersion: true
 
-version_info_list:
+version_info_list_js:
   - value: latest version(3.0.0)
   - value: 2.x
     child:
