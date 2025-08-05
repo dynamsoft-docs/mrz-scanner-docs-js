@@ -516,7 +516,7 @@ interface MRZDate {
 
 ### ResultStatus
 
-ResultStatus is used to represent the status of the MRZ Result. This status can be **successful**, **cancelled** if the user closes the scanner, or **failed** if something went wrong during the scanning process. The *code* of the result status is a [`EnumResultStatus`]({{ site.api }}enums-mrz-scanner.md#enumresultstatus).
+ResultStatus is used to represent the status of the MRZ Result. This status can be **successful**, **cancelled** if the user closes the scanner, or **failed** if something went wrong during the scanning process. The *code* of the result status is a [`EnumResultStatus`]({{ site.api }}enums-mrz-scanner.html#enumresultstatus).
 
 #### Syntax
 
