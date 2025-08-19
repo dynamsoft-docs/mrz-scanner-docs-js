@@ -12,6 +12,13 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 3.0.1 (08/06/2025)
+
+## Fixes
+
+- Fixed the file input process error when decoding static file input when `showResultView` is set to `false`.
+- Resolved an issue with the `launch()` method throwing an error when there's a different error format thrown.
+
 ## 3.0.0 (06/17/2025)
 
 ## Highlighted Features
