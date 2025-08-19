@@ -19,3 +19,4 @@ description: MRZ Scanner JavaScript Edition Documentation Homepage
 - [Code Gallery]({{ site.codegallery }}index.html)
 - [API Reference]({{ site.api }}index.html)
 - [Release Notes]({{ site.releasenotes }}index.html)
+- [FAQ](/mrz-scanner/docs/web/faq/index.html)
