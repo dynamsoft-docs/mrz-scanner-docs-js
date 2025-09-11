@@ -12,7 +12,7 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
-## 3.0.2 (09/10/2025)
+## 3.0.2 (09/11/2025)
 
 ### Fixes
 
