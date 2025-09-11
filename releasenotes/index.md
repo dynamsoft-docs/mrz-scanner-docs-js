@@ -12,23 +12,31 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 3.0.2 (09/11/2025)
+
+### Fixes
+
+- Updated the underlying Capture Vision bundle to `3.0.6001`.
+- Improved recognition speed by fixing an issue where a WASM compilation parameter caused performance degradation.
+- Resolving security vulnerabilities regarding some of the dev dependencies of the framework samples.
+
 ## 3.0.1 (08/06/2025)
 
-## Fixes
+### Fixes
 
 - Fixed the file input process error when decoding static file input when `showResultView` is set to `false`.
 - Resolved an issue with the `launch()` method throwing an error when there's a different error format thrown.
 
 ## 3.0.0 (06/17/2025)
 
-## Highlighted Features
+### Highlighted Features
 
 - Updated the underlying Capture Vision bundle to `3.0.3001` for major improvements in reading accuracy and speed.
 - Optimized the algorithm to achieve a **30% increase in read rate** as well as a **15% increase in accuracy**.
 - Added support for `TD2` and `TD3` Visa.
 - Added a `emptyResultMessage` property to the `ResultViewConfig` interface in order to change the string message that is displayed when no result is found.
 
-## Fixes
+### Fixes
 
 - Fixed the issue where the camera select icon cuts off on browsers in iOS.
 - Optimized the resource loading process of the library. 
@@ -36,7 +44,7 @@ permalink: /releasenotes/index.html
 
 ## 2.1.0 (05/16/2025)
 
-## Highlighted Features
+### Highlighted Features
 
 - **[UI]** Redesigned the **`MRZScannerView`** (the main camera view) to have updated icons and better alignment and spacing.
 - Changed the default camera resolution when the camera is opened from **1080p** to **2K** (if the camera supports it).
@@ -47,7 +55,7 @@ permalink: /releasenotes/index.html
 - Integrated Dynamsoft's [Mobile Web Capture](https://www.dynamsoft.com/mobile-web-capture/docs/introduction/) with the MRZ Scanner (JavaScript Edition) to allow the user to edit the scanned MRZ image like a document.
 - Added `NationalityRaw` and `IssuingStateRaw` to the `MRZData` interface that represent the raw values of these fields
 
-## Fixes
+### Fixes
 
 - Fixed parsing of German IDs returning `D<<` instead of `D`.
 - `engineResourcePaths` is now set before `initLicense` (internally) to prevent a bug when the user wants to implement a custom `engineResourcePaths`.
@@ -57,7 +65,7 @@ permalink: /releasenotes/index.html
 
 The **MRZ Scanner JavaScript Edition** has been redesigned and redeveloped to now include a **ready-to-use, fully developed UI** to ease the development process while providing even better functionality.
 
-## Highlighted Features
+### Highlighted Features
 
 - Automatic detection and parsing of MRZs in passports and IDs
 - Support for the following MRTD formats: TD3 (Passport), TD2 (ID), and TD1 (ID)
@@ -65,14 +73,14 @@ The **MRZ Scanner JavaScript Edition** has been redesigned and redeveloped to no
 - Supports an interactive video scenario (capturing via video) as well as static images (jpg/png)
 - Modular, view-based design for easy maintenance and customization
 
-## Views
+### Views
 
 MRZ Scanner JavaScript Edition is organized into configurable UI views. Below is a quick overview of the two main views:
 
 > [!TIP]
 > Learn more about these views and how to configure them in the [User Guide]({{ site.guides }}mrz-scanner.html) and the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html).
 
-### MRZ Scanner View
+#### MRZ Scanner View
 
 - Fully configurable camera view
 - Resolution/camera select dropdown to allow for quick improvements
@@ -81,7 +89,7 @@ MRZ Scanner JavaScript Edition is organized into configurable UI views. Below is
 - Flash/Torch support
 - Allows the user to load in an image from the photo library
 
-### MRZ Result View
+#### MRZ Result View
 
 - Scrollable field view to display the parsed MRZ info
 - Displays the original image of the MRZ document
