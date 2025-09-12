@@ -13,9 +13,6 @@ permalink: /releasenotes/index.html
 # Release Notes
 
 ## 3.0.2 (09/11/2025)
-
-### Improved
-
 ### Improved
 
 - Updated the underlying **Capture Vision Bundle dependency** to **3.0.6001**.
