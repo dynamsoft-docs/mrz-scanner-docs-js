@@ -14,11 +14,11 @@ permalink: /releasenotes/index.html
 
 ## 3.0.2 (09/11/2025)
 
-### Fixes
+### Improved
 
 - Updated the underlying Capture Vision bundle to `3.0.6001`.
 - Improved recognition speed by fixing an issue where a WASM compilation parameter caused performance degradation.
-- Resolving security vulnerabilities regarding some of the dev dependencies of the framework samples.
+- Strengthened framework samples with security updates.
 
 ## 3.0.1 (08/06/2025)
 
