@@ -16,9 +16,11 @@ permalink: /releasenotes/index.html
 
 ### Improved
 
-- Updated the underlying Capture Vision bundle to `3.0.6001`.
-- Improved recognition speed by fixing an issue where a WASM compilation parameter caused performance degradation.
-- Strengthened framework samples with security updates.
+### Improved
+
+- Updated the underlying **Capture Vision Bundle dependency** to **3.0.6001**.
+- Increased recognition speed by fixing an issue caused by a WASM compilation parameter that degraded performance.
+- Enhanced framework samples with the latest security updates.
 
 ## 3.0.1 (08/06/2025)
 
