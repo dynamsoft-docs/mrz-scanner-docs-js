@@ -49,21 +49,21 @@ The simplest way to include the SDK is to use either the [**jsDelivr**](https://
 - jsDelivr
 
   ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
   ```
 
 - UNPKG
 
   ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
   ```
 
 When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
 
   ```sh
-  npm i dynamsoft-mrz-scanner@3.0.2 -E
+  npm i dynamsoft-mrz-scanner@3.0.3 -E
   # or
-  yarn add dynamsoft-mrz-scanner@3.0.2 -E
+  yarn add dynamsoft-mrz-scanner@3.0.3 -E
   ```
 
 > [!WARNING]
@@ -78,7 +78,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -160,7 +160,7 @@ The first step is to get a copy of the resources. There are two ways which you c
 
 - Go to the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript). Download the repository as a ZIP and the library resources are in the *dist* folder. So all you need is just a copy of this *dist* folder.
 
-- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.2 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
+- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.3 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
 
 ### Modify the Build Script
 
@@ -182,19 +182,13 @@ Update the `scripts` section in `package.json` to automatically copy the librari
 By default, the engine resource paths of the libraries are usually set to the CDN links for each library. Once you modify the build script, the library resource files are then available locally so the engine resource paths can now be set to the path defined in the previous step.
 
 ```ts
-const mrzScanner = new Dynamsoft.DocumentScanner({
+const mrzScanner = new Dynamsoft.MRZScanner({
     license: "YOUR_LICENSE_KEY_HERE",
     scannerViewConfig: {
         uiPath: "./dist/mrz-scanner.ui.html", // Use the local file
     },
     engineResourcePaths: {
-        std: "./dist/libs/dynamsoft-capture-vision-std/dist/",
-        dip: "./dist/libs/dynamsoft-image-processing/dist/",
-        core: "./dist/libs/dynamsoft-core/dist/",
-        license: "./dist/libs/dynamsoft-license/dist/",
-        cvr: "./dist/libs/dynamsoft-capture-vision-router/dist/",
-        dlr: "./dist/libs/dynamsoft-label-recognizer/dist/",
-        dcp: "./dist/libs/dynamsoft-code-parser/dist/"
+        rootDirectory: "https://cdn.jsdelivr.net/npm/"
     },
 });
 ```
@@ -244,7 +238,7 @@ Let's now go through the code of the Hello World sample to understand how the co
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.2/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>

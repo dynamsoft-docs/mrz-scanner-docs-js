@@ -12,12 +12,20 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
-## 3.0.2 (09/11/2025)
-### Improved
+## 3.0.3 (09/17/2025)
 
-- Updated the underlying **Capture Vision Bundle dependency** to **3.0.6001**.
-- Increased recognition speed by fixing an issue caused by a WASM compilation parameter that degraded performance.
-- Enhanced framework samples with the latest security updates.
+### Fixes
+
+- Fixed the `launch()` method so that the `imageOrFile` parameter is optional (for TypeScript implementation).
+- Altered the React Hooks sample to allow it to run in `Strict Mode`.
+
+## 3.0.2 (09/11/2025)
+
+### Fixes
+
+- Updated the underlying Capture Vision bundle to `3.0.6001`.
+- Improved recognition speed by fixing an issue where a WASM compilation parameter caused performance degradation.
+- Strengthened and improved the framework samples (e.g. Angular) with security updates.
 
 ## 3.0.1 (08/06/2025)
 
