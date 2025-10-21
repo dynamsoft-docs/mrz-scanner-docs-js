@@ -12,6 +12,12 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 3.0.4 (10/20/2025)
+
+### Fixes
+
+- Fixed a bug with the `mrzText` field of the `MRZData` interface.
+
 ## 3.0.3 (09/17/2025)
 
 ### Fixes
