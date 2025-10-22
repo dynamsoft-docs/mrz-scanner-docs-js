@@ -189,6 +189,7 @@ interface MRZScannerViewConfig {
   showUploadImage?: boolean;
   showFormatSelector?: boolean;
   showSoundToggle?: boolean;
+  showPoweredByDynamsoft?: boolean;
 
   enableMultiFrameCrossFilter?: boolean; // false by default
 
@@ -207,6 +208,7 @@ interface MRZScannerViewConfig {
 | `showUploadImage`       | `boolean`                | Determines the visibility of the "load image" icon to allow the user to select a static image from their local photo library.              |
 | `showFormatSelector`    | `boolean`                | Determines the visibility of the format selector box that allows the user to restrict the MRTD format(s) that are being read.  |
 | `showSoundToggle`       | `boolean`                | Determines the visibility of the "sound" icon that allows the user to play a beep sound once the MRZ is recognized.        |
+| `showPoweredByDynamsoft`       | `boolean`         | Determines the visibility of the "Powered By Dynamsoft" imessage at the bottom of the scanner view.        |
 | `enableMultiFrameCrossFilter`      | `boolean`     | Enables or disables the MultiFrameResultCrossFilter that can improve the accuracy of the MRZ result, but possibly at the cost of speed.   |
 | `uploadAcceptedTypes`      | `string`     | Configures which image and file format(s) the library will accept if the user chooses to decode static images. |
 | `uploadFileConverter`      | `function`     | Converts non-image files (e.g. PDF) to blobs so that they can be read by the MRZ Scanner.  |
@@ -219,7 +221,7 @@ const mrzScanViewConfig = {
     showUploadImage: true, // hides the load image icon that shows up in the toolbar at the top of the view; true by default
     showFormatSelector: true, // hides the format selector box if more than two MRZ types are assigned; true by default
     showSoundToggle: false, // hides the sound icon that allows the user to control whether a beep is played once an MRZ is recognized; true by default
-    showPoweredByDynamsoft?: boolean; // hides the "Powered By Dynamsoft" message that appears on the scanner UI; true by default
+    showPoweredByDynamsoft: false; // hides the "Powered By Dynamsoft" message that appears on the scanner UI; true by default
     enableMultiFrameCrossFilter: true, // turning the filter off could improve the speed but at the cost of result accuracy; true by default
 
     uploadAcceptedTypes: "image/*,application/pdf", // allows the user to upload static images and PDFs to be read by the MRZ Scanner - default is "image/*"

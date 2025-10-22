@@ -49,21 +49,21 @@ The simplest way to include the SDK is to use either the [**jsDelivr**](https://
 - jsDelivr
 
   ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   ```
 
 - UNPKG
 
   ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   ```
 
 When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
 
   ```sh
-  npm i dynamsoft-mrz-scanner@3.0.3 -E
+  npm i dynamsoft-mrz-scanner@3.0.4 -E
   # or
-  yarn add dynamsoft-mrz-scanner@3.0.3 -E
+  yarn add dynamsoft-mrz-scanner@3.0.4 -E
   ```
 
 > [!WARNING]
@@ -78,7 +78,7 @@ Below is the complete Hello World sample page that uses the precompiled script s
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
@@ -160,40 +160,141 @@ The first step is to get a copy of the resources. There are two ways which you c
 
 - Go to the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript). Download the repository as a ZIP and the library resources are in the *dist* folder. So all you need is just a copy of this *dist* folder.
 
-- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.3 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
+- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.4 -E`. Find the `dynamsoft-mrz-scanner` folder in `node_modules` and the *dist* folder will be inside.
 
 ### Modify the Build Script
 
-If you are working with a npm-dependent project (e.g. a *React* or *Angular* app), the build script in `package.json` needs to be modified to allow for the local source files to be copied over during the build process.
+Depending on the framework that is being used to develop the application, there are different ways to copy over the resources locally during the build process so that it is accessible to the app when it is deployed on a development or production server. Let's look at each of the supported frameworks:
 
-Update the `scripts` section in `package.json` to automatically copy the libraries during the build process:
+#### Angular
+
+For Angular, the main modification will happen in the **angular.json** file - specifically in the *assets* section of the file. The objective is to copy over the resources from the *node_modules* folder into the *dist/my-app/browser/assets* folder of the Angular project.
+
+```json
+ "assets": [
+  {
+    "glob": "**/*",
+    "input": "public"
+  },
+  {
+    "glob": "**/*",
+    "input": "node_modules/dynamsoft-mrz-scanner/dist",
+    "output": "/assets/dynamsoft-mrz-scanner@3.0.4/dist"
+  },
+  {
+    "glob": "**/*",
+    "input": "node_modules/dynamsoft-capture-vision-bundle/dist",
+    "output": "/assets/dynamsoft-capture-vision-bundle@3.0.6001/dist"
+  },
+  {
+    "glob": "char-resources/**/*",
+    "input": "node_modules/dynamsoft-capture-vision-data",
+    "output": "/assets/dynamsoft-capture-vision-data@1.0.1"
+  },
+  {
+    "glob": "models/**/*",
+    "input": "node_modules/dynamsoft-capture-vision-data",
+    "output": "/assets/dynamsoft-capture-vision-data@1.0.1"
+  },
+  {
+    "glob": "parser-resources/**/*",
+    "input": "node_modules/dynamsoft-capture-vision-data",
+    "output": "/assets/dynamsoft-capture-vision-data@1.0.1"
+  },
+  {
+    "glob": "templates/**/*",
+    "input": "node_modules/dynamsoft-capture-vision-data",
+    "output": "/assets/dynamsoft-capture-vision-data@1.0.1"
+  },
+  {
+    "glob": "ui/**/*",
+    "input": "node_modules/dynamsoft-capture-vision-data",
+    "output": "/assets/dynamsoft-capture-vision-data@1.0.1"
+  }
+],
+```
+
+> [!NOTE]
+> The above script assumes that the `dynamsoft-mrz-scanner`, `dynamsoft-capture-vision-bundle`, and `dynamsoft-capture-vision-data` have all been installed via npm and are in the node_modules folder.
+>
+> Furthermore, please note the version number that is at the end of the folder name above depends on the version of the library that is being used. This current script is based on the latest version of the library, v3.0.4.
+
+#### React
+
+In the React implementation, the script of **package.json** needs to be modified to get the resources to copy into the *public* folder. Here is what to add to the *scripts* section of the file:
 
 ```json
 "scripts": {
-    "serve": "node dev-server/index.js",
-    "build": "rollup -c && npm run copy-libs",
-    "copy-libs": "npx mkdirp dist/libs && npx cpx \"node_modules/dynamsoft-*/**/*\" dist/libs/ --dereference",
-    "build:production": "rollup -c --environment BUILD:production"
+  "copy-resources": "mkdir -p public/libs && cp -r node_modules/dynamsoft-mrz-scanner/ public/libs/dynamsoft-mrz-scanner@3.0.4/ && cp -r node_modules/dynamsoft-capture-vision-bundle/ public/libs/dynamsoft-capture-vision-bundle@3.0.6001/ && cp -r node_modules/dynamsoft-capture-vision-data public/libs/dynamsoft-capture-vision-data@1.0.1",
+  "start": "react-scripts start",
+  "build": "npm run copy-resources && react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
 },
 ```
+
+> [!NOTE]
+> The one new thing that was added is the `copy-resources` script which copies the resources needed from the *node_modules* folder into the *public/libs* folder so that it is accessible at runtime by the app. The `build` script was modified so that it runs `copy-resources` whenever it is called.
+>
+> Please note that the version numbers in the copy-resources command is based on the latest version of dynamsoft-mrz-scanner, v3.0.4.
+
+
+Afterwards, running `npm build` on the root directory of the React project will copy over the resources.
+
+#### Vue
+
+Similar to the React implementation, the *scripts* of **package.json** needs to be modified to get the resources to copy into the *public* folder.
+
+```json
+"scripts": {
+  "copy-resources": "mkdir -p public/libs && cp -r node_modules/dynamsoft-mrz-scanner/ public/libs/dynamsoft-mrz-scanner@3.0.4/ && cp -r node_modules/dynamsoft-capture-vision-bundle/ public/libs/dynamsoft-capture-vision-bundle@3.0.6001/ && cp -r node_modules/dynamsoft-capture-vision-data public/libs/dynamsoft-capture-vision-data@1.0.1",
+  "serve": "vue-cli-service serve",
+  "build": "npm run copy-resources && vue-cli-service build",
+  "lint": "vue-cli-service lint"
+},
+```
+
+> [!NOTE]
+> The one new thing that was added is the `copy-resources` script which copies the resources needed from the *node_modules* folder into the *public/libs* folder so that it is accessible at runtime by the app. The `build` script was modified so that it runs `copy-resources` whenever it is called.
+>
+> Please note that the version numbers in the copy-resources command is based on the latest version of dynamsoft-mrz-scanner, v3.0.4.
 
 ### Update the Engine Resource Paths
 
 By default, the engine resource paths of the libraries are usually set to the CDN links for each library. Once you modify the build script, the library resource files are then available locally so the engine resource paths can now be set to the path defined in the previous step.
 
+#### React / Vue
+
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
     license: "YOUR_LICENSE_KEY_HERE",
     scannerViewConfig: {
-        uiPath: "./dist/mrz-scanner.ui.html", // Use the local file
+      uiPath: "/libs/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.ui.html",
     },
+    templateFilePath: "/libs/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.template.json",
     engineResourcePaths: {
-        rootDirectory: "https://cdn.jsdelivr.net/npm/"
-    },
+      rootDirectory: "/libs/"
+    }
 });
 ```
 > [!TIP]
 > Please see [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for more info on the full configuration.
+
+
+#### Angular
+
+```ts
+const config = {
+  license: 'YOUR_LICENSE_KEY_HERE', // Replace with your Dynamsoft license key
+  scannerViewConfig: {
+    uiPath: "/assets/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.ui.html",
+  },
+  templateFilePath: "/assets/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.template.json",
+  engineResourcePaths: {
+      rootDirectory: "/assets/"
+  }
+};
+```
 
 ### Server Requirements for Deployment
 
@@ -238,7 +339,7 @@ Let's now go through the code of the Hello World sample to understand how the co
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.3/dist/mrz-scanner.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script>
   </head>
 
   <body>
