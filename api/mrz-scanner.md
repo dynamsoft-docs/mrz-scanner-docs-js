@@ -410,7 +410,7 @@ export interface MRZResult {
 | Property                | Type                           | Description                                                     |
 | ----------------------- | ------------------------------ | --------------------------------------------------------------- |
 | `status`               | [`ResultStatus`](#resultstatus)  | The status of the MRZ result, which can be successful, cancelled (if the user closes the scanner), or failed (indicating that something has gone wrong during the scanning process).  |
-| `originalImageResult`  | [`DSImageData`]({{ site.dcvb_js_api }}core/basic-structures/ds-image-data.html)  | A `DSImageData` object that represents the cropped image of the MRZ document.  |
+| `originalImageResult`  | [`DSImageData`]({{ site.dcvb_js_api }}core/basic-structures/ds-image-data.html)  | A `DSImageData` object that represents the **uncropped/uncorrected** image of the MRZ document.  |
 | `data`                 | [`MRZData`](#mrzdata)                | Represents the parsed MRZ info.         |
 
 #### Example
