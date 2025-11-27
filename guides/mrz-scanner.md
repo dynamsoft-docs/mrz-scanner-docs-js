@@ -423,7 +423,7 @@ The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.ap
 
 Here is a quick breakdown of the constituent UI elements of the result view, controlled by [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig):
 
-1. **Original Image**: A cropped image of the scanned MRZ document - this gets displayed at the top of the `MRZResultView` by default.
+1. **Original Image**: An uncropped/uncorrected image of the scanned MRZ document - this gets displayed at the top of the `MRZResultView` by default.
 
 2. **Parsed Results**: The data parsed from the MRZ code, displayed with their corresponding field names (e.g. Given Name, Nationality, etc.) are placed below the cropped image of the MRZ corresponding field names. In addition to displaying these parsed results, the MRZ Scanner allows the user to edit the values of the fields in case of any errors by cross referencing from the cropped MRZ document displayed directly above.
 
@@ -441,4 +441,4 @@ Here is a quick breakdown of the constituent UI elements of the result view, con
 Now that you got the most basic functionality of the MRZ Scanner up and running, it's time to explore the many ways in which the MRZ Scanner can be used, including customization and the ability to read directly from static images and PDFs. To learn more about those two topics, please visit the following articles
 
 - [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization.html)
-- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) 
+- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html)
