@@ -109,16 +109,14 @@ When deploying your web application for production, ensure it is served over a *
 
 2. **Dynamsoft License Requirements** – A secure context is required for **Dynamsoft licenses** to function properly.
 
-### Required Browser Features
+### Supported Browsers
 
-The following** browser features** are required for the **DCE** and **DDN** components of **DDS** and **MWC**:
+The following **browser features** are required :
 
 1. [`WebAssembly`](https://caniuse.com/?search=WebAssembly)
 2. [`Blob`](https://caniuse.com/?search=Blob)
 3. [`URL`](https://caniuse.com/?search=URL)/[`createObjectURL`](https://caniuse.com/?search=createObjectURL)
 4. [`Web Workers`](https://caniuse.com/?search=Worker)
-
-### Supported Browsers
 
 The table below lists the **minimum supported versions** of browsers based on these requirements:
 
