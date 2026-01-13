@@ -9,24 +9,29 @@ description: Dynamsoft MRZ Scanner User Guide
 permalink: /guides/mrz-scanner-static-image.html
 ---
 
-# Setting up the MRZ Scanner for Static Images and PDFs
+# Using the MRZ Scanner with Static Images and PDFs
 
-In the main [MRZ Scanner JS User Guide]({{ site.guides }}mrz-scanner.html), we explored how to use the default UI of the MRZ Scanner to read MRZs via interactive video stream while at the same time including the ability to read from photos in your photo library via the Load Image button that is part of the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview).
+The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview) for selecting photos from your device.
 
-In **v2.1** (and beyond) of the MRZ Scanner, the library has introduced the ability to read MRZs directly from static images without the need to use the file/photo picker that is a default part of the mobile device or the computer. In this guide, we will explore how to use the MRZ Scanner API in order to read MRZs from multiple image formats, as well as PDFs.
+Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static images and PDFs without requiring the default file picker. This guide shows you how to implement this functionality programmatically, supporting multiple image formats and PDF documents.
 
 > [!NOTE]
-> In order to follow with this guide, please refer to the [**use-file-input sample**](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/scenarios/use-file-input.html) that is hosted on the main Github repo of the MRZ Scanner source files.
+> To follow along with this guide, refer to the [use-file-input sample](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/scenarios/use-file-input.html) in the MRZ Scanner GitHub repository.
 
 ## Prerequisites
 
-To get started with the development process, a valid license key is needed. To obtain a license key, please refer to the [Licensing]({{ site.guides }}mrz-scanner.html#license) section of the main User Guide. The next section will break down the code and take you through the sample step-by-step.
+You'll need a valid license key to get started. Refer to the [Licensing]({{ site.guides }}mrz-scanner.html#license) section of the main User Guide for instructions on obtaining one.
 
-## Breaking Down the Code
+## Understanding the Implementation
 
 ### Step 1: Including the Library and Defining UI Elements
 
-The first step in making the sample is to define the script references and the HTML elements of the page. In terms of the scripts, similar to the Hello World sample, the MRZ Scanner script needs to be referenced, either locally or via a CDN link. Since this sample will also support PDFs, we must use the [**PDF JS**](https://github.com/mozilla/pdf.js) library. Here is the start:
+The first step is to include the required libraries and define the HTML elements. You'll need:
+
+1. The MRZ Scanner library (via CDN or local reference)
+2. The [PDF.js library](https://github.com/mozilla/pdf.js) for PDF support
+
+Here's the basic HTML structure:
 
 ```html
 <!DOCTYPE html>
@@ -35,7 +40,7 @@ The first step in making the sample is to define the script references and the H
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Use File Input</title>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.4/dist/mrz-scanner.bundle.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.1.0/dist/mrz-scanner.bundle.js"></script> -->
     <!-- To use locally: -->
     <script src="../../dist/mrz-scanner.bundle.js"></script>
 
@@ -64,9 +69,9 @@ The first step in making the sample is to define the script references and the H
 </html>
 ```
 
-### Step 2: Setting up PDF.js
+### Step 2: Configuring PDF.js
 
-Now that the HTML and scripts have been set, it's time to set up the PDF.js library in order to support loading PDFs into your web app. Here is the code to do that:
+Configure the PDF.js library to enable PDF loading in your application:
 
 ```html
 <script>
@@ -79,9 +84,9 @@ Now that the HTML and scripts have been set, it's time to set up the PDF.js libr
 </script>
 ```
 
-### Step 3: Initializing the Dynamsoft MRZ Scanner
+### Step 3: Initializing the MRZ Scanner
 
-Now that we are working on the main script of the operation of the web application, one of the first things that we need to do is to initialize the MRZ Scanner which will be responsible for the MRZ reading functionality of the web app.
+Initialize the MRZ Scanner with custom configuration to handle static images and PDFs:
 
 ```js
 // Initialize the Dynamsoft MRZ Scanner
@@ -104,11 +109,14 @@ const mrzscanner = new Dynamsoft.MRZScanner({
 });
 ```
 
-It is important to pay attention to the new properties that have been introduced to the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) interface. The first new property is `uploadAcceptedTypes` which sets the file format(s) that the MRZ Scanner will accept. In this sample, we set to accept any image type as well as PDF. The second property is the `uploadFileConverter` - which is needed to support PDF files as those need to be converted to images so that the MRZ Scanner can accept them as input.
+Note the new properties in [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig):
 
-### Step 4: Implementing the convertPDFToImage function
+- **`uploadAcceptedTypes`**: Specifies accepted file formats (images and PDFs in this example)
+- **`uploadFileConverter`**: Converts PDFs to images before processing, as the scanner requires image input
 
-In the previous step, we used a `convertPDFToImage` function in the `uploadFileConverter` property, but that function has not been implemented yet. Let's implement that now:
+### Step 4: Implementing the PDF Conversion Function
+
+Implement the `convertPDFToImage` function referenced in the previous step:
 
 ```js
 // PDF to image conversion function
@@ -162,15 +170,18 @@ async function convertPDFToImage(file) {
 ```
 
 > [!NOTE]
-> It is important to note that currently, this sample only accepts **single-page PDF** files. The above `convertPDFToImage` function can process only a single-page PDF file.
+> This sample supports **single-page PDFs only**. Multi-page PDFs require additional logic to process each page.
 
-In this function, any **single-page** PDF file that is accepted as input is converted to a Blob that has a `PNG` type. Now that the PDF has been converted to a an image type, it's ready to get fed to the MRZ Scanner to be read.
+This function converts a **single-page** PDF file to a PNG Blob, making it compatible with the MRZ Scanner.
 
 ### Step 5: Launching the MRZ Scanner
 
-Now that all of the core functions needed for loading the image or PDF have been implemented, it's time to connect all of these parts to the [`launch`]({{ site.api }}mrz-scanner.html#launch) method of the MRZ Scanner. One of the main changes in v2.1 of the MRZ Scanner is that the `launch` method can now be run with a file input. 
+With the PDF conversion function in place, connect everything to the [`launch`]({{ site.api }}mrz-scanner.html#launch) method. Starting in v2.1, the `launch` method accepts a file input parameter.
 
-In the code below, there are two trigger functions, one for launching the MRZ Scanner with its normal camera UI (MRZScannerView) The following trigger functions demonstrate how to read the MRZ from a file when said file is uploaded, then we automatically run the `launch` command in order to read the MRZ from the file without needing to click "Start Scan".
+The code below shows two ways to trigger the scanner:
+
+1. **Camera UI**: Click the "Start Scan" button to launch the standard camera interface
+2. **File Upload**: Select a file to automatically process it without showing the camera UI
 
 ```js
 document.getElementById("start-scan").onclick = async function () {
@@ -200,11 +211,13 @@ document.getElementById("initialFile").onchange = async function () {
 ```
 
 > [!NOTE]
-> Please note the difference in how the launch command is run when using the default UI (which includes the camera) and how the launch command is run when trying to read from a static image/file. When using the default UI, it is run as  `mrzScanner.launch({})`. When reading from a static image, it is run as `mrzScanner.launch()` or `mrzScanner.launch(file)`.
+> The `launch()` method behavior differs based on the parameter:
+> - **No parameter or empty object** (`launch()` or `launch({})`): Opens the camera UI
+> - **File parameter** (`launch(file)`): Processes the file directly without UI
 
 ### Step 6: Displaying the Result
 
-When the MRZ is read, the last step that we need to do is to display the result to the user. Here is the `displayResult` function
+Finally, display the scanned MRZ results to the user:
 
 ```js
 function displayResult(result) {
@@ -246,8 +259,16 @@ function displayResult(result) {
 
 ## Conclusion
 
-Now that the code is all done, all you need to do is run the app either via npm or you can host the source files yourself and serve your web application via a HTTPS environment.
+You now have a complete implementation for scanning MRZs from static images and PDFs. To run the application:
 
-With this app, you can read MRZs from static images and files without needing to use the MRZScannerView UI, therefore covering cases where a camera is not needed at all or cases where the images are obtained via a different source e.g. via a scanner and Dynamic Web TWAIN.
+1. Serve the files via HTTPS (required for the license to work)
+2. Use a local development server like the Five Server extension for VS Code, or
+3. Deploy to your web server
 
-If you have any questions about this use case, please contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/).
+This approach is ideal when:
+
+- Camera access is not needed
+- Images come from external sources (scanners, document management systems, etc.)
+- You want programmatic control over the scanning process
+
+For questions or support, contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/).
