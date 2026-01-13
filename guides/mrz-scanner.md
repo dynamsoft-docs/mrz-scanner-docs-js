@@ -390,7 +390,7 @@ When launched, the scanner guides the users through two main stages:
 
 Let's explore each view in detail:
 
-##### MRZScannerView
+***MRZScannerView***
 
 The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) and consists of these UI elements:
 
@@ -427,7 +427,7 @@ The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.ap
 > [!NOTE]
 > To learn more about customizing the MRZScannerView and its UI elements, refer to the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html).
 
-##### MRZResultView
+***MRZResultView***
 
 The `MRZResultView` is controlled by [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) and consists of these UI elements:
 
