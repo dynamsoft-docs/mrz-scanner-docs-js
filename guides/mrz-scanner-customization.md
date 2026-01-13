@@ -3,7 +3,7 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Dynamsoft MRZ Scanner JavaScript Edition
+title: Customizing the MRZ Scanner JavaScript Edition
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Customization
 description: Customizing the Dynamsoft MRZ Scanner
 permalink: /guides/mrz-scanner-customization.html
@@ -11,9 +11,8 @@ permalink: /guides/mrz-scanner-customization.html
 
 # Customizing the MRZ Scanner JavaScript Edition
 
->[!NOTE]
->
->Before going into the ways that you can customize the MRZ Scanner, please read the [MRZ Scanner JavaScript Edition User Guide]({{ site.guides }}mrz-scanner.html).
+> [!NOTE]
+> Before customizing the MRZ Scanner, read the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html).
 
 ## Quick Links
 
@@ -26,51 +25,57 @@ permalink: /guides/mrz-scanner-customization.html
 
 ## Introduction
 
-This guide expands on the User Guide that explored the MRZ Scanner Hello World sample project. Here we explore ways to customize the UI as well as the performance of the MRZ Scanner. We will walk through the three main configuration interfaces - [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig), [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig), and [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig). These configuration interfaces make customizing the MRZ Scanner as easy as adding or changing a few properties in the instance constructor. Every sample is a variation on the previous Hello World sample with a few additional properties defined in the configuration interfaces, and so we only show the differing portion rather than all the code.
+This guide builds on the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) by exploring UI and performance customization options. You'll learn to use three main configuration interfaces:
+
+- [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) - Main configuration
+- [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) - Scanner view customization
+- [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) - Result view customization
+
+These interfaces make customization straightforward—simply add or modify properties in the constructor. Each example shows only the configuration changes needed, building on the Hello World sample.
 
 ## `MRZScannerConfig` Overview
 
-The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface is capable of configuring almost all customization options applicable to MRZ scanning use cases with the MRZ Scanner. The MRZ Scanner uses passes an `MRZScannerConfig` object to the constructor when creating an MRZ Scanner instance. `MRZScannerConfig` contains the following properties:
+The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface configures most customization options for MRZ scanning. The MRZ Scanner passes an `MRZScannerConfig` object to the constructor when creating an instance. It contains the following properties:
 
-1. **`license`** - the license key is the only property whose ***value must be specified when instantiating the MRZ Scanner instance***. If the license is undefined, invalid, or expired, the MRZ Scanner cannot proceed with scanning, and instead displays a pop-up error message instructing the user to contact the site administrator to resolve this license issue.
+1. **`license`** - The license key is the only property that **must be specified** when instantiating the MRZ Scanner. If the license is undefined, invalid, or expired, the scanner displays an error message instructing the user to contact the site administrator.
 
-2. **`container`** - pass a DOM element to this property to contain the entire MRZ Scanner UI within that DOM element. This property is optional. When not specified, (e.g. in our [Hello World sample]({{ site.codegallery }}helloworld/index.html)) the MRZ Scanner automatically creates its own container upon instantiation and uses that container instead.
+2. **`container`** - Pass a DOM element to contain the entire MRZ Scanner UI. When not specified (e.g., in the [Hello World sample]({{ site.codegallery }}helloworld/index.html)), the scanner automatically creates its own container.
 
-3. **`templateFilePath`** - a template file is a JSON file that contains a series of algorithm parameter settings (called Capture Vision templates) that is usually used for very specific and customized scanning and parsing scenarios. The `templateFilePath` points to the location of the JSON file. The MRZ Scanner comes with a default template file, but you may choose to use a custom template to target specialized use cases. We recommend contacting the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for assistance with template customization. Simply host the custom template file on the hosting server of the web application and use the `templateFilePath` to define its location to the MRZ Scanner.
+3. **`templateFilePath`** - A template file is a JSON file containing algorithm parameter settings (called Capture Vision templates) for specialized scanning scenarios. The `templateFilePath` points to this file's location. The MRZ Scanner includes a default template, but you can use a custom template for specialized use cases. Contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for assistance with template customization. Host the custom template file on your server and use `templateFilePath` to specify its location.
 
-4. **`utilizedTemplateNames`** - define the names of Capture Vision template(s) defined in the non-default template file pointed to by `templateFilePath`. These names must be declared in this property when using a custom template with `templateFilePath`.
+4. **`utilizedTemplateNames`** - Define the names of Capture Vision templates in the custom template file specified by `templateFilePath`. These names must be declared when using a custom template.
 
-5. **`engineResourcePaths`** - the engine files of the library make up the core of the library and define the operation as well as the UI. `engineResourcePaths` defines the location of the engine files in case they are being referenced from another different location. This property is typically used with frameworks such as **React**, **Angular**, and any other framework that makes use of a package manager like **`npm`** or **`yarn`**.
+5. **`engineResourcePaths`** - The engine files provide the core functionality and UI. This property defines the location of engine files when they're referenced from a different location. Typically used with frameworks like **React** or **Angular** when using package managers like **npm** or **yarn**.
 
-6. **`scannerViewConfig`** - this is the configuration interface for the `MRZScannerView`, which is responsible for the main scanning functionality as well as the camera UI. We explain the configuration properties nested in this object in the [`MRZScannerViewConfig` overview](#mrzscannerviewconfig-overview).
+6. **`scannerViewConfig`** - Configuration interface for the `MRZScannerView`, which handles the main scanning functionality and camera UI. See the [`MRZScannerViewConfig` overview](#mrzscannerviewconfig-overview) for details.
 
-7. **`resultViewConfig`** - this is the configuration interface for the `MRZResultView`, which is responsible for displaying the scanned MRZ document and its parsed data after a successful scan. You can find the breakdown of the `MRZResultView` settings in the [`MRZResultView` overview](#mrzresultviewconfig-overview).
+7. **`resultViewConfig`** - Configuration interface for the `MRZResultView`, which displays the scanned MRZ document and parsed data after a successful scan. See the [`MRZResultViewConfig` overview](#mrzresultviewconfig-overview) for details.
 
-8. **`mrzFormatType`** - configure the available MRTD formats that the MRZ Scanner can read. The formats set in `mrzFormatType` are the formats that appear in the format selector box within the `MRZScannerView`. By default, the library will include all of the supported MRTD formats.To learn more about the different MRTD formats the library supports, visit the introduction page for [more details]({{ site.introduction }}index.html#supported-mrz-formats).
+8. **`mrzFormatType`** - Configure the available MRTD formats for scanning. The formats set here appear in the format selector box within the `MRZScannerView`. By default, all supported MRTD formats are included. Learn more about supported formats in the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats).
 
-9. **`showResultView`** (default value `true`) -  toggle the visibility of the `MRZResultView`. If `false`, the MRZ Scanner immediately closes upon a successful scan rather than going into the `MRZResultView`, then proceeds to the next step of the web application's workflow (outside the purview of the MRZ Scanner SDK). In the case of the Hello World sample, the next step just takes the user back to the landing page.
+9. **`showResultView`** (default: `true`) - Toggle the visibility of the `MRZResultView`. When `false`, the scanner immediately closes after a successful scan and proceeds to your application's next workflow step. In the Hello World sample, this returns the user to the landing page.
 
-Next, we go over the different ways that these properties can be used to customize the scanner with a few examples.
+The following sections show how to use these properties to customize the scanner.
 
 ### Setting Available MRTD formats
 
 > [!TIP]
 > Prerequisite: [Introduction to MRZ Formats]({{ site.introduction }}index.html#supported-mrz-formats)
 
-The MRZ Scanner reads all three MRZ formats, but it can optionally restrict the MRZ format that it reads. For example, you may want to configure MRZ scanner to only read **TD1** and passport (**TD3**) document types, while **ignoring TD2** documents. Here is a quick snippet based on the Hello World code (from the [User Guide]({{ site.guides }}mrz-scanner.html)) that sets the specific MRZ formats to read using the `mrzFormatType` property:
+The MRZ Scanner reads all three MRZ formats by default, but you can restrict which formats to recognize. For example, to scan only **TD1** and **TD3 (Passport)** documents while ignoring **TD2**:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
    license: "YOUR_LICENSE_KEY_HERE",
-   mrzFormatType: ["passport", "td1"], // setting it to just TD3 (passport) and TD1
+   mrzFormatType: ["passport", "td1"], // TD3 (passport) and TD1 only
 });
 ```
 
-After changing the `mrzFormatType`, the format selector box of the MRZScannerView reflects the two formats selected above instead of all three formats available by default. If you only set a single MRZ format with `mrzFormatType`, the format selector box of the MRZScannerView *does not appear, even if showFormatSelector is set to `true`*.
+The format selector box in the MRZScannerView will reflect your selection. If you specify only a single format, the selector box does not appear, even if `showFormatSelector` is set to `true`.
 
 ### Hiding the Result View
 
-You may not want to use the Result View that the MRZ Scanner provides. If your workflow does not require the user to view or verify the scanned results, you may opt to forego the Result View after the SDK finishes a scan, then exit the MRZ Scanner portion of your application workflow. Here is how to configure the MRZScanner to hide the result view:
+If your workflow doesn't require users to view or verify scanned results, you can hide the Result View and proceed directly to the next step:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -83,41 +88,40 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) controls the UI elements of the `**MRZScannerView**`, which is the view responsible for scanning operations. Here are its properties in detail:
 
-1. **`uiPath`** (formerly `cameraEnhancerUIPath`) - define the path to a custom HTML user interface file for the `MRZScannerView`, which is based on the UI for the Dynamsoft Camera Enhancer SDK used by the MRZ Scanner. Setting the path to a custom file allows this custom UI to take effect for any `MRZScanner` instance created within your application. We recommend you to reach out to the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) to assist you in creating such a custom UI.
+1. **`uiPath`** (formerly `cameraEnhancerUIPath`) - Specifies the path to a custom HTML user interface file for the `MRZScannerView`. The `MRZScannerView` is based on the Dynamsoft Camera Enhancer SDK UI. Contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for assistance creating custom UI files.
 
-2. **`container`** - assign a specific DOM element to contain the `MRZScannerView` in. By default, when not specified, the MRZScanner creates its own container for this View automatically.
+2. **`container`** - Assigns a specific DOM element to contain the `MRZScannerView`. When not specified, the MRZ Scanner automatically creates its own container.
 
-3. **`showScanGuide`** (default value `true`) - toggle the availability of the *scan guide*. Other than the actual camera view, one of the main elements in the `MRZScannerView` is a *scan guide frame*. When enabled, placing the MRZ document within the boundaries of the scan guide frame allows the library to quickly and accurately recognize the MRZ and decipher it. When enabled, the MRZ Scanner does not read outside the confines of the scan guide, so enabling the scan guide reduces the need to read the entire camera frame. There are three frames, one for each MRTD format. Going from left to right, the first scan guide corresponds to the TD3 (Passport) format, the second is the TD2 (ID) format, and the third is the TD1 (ID) format. Read more about how the detection region changes with different combinations of enabled MRTD formats [here](#changing-the-scan-guide-frame).
+3. **`showScanGuide`** (default: `true`) - Toggles the scan guide frame visibility. The scan guide frame is an overlay that helps users position their MRZ document correctly. When enabled, the scanner only reads within the frame boundaries, improving recognition speed and accuracy. Three frames are available, one for each MRTD format: TD3 (Passport), TD2 (ID), and TD1 (ID). See [Changing the Scan Guide Frame](#changing-the-scan-guide-frame) for details on how the frame changes based on selected formats.
 
     <div align="center">
        <img src="../assets/imgs/mrz-scan-guides.png" alt="Scan Guide Frames" width="80%" />
     </div>
 
-4. **`showUploadImage`** (default value `true`) - in addition to scanning via a camera, the MRZ Scanner can also read MRZs from image files from the device's local storage from the file import icon in the `MRZScannerView` UI header. You can disable this feature (and the icon) by setting this property to `false`.
+4. **`showUploadImage`** (default: `true`) - Toggles the file import icon in the `MRZScannerView` header. When enabled, users can scan MRZs from image files stored on their device. Set to `false` to hide this feature.
 
-5. **`showFormatSelector`** (default value `true`) - toggle the selector box near the bottom of the `MRZScannerView` that allows the user to toggle recognition of individual MRZ formats. The selectable formats in this selector box are defined by the **`mrzFormatType`** property. The user cannot disable reading all formats - at least one will be enabled. The scan guide frame (if shown) will also change based on which format(s) are selected. (see [changing the scan guide frame](#changing-the-scan-guide-frame) for more details) Setting this property to false disables the format selector.
+5. **`showFormatSelector`** (default: `true`) - Toggles the format selector box that appears near the bottom of the `MRZScannerView`. This selector allows users to enable or disable recognition of individual MRZ formats. Available formats are defined by the `mrzFormatType` property. At least one format must remain enabled. The scan guide frame updates based on selected formats (see [Changing the Scan Guide Frame](#changing-the-scan-guide-frame)).
 
     <div align="center">
        <img src="../assets/imgs/format-selector.png" alt="Scan Guide Frames" width="40%" />
     </div>
 
-6. **`showSoundToggle`** (default value `true`) - the MRZ Scanner can play a beeping sound upon successfully recognizing an MRZ. This feature depends on browser support. When this property is `true`, the sound toggle icon appears at the top of the MRZScannerView in a grey disabled state. To hide this feature altogether, set this property to `false`.
+6. **`showSoundToggle`** (default: `true`) - Toggles the sound icon that appears in the `MRZScannerView` header. When enabled, users can control whether a beep plays after successfully recognizing an MRZ. This feature depends on browser support. Set to `false` to hide the sound toggle.
 
-7. **`showPoweredByDynamsoft`** (default value `true`) - the scanner UI includes a "Powered By Dynamsoft" message that shows at the bottom. This property allows you to hide this text if you wish.
+7. **`showPoweredByDynamsoft`** (default: `true`) - Toggles the "Powered By Dynamsoft" message at the bottom of the scanner UI. Set to `false` to hide this text.
 
-8. **`enableMultiFrameCrossFilter`** (default value `true`) - enable the multi-frame result cross filter to improve read accuracy at the cost of a slight increase to MRZ read time.
+8. **`enableMultiFrameCrossFilter`** (default: `true`) - Enables the multi-frame result cross filter, which improves recognition accuracy at the cost of slightly longer scan times.
 
-9. **`uploadAcceptedTypes`** (default value `"image/*"`) - allows the user to configure which image and file format(s) the library will accept if the user chooses to decode static images instead of using the camera view to scan MRZs.
+9. **`uploadAcceptedTypes`** (default: `"image/*"`) - Specifies which image and file formats the scanner accepts when users upload static files instead of using the camera.
 
-10. **`uploadFileConverter`** - this function converts non-image files (e.g. PDF) to blobs so that they can be read by the MRZ Scanner. It is essential that this function is used if you would like to support reading PDF files in your web app.
+10. **`uploadFileConverter`** - A function that converts non-image files (e.g., PDFs) to blobs for processing by the MRZ Scanner. This function is required to support PDF file uploads.
 
 > [!NOTE]
->
-> Not every UI element of the MRZScannerView can be controlled by the MRZScannerViewConfig. Namely, the **torch/flash button** will always show up in the **MRZScannerView**.
+> The **torch/flash button** always appears in the `MRZScannerView` and cannot be hidden via configuration.
 
 ### Using the MRZScannerViewConfig
 
-Now that we have gone through all the properties that make up the MRZScannerViewConfig, let's see them in action:
+Here's an example showing the `MRZScannerViewConfig` properties in use:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -147,43 +151,43 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 ### Changing the Scan Guide Frame
 
-The `MRZScannerView` provides a guide frame for each of the three MRTD formats. Because the MRZ Scanner only scans within the guide frame (when the guide frame is enabled), here we explain which guide frame is used when multiple MRTD formats are selected in the format selector:
+The `MRZScannerView` provides a guide frame for each of the three MRTD formats. When the guide frame is enabled, the scanner only reads within its boundaries. The active guide frame depends on which formats are selected:
 
-1. If **passport** is selected, then the guide frame for passport (TD3) will be displayed.
+1. If **Passport** is selected, the **TD3 (Passport)** guide frame displays.
 
-2. Otherwise, if both **ID (TD1)** and **ID (TD2)** are selected or only **ID (TD1)**, (but not passport), then the frame for ID (**TD1**) will be displayed.
+2. If both **ID (TD1)** and **ID (TD2)** are selected, or only **ID (TD1)** is selected (without Passport), the **TD1 (ID)** guide frame displays.
 
-3. The ID (TD2) guide frame only gets displayed if **ID (TD2)** is the only selected format.
+3. The **TD2 (ID)** guide frame only displays when **ID (TD2)** is the only selected format.
 
-Please contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) for any further inquiries, or to customize the frame guide selection logic.
+Contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) to customize the frame guide selection logic.
 
 ### Reading Static Images and PDFs using the MRZ Scanner
 
-Starting from **v2.1** of the MRZ Scanner, the library is now able to read MRZs **directly** from static images and PDFs. To support this, the MRZScannerViewConfig will need to be configured to support that, especially for PDFs.
+Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static images and PDFs. Configure the `MRZScannerViewConfig` properties `uploadAcceptedTypes` and `uploadFileConverter` to enable this functionality, particularly for PDF support.
 
-To learn more on how to create a web application that supports static image/PDF reading using the MRZ Scanner, please refer to this [guide]({{ site.guides }}mrz-scanner-static-image.html). Furthermore, please refer to the full File Input Sample that the previously linked guide walks you through.
+For a complete implementation guide, see [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html), which includes a full File Input sample.
 
 ## `MRZResultViewConfig` Overview
 
-The **`MRZResultView`** user interface displays the parsed MRZ results as well as the cropped image of the MRTD document to save the time and resources needed to build your own viewer. The [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) contains the following settings used to customize this View:
+The `MRZResultView` displays parsed MRZ results and a cropped image of the MRTD document, eliminating the need to build a custom viewer. The [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) contains the following settings:
 
-1. **`container`** - assign a specific DOM element to contain the `**MRZResultView**` in. By default, when not specified, the MRZScanner creates its own container for this View automatically.
+1. **`container`** - Assigns a specific DOM element to contain the `MRZResultView`. When not specified, the MRZ Scanner automatically creates its own container.
 
-2. **`toolbarButtonsConfig`** - configure the `MRZResultView` toolbar located in the footer in portrait mode, and on the right hand side of the screen in landscape. The **re-take button** takes the user back to the `MRZScannerView` to scan a new MRZ, discarding the previously scanned result. The other button is a **done button** that closes the scanner and destroys the `MRZScanner` instance. We explain how to use the `toolbarButtonsConfig` to customize this tool bar. The **cancel button** appears in place of the re-take button when the MRZ Scanner is launched with a static file instead of the standard camera UI.
+2. **`toolbarButtonsConfig`** - Configures the `MRZResultView` toolbar (located in the footer in portrait mode, on the right side in landscape). The toolbar includes a **re-take button** that returns to the `MRZScannerView` for a new scan (discarding the current result) and a **done button** that closes the scanner and destroys the `MRZScanner` instance. When scanning a static file instead of using the camera, a **cancel button** appears in place of the re-take button.
 
-3. **`showOriginalImage`** (default value `true`) - show or hide the cropped image of the scanned MRZ document at the top of the View. Set this property to `false` to hide the image.
+3. **`showOriginalImage`** (default: `true`) - Toggles the cropped document image at the top of the result view. Set to `false` to hide the image.
 
-4. **`showMRZText`** (default value `true`) - show or hide the raw MRZ text as one of the result fields in the result view. By default, this txt will be shown but if you would like to hide it, then setting this property to `false` will do the trick.
+4. **`showMRZText`** (default: `true`) - Toggles the raw MRZ text field in the result view. Set to `false` to hide this field.
 
-5. **`allowResultEditing`** (default value `false`) - control whether or not the parsed text fields can be edited by the user. In certain cases, the MRZ text result parsed by the SDK may not exactly match the text present on the MRZ document. You may choose to allow the user to edit the result fields after cross-checking them with the info present on the document itself by displaying the original document with `showOriginalImage: true`.
+5. **`allowResultEditing`** (default: `false`) - Controls whether users can edit the parsed text fields. Enable this to allow users to correct parsed results that don't match the physical document. Combine with `showOriginalImage: true` to display the document image for cross-checking.
 
-6. **`onDone`** - set a callback function to be executed upon exiting the MRZ Scanner workflow when the user clicks the *Done* button. This callback receives the MRZResult object representing the full MRZ result (including the scanned image and the parsed MRZ string) for further processing after closing the MRZ Scanner and entering the next stage of your application's workflow. Read more about implementing `onDone` in the [following section](#configuring-the-ondone-callback).
+6. **`onDone`** - A callback function executed when the user clicks the *Done* button. This callback receives the `MRZResult` object (including the scanned image and parsed data) for processing after the scanner closes. See [Configuring the onDone Callback](#configuring-the-ondone-callback) for implementation details.
 
-7. **`onCancel`** - set a callback function to be executed upon cancelling the MRZ Scanner process *when the scanner is launched with a static file instead of the default camera UI*. When the cancel button is clicked, the MRZ result is discarded and the user is redirected back to the landing page. However, if you wish for a different behaviour than going back to the landing page, then this callback is where you define the behaviour that you are looking to implement. Read more on how to implement this callback in the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) section of the API reference.
+7. **`onCancel`** - A callback function executed when the user clicks the *Cancel* button (only appears when scanning a static file). By default, clicking cancel discards the result and returns to the landing page. Use this callback to define custom behavior. See the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) API reference for implementation details.
 
 ### Using the `MRZResultViewConfig`
 
-Now that we have learned about the properties of the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) interface, let's now demonstrate how to use it in a simple code snippet:
+Here's an example showing the `MRZResultViewConfig` properties in use:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -215,7 +219,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 ### Configuring the `onDone` Callback
 
-By default, once the user clicks the *Done* button in the `MRZResultView`, the scanner closes and the user is taken back to the landing page. The `onDone` callback function defined within [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) serves to add useful behavior here, typically to connect the end of the MRZ Scanner workflow to the overall workflow of your entire web application by passing the MRZ scan result (stored as an `MRZResult` object) out of the MRZ Scanner. For example:
+By default, clicking the *Done* button closes the scanner and returns to the landing page. The `onDone` callback in [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) lets you define custom behavior to integrate the scanner into your application workflow. The callback receives the `MRZResult` object containing all parsed data. For example:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -233,13 +237,13 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 });
 ```
 
-Here, when the user clicks *Done*, the application prints the result status code, status message, and the first name from the scanned document to the console. The `MRZResult` object (named `result` in the sample) contains each parsed text field, the full MRZ text string, and the cropped image of the scanned MRZ document. You web application can rely on the MRZ Scanner to parse the MRZ string and easily use MRZ fields using the `result.data.{fieldName}` scheme as shown above.
+In this example, clicking *Done* prints the result status, status message, and first name to the console. The `MRZResult` object contains all parsed fields, the raw MRZ text, and the cropped document image. Access parsed fields using the `result.data.{fieldName}` pattern shown above.
 
 ### Enable Result Editing
 
-There could be certain cases where the parsed fields in the final **MRZResultView** do not pass validation as they fail the check digit step of the parsing process. To better deal with those cases, the MRZ Scanner has the feature to allow the user to edit the result fields directly.
+In some cases, parsed fields may fail validation during the check digit verification step. The result editing feature allows users to manually correct these fields by comparing them against the physical document.
 
-By enabling this feature, users can verify the parsed information provided by the MRZ Scanner is correct compared to the information present on the MRZ document. This feature acts as a sort of safety net for any results that don't pass the validation check or if the user just wants to make sure that the parsed information from the MRZ matches the information on the MRZ document.
+Enable this feature to let users verify and adjust parsed information when validation fails or when manual verification is required.
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -248,15 +252,36 @@ const mrzScanner = new Dynamsoft.MRZScanner({
       /* see the MRZScannerViewConfig section to learn how to set this */
    },
    resultViewConfig: {
-      allowResultEditing: false,
+      allowResultEditing: true,
    }
 });
 ```
 
-By changing *allowResultEditing* in the `resultViewConfig`, the user will now see a slightly different UI in the result view. Below is a  screenshot showing the UI difference
+Setting `allowResultEditing: true` changes the result view UI to display editable fields. The screenshot below shows the difference:
 
 <div align="center">
    <img src="../assets/imgs/ResultEditUI-MRZ.png" alt="MRZ Result View Editing Feature" width="70%" />
 </div>
 
-As you can see above, when result editing is enabled, the result fields will change into editable fields like in a form. 
+As you can see above, when result editing is enabled, the result fields will change into editable fields like in a form.
+
+## Conclusion
+
+The MRZ Scanner JavaScript Edition provides extensive customization options to fit your specific workflow requirements. Through the three main configuration interfaces—`MRZScannerConfig`, `MRZScannerViewConfig`, and `MRZResultViewConfig`—you can control virtually every aspect of the scanner's behavior and appearance.
+
+Key customization capabilities include:
+
+- **Format Control** - Restrict scanning to specific MRTD formats based on your use case
+- **UI Customization** - Show or hide UI elements like the result view, scan guide, format selector, and toolbar buttons
+- **File Input Support** - Enable scanning from static images and PDFs in addition to camera input
+- **Result Handling** - Use the `onDone` callback to integrate scanned results into your application workflow
+- **Result Editing** - Allow users to manually correct parsed fields when validation fails
+
+These configuration options work together to create a seamless scanning experience tailored to your application's needs. For additional customization requirements or technical assistance, contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/).
+
+For more information about the MRZ Scanner JavaScript Edition, explore these resources:
+
+- [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) - Getting started with basic implementation
+- [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) - Complete guide for file input support
+- [API Reference]({{ site.api }}mrz-scanner.html) - Detailed documentation for all configuration interfaces
+- [Introduction]({{ site.introduction }}index.html) - Overview of MRZ formats and capabilities 
