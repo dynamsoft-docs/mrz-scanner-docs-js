@@ -12,6 +12,17 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 3.1.0 (01/13/2026)
+
+### Highlighted Features
+
+- Neural MRZ Localization – The new [MRZLocalization](https://www.dynamsoft.com/capture-vision/docs/core/parameters/reference/label-recognizer-task-settings/localization-modes.html#modelnamearray) model improves region detection accuracy and delivers up to 42.7% faster processing for MRZ-based document workflows.
+- Configurable Localization Control – The new [LocalizationModes](https://www.dynamsoft.com/capture-vision/docs/core/parameters/reference/label-recognizer-task-settings/localization-modes.html) parameter allows configuration for text line detection.
+
+### Fixes & Improvements
+
+- Updated third-party libraries to incorporate the latest security fixes and maintenance updates.
+
 ## 3.0.4 (10/20/2025)
 
 ### Fixes
