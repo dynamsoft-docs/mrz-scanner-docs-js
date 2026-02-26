@@ -173,7 +173,7 @@ The `MRZResultView` displays parsed MRZ results and a cropped image of the MRTD 
 
 1. **`container`** - Assigns a specific DOM element to contain the `MRZResultView`. When not specified, the MRZ Scanner automatically creates its own container.
 
-2. **`toolbarButtonsConfig`** - Configures the `MRZResultView` toolbar (located in the footer in portrait mode, on the right side in landscape). The toolbar includes a **re-take button** that returns to the `MRZScannerView` for a new scan (discarding the current result) and a **done button** that closes the scanner and destroys the `MRZScanner` instance. When scanning a static file instead of using the camera, a **cancel button** appears in place of the re-take button.
+2. **`toolbarButtonsConfig`** - Configures the `MRZResultView` toolbar (located in the footer in portrait mode, on the right side in landscape). The toolbar includes a **rescan button** that returns to the `MRZScannerView` for a new scan (discarding the current result) and a **done button** that closes the scanner and destroys the `MRZScanner` instance. When scanning a static file instead of using the camera, a **cancel button** appears in place of the rescan button.
 
 3. **`showOriginalImage`** (default: `true`) - Toggles the cropped document image at the top of the result view. Set to `false` to hide the image.
 
@@ -200,14 +200,14 @@ const mrzScanner = new Dynamsoft.MRZScanner({
       allowResultEditing: true, // enables the ability to edit the result fields should the parsed information not match the MRZ document; false by default
       showMRZText: false, // hides the raw MRZ text as a result field in the result view; true by default
       toolbarButtonsConfig: {
-         retake: {
-            icon: "path to a png/svg file" // Changes the icon image of the retake button
-            label: "Re-scan", // Change the text label of the retake button to the provided string; string is "Re-take" by default
-            isHidden: true, // Hides the retake button; false by default
+         rescan: {
+            icon: "path to a png/svg file", // Changes the icon image of the rescan button
+            label: "Re-scan", // Change the text label of the rescan button to the provided string; string is "Re-scan" by default
+            isHidden: true, // Hides the rescan button; false by default
             className: "custom class name" // to implement a custom css to the done button, you can assign a custom css class to the button here
          },
          done: {
-            icon: "path to a png/svg file" // Changes the icon image of the retake button
+            icon: "path to a png/svg file" // Changes the icon image of the done button
             label: "Return Home", // Change the text label of the done button to the provided string; string is "Done" by default
             isHidden: true, // Hides the done button; false by default
             className: "custom class name" // to implement a custom css to the done button, you can assign a custom css class to the button here

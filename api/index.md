@@ -18,9 +18,9 @@ Please read through the [**full API reference**](mrz-scanner.md), but you can fi
 
 1. [MRZScanner](mrz-scanner.md#mrzscanner) - The main class of the MRZ Scanner, which is used to create and configure the MRZ Scanner instance.
 
-2. MRZScannerView - Represents the main view of the MRZ Scanner where the scanning operation occurs.
+2. [MRZScannerView](mrz-scanner.md#mrzscannerview) - Represents the main view of the MRZ Scanner where the scanning operation occurs.
 
-3. MRZResultView - Displays the parsed MRZ result in human readable fields, along with a cropped image of the MRZ document.
+3. [MRZResultView](mrz-scanner.md#mrzresultview) - Displays the parsed MRZ result in human readable fields, along with a cropped image of the MRZ document.
 
 ## Interfaces
 
@@ -46,4 +46,8 @@ All of the enumerations can be found [**here**](enums-mrz-scanner.md). Here is a
 
 2. [EnumResultStatus](enums-mrz-scanner.md#enumresultstatus) - An enumeration to represent the status of a MRZ result.
 
-3. [EnumMRZData](enums-mrz-scanner.md) - An enumeration to represent the different fields of the `MRZData` interface.
+3. [EnumMRZData](enums-mrz-scanner.md#enummrzdata) - An enumeration to represent the different fields of the `MRZData` interface.
+
+4. [EnumMRZScanMode](enums-mrz-scanner.md#enummrzscanmode) - An enumeration to represent preset combinations of supported MRZ scan formats.
+
+5. [EnumMRZScannerViews](enums-mrz-scanner.md#enummrzscannerviews) - An enumeration to represent built-in scanner view IDs.

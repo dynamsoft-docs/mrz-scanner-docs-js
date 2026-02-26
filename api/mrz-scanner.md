@@ -52,8 +52,12 @@ Starts the **MRZ scanning workflow**. If the method is run without a file input,
 ```ts
 launch(): Promise<MRZResult>
 
-launch(fileToProcess): Promise<MRZResult>
+launch(imageOrFile?: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>
 ```
+
+#### Parameters
+
+- `imageOrFile` (optional): A static input to process directly. Supported types are `Blob`, `string`, `DSImageData`, `HTMLImageElement`, `HTMLVideoElement`, and `HTMLCanvasElement`.
 
 #### Returns
 
@@ -77,11 +81,44 @@ A `Promise` resolving to a `MRZResult` object.
 (async () => {
     // Launch the scanner and wait for the result
     try {
-        const result = await mrzScanner.launch(fileToProcess);
+        const result = await mrzScanner.launch(imageOrFile);
         console.log(result); // print the MRZResult to the console
     } catch (error){
         console.error("Error processing file:", error);
     }
+})();
+```
+
+### initialize()
+
+Initializes the MRZ Scanner resources and returns access to shared resources and view components for advanced workflows.
+
+#### Syntax
+
+```ts
+initialize(): Promise<{
+  resources: SharedResources;
+  components: {
+    scannerView?: MRZScannerView;
+    resultView?: MRZResultView;
+  };
+}>
+```
+
+#### Returns
+
+A `Promise` resolving to an object that contains:
+
+- `resources`: Shared scanner resources.
+- `components`: View components that may include `scannerView` and `resultView`.
+
+#### Example
+
+```ts
+(async () => {
+    const initialized = await mrzScanner.initialize();
+    console.log(initialized.components.scannerView);
+    console.log(initialized.components.resultView);
 })();
 ```
 
@@ -103,6 +140,41 @@ console.log("Scanner resources released.");
 ```
 
 ## Configuration Interfaces
+
+## View Classes
+
+### MRZScannerView
+
+Represents the scanning UI view and camera lifecycle controls.
+
+#### Syntax
+
+```ts
+class MRZScannerView {
+  initialize(): Promise<void>;
+  openCamera(): Promise<void>;
+  closeCamera(): Promise<void>;
+  pauseCamera(): Promise<void>;
+  stopCapturing(): Promise<void>;
+  handleMRZResult(result: MRZResult): Promise<void>;
+  launch(imageOrFile?: Blob | string | DSImageData | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<MRZResult>;
+}
+```
+
+### MRZResultView
+
+Represents the result UI view that displays parsed MRZ data.
+
+#### Syntax
+
+```ts
+class MRZResultView {
+  launch(result: MRZResult): Promise<void>;
+  initialize(): Promise<void>;
+  hideView(): void;
+  dispose(): void;
+}
+```
 
 ### MRZScannerConfig
 
@@ -183,6 +255,7 @@ The MRZScannerViewConfig is used to configure the UI elements of the **MRZScanne
 ```ts
 interface MRZScannerViewConfig {
   uiPath?: string;
+  cameraEnhancerUIPath?: string;
   container?: HTMLElement | string;
 
   showScanGuide?: boolean;
@@ -191,8 +264,9 @@ interface MRZScannerViewConfig {
   showSoundToggle?: boolean;
   showPoweredByDynamsoft?: boolean;
 
-  enableMultiFrameCrossFilter?: boolean; // false by default
+  enableMultiFrameCrossFilter?: boolean; // true by default
 
+  mrzFormatType?: EnumMRZDocumentType | Array<EnumMRZDocumentType>;
   uploadAcceptedTypes?: string;
   uploadFileConverter?: (file: File) => Promise<Blob>;
 }
@@ -203,6 +277,7 @@ interface MRZScannerViewConfig {
 | Property                | Type                           | Description                                                     |
 | ----------------------- | ------------------------------ | --------------------------------------------------------------- |
 | `uiPath`  | `string`                 | Path to the custom Camera Enhancer UI (`.html` template file) for the scanner view.               |
+| `cameraEnhancerUIPath`  | `string`                 | Deprecated alias of `uiPath`, preserved for backward compatibility.               |
 | `container`             | `HTMLElement \ string`  | The container element or selector for the `MRZScannerView` UI. |
 | `showScanGuide`         | `boolean`                | Determines whether the scan guide frame will be displayed or not.  |
 | `showUploadImage`       | `boolean`                | Determines the visibility of the "load image" icon to allow the user to select a static image from their local photo library.              |
@@ -210,6 +285,7 @@ interface MRZScannerViewConfig {
 | `showSoundToggle`       | `boolean`                | Determines the visibility of the "sound" icon that allows the user to play a beep sound once the MRZ is recognized.        |
 | `showPoweredByDynamsoft`       | `boolean`         | Determines the visibility of the "Powered By Dynamsoft" imessage at the bottom of the scanner view.        |
 | `enableMultiFrameCrossFilter`      | `boolean`     | Enables or disables the MultiFrameResultCrossFilter that can improve the accuracy of the MRZ result, but possibly at the cost of speed.   |
+| `mrzFormatType`      | `EnumMRZDocumentType \| Array<EnumMRZDocumentType>`     | Restricts supported MRTD format(s) for this scanner view instance.   |
 | `uploadAcceptedTypes`      | `string`     | Configures which image and file format(s) the library will accept if the user chooses to decode static images. |
 | `uploadFileConverter`      | `function`     | Converts non-image files (e.g. PDF) to blobs so that they can be read by the MRZ Scanner.  |
 
@@ -221,9 +297,10 @@ const mrzScanViewConfig = {
     showUploadImage: true, // hides the load image icon that shows up in the toolbar at the top of the view; true by default
     showFormatSelector: true, // hides the format selector box if more than two MRZ types are assigned; true by default
     showSoundToggle: false, // hides the sound icon that allows the user to control whether a beep is played once an MRZ is recognized; true by default
-    showPoweredByDynamsoft: false; // hides the "Powered By Dynamsoft" message that appears on the scanner UI; true by default
+    showPoweredByDynamsoft: false, // hides the "Powered By Dynamsoft" message that appears on the scanner UI; true by default
     enableMultiFrameCrossFilter: true, // turning the filter off could improve the speed but at the cost of result accuracy; true by default
 
+    mrzFormatType: ["passport", "td1"], // limits this view to TD3 and TD1
     uploadAcceptedTypes: "image/*,application/pdf", // allows the user to upload static images and PDFs to be read by the MRZ Scanner - default is "image/*"
     uploadFileConverter: async (file) => {
         if (file.type === "application/pdf") {
@@ -286,9 +363,9 @@ const mrzResultViewConfig = {
     showMRZText: false, // Hides the raw MRZ text as a field in the result view; true by default
     emptyResultMessage: "No MRZ is detected. Please try again.", // Change the message if there is no MRZ is detected. The default message is "The necessary information couldn't be detected. Please try again."
     toolbarButtonsConfig: {
-        retake: {
-            label: "Re-scan", // Changes the text label of the retake button to "Re-scan"; string is "Re-take" by default
-            isHidden: true // Hides the retake button; false by default
+        rescan: {
+            label: "Re-scan", // Changes the text label of the rescan button to "Re-scan"; string is "Re-scan" by default
+            isHidden: true // Hides the rescan button; false by default
         },
         done: {
             label: "Return Home", // Changes the text label of the done button to "Return Home"; string is "Done" by default
@@ -324,9 +401,9 @@ The `MRZResultViewToolbarButtonsConfig` is used to configure the buttons of the 
 
 ```ts
 interface MRZResultViewToolbarButtonsConfig {
-  retake?: ToolbarButtonConfig;
+  rescan?: ToolbarButtonConfig;
   done?: ToolbarButtonConfig;
-  cancel?: ToolbarButtonConfig;
+  cancel?: ToolbarButton;
 }
 ```
 
@@ -334,15 +411,15 @@ interface MRZResultViewToolbarButtonsConfig {
 
 | Property                | Type                           | Description                                                     |
 | ----------------------- | ------------------------------ | --------------------------------------------------------------- |
-| `retake`    | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the re-scan button of the toolbar.   |
+| `rescan`    | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the re-scan button of the toolbar.   |
 | `done`      | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the done button of the toolbar.  |
-| `cancel`      | [`ToolbarButtonConfig`](#toolbarbuttonconfig)  | Configuration for the cancel button of the toolbar (which only shows up if the MRZ Scanner is launched with a static file instead of the standard camera UI).  |
+| `cancel`      | [`ToolbarButton`](#toolbarbutton)  | Full configuration for the cancel button of the toolbar (which only shows up if the MRZ Scanner is launched with a static file instead of the standard camera UI).  |
 
 #### Example
 
 ```ts
 const mrzButtonConfig = {
-    retake: {
+    rescan: {
         label: "Re-scan",
         isHidden: false
     },
@@ -360,6 +437,36 @@ const mrzResultViewConfig = {
     toolbarButtonsConfig: mrzButtonConfig,
 };
 ```
+
+### ToolbarButton
+
+The full interface used for toolbar buttons with click handling and visibility/disabled state controls.
+
+#### Syntax
+
+```ts
+export interface ToolbarButton {
+  id: string;
+  icon: string;
+  label: string;
+  onClick?: () => void | Promise<void>;
+  className?: string;
+  isDisabled?: boolean;
+  isHidden?: boolean;
+}
+```
+
+#### Properties
+
+| Property                | Type                           | Description                                                     |
+| ----------------------- | ------------------------------ | --------------------------------------------------------------- |
+| `id`         | `string`  | A unique identifier of the button. |
+| `icon`       | `string`  | The path to a custom icon (png/svg) for the button.  |
+| `label`      | `string`  | The text label of the button.  |
+| `onClick`    | `() => void \| Promise<void>`  | Callback executed when the button is clicked. |
+| `className`  | `string`  | Assigns a custom class to the button (usually to apply custom styling).  |
+| `isDisabled` | `boolean` | Disables/enables the button. |
+| `isHidden`   | `boolean` | Hides/shows the button in the toolbar.  |
 
 ### ToolbarButtonConfig
 
@@ -459,7 +566,7 @@ export interface MRZData {
 | `mrzText`         | `string`  | The raw unparsed text of the MRZ.              |
 | `firstName`       | `string`  | The first name of the MRZ document holder.  |
 | `lastName`        | `string`  | The last name of the MRZ document holder.      |
-| `age`             | `string`  | The age of the MRZ document holder.      |
+| `age`             | `number`  | The age of the MRZ document holder.      |
 | `sex`             | `string`  | The sex of the MRZ document holder.      |
 | `issuingState`    | `string`  | The issuing state (represented as the full name of the country/region) of the MRZ document.     |
 | `issuingStateRaw`    | `string`  | The raw text from the MRZ string of the issuing state of the MRZ document.     |
@@ -518,7 +625,7 @@ interface MRZDate {
 
 ### ResultStatus
 
-ResultStatus is used to represent the status of the MRZ Result. This status can be **successful**, **cancelled** if the user closes the scanner, or **failed** if something went wrong during the scanning process. The *code* of the result status is a [`EnumResultStatus`]({{ site.api }}enums-mrz-scanner.md#enumresultstatus).
+ResultStatus is used to represent the status of the MRZ Result. This status can be **successful**, **cancelled** if the user closes the scanner, or **failed** if something went wrong during the scanning process. The *code* of the result status is a [`EnumResultStatus`]({{ site.api }}enums-mrz-scanner.html#enumresultstatus).
 
 #### Syntax
 

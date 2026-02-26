@@ -52,8 +52,37 @@ enum EnumMRZData {
   Age = "age",
   Sex = "sex",
   IssuingState = "issuingState",
+  IssuingStateRaw = "issuingStateRaw",
   Nationality = "nationality",
+  NationalityRaw = "nationalityRaw",
   DateOfBirth = "dateOfBirth",
   DateOfExpiry = "dateOfExpiry",
+}
+```
+
+## EnumMRZScanMode
+
+### Syntax
+
+```ts
+enum EnumMRZScanMode {
+  Passport = "passport",
+  TD1 = "td1",
+  TD2 = "td2",
+  PassportAndTD1 = "passportAndTD1",
+  PassportAndTD2 = "passportAndTD2",
+  TD1AndTD2 = "td1AndTD2",
+  All = "all",
+}
+```
+
+## EnumMRZScannerViews
+
+### Syntax
+
+```ts
+enum EnumMRZScannerViews {
+  Scanner = "scanner",
+  Result = "scan-result",
 }
 ```
