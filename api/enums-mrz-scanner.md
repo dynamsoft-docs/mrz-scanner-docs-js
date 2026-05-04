@@ -6,7 +6,7 @@ noTitleIndex: false
 title: Dynamsoft MRZ Scanner JavaScript Edition - API Reference
 keywords: Documentation, MRZ Scanner JavaScript Edition, API, APIs, Enumeration, Enums, Enum
 breadcrumbText: API References
-description: Dynamsoft MRZ Scanner JavaScript Edition - API Reference
+description: "Explore MRZ Scanner values in Dynamsoft MRZ Scanner Web API and learn how they define status, configuration, and processing behavior for modern web today."
 ---
 
 # MRZ Scanner API Enumerations

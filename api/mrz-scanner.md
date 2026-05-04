@@ -3,7 +3,7 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Dynamsoft MRZ Scanner JavaScript Edition - API Reference
+title: MrzScanner API Reference – Dynamsoft JS Edition
 keywords: Documentation, MRZ Scanner JavaScript Edition, API, APIs
 breadcrumbText: API References
 description: Dynamsoft MRZ Scanner JavaScript Edition - API Reference
