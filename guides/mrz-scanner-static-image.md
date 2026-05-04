@@ -5,7 +5,7 @@ needGenerateH3Content: true
 noTitleIndex: false
 title: Setting up a MRZ Scanner for Static Images and PDFs
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Static Image, PDF
-description: Dynamsoft MRZ Scanner User Guide
+description: "Learn how to use Dynamsoft MRZ Scanner Web features with practical setup guidance, workflow tips, and examples for building reliable capture apps today."
 permalink: /guides/mrz-scanner-static-image.html
 ---
 
