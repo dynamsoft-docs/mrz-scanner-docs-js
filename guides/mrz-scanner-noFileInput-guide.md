@@ -3,18 +3,21 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Dynamsoft MRZ Scanner JavaScript Edition
-keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition,
-description: Dynamsoft MRZ Scanner User Guide
-permalink: /guides/mrz-scanner.html
+title: Dynamsoft MRZ Scanner JavaScript Edition - Streamlined Camera Workflow
+keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Streamlined, Camera Workflow
+description: Dynamsoft MRZ Scanner JavaScript Edition - Streamlined Camera Workflow
+permalink: /guides/mrz-scanner-noFileInput-guide.html
 ---
 
-# User Guide for the MRZ Scanner JavaScript Edition
+# User Guide for the MRZ Scanner JavaScript Edition - Streamlined Camera Workflow
 
-This user guide demonstrates how to integrate the MRZ Scanner JavaScript Edition SDK into a production web application. You'll install the library via npm, build a scanner that supports both live-camera and file-upload entry points, render the parsed MRZ data alongside the cropped document and portrait images, and deploy the result from your own server.
+This user guide demonstrates how to integrate the MRZ Scanner JavaScript Edition SDK into a production web application with a streamlined, single camera-scan entry point on the landing page. You'll install the library via npm, build a scanner whose landing page exposes a single **Start Camera Scan** button, render the parsed MRZ data alongside the cropped document and portrait images, and deploy the result from your own server.
 
 > [!TIP]
-> If you're just trying out the MRZ Scanner for the first time and want a single-file Hello World you can open from disk, see the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) instead.
+> This guide focuses on a single camera-scan entry point on the landing page. If you'd also like a file-upload button alongside the camera scan, see the [main User Guide]({{ site.guides }}mrz-scanner.html). If you're just trying out the MRZ Scanner for the first time and want a single-file Hello World you can open from disk, see the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html).
+
+> [!NOTE]
+> The `MRZScannerView` still includes its built-in **load-image** button in the in-scanner toolbar — this guide keeps that option enabled. What it omits is the application-level file-upload button on the landing page.
 
 ## License
 
@@ -116,7 +119,7 @@ Follow these steps:
 
 ## Building a Production Sample
 
-This section walks you through building an MRZ Scanner integration that mirrors the [`test-workflow-1.html`](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/test-workflow-1.html) sample in the repository: a home screen with camera-scan and file-upload entry points, a result view that displays the portrait, the processed and original document images, and the parsed MRZ fields, and a re-scan flow that returns the user to a fresh scanning session.
+This section walks you through building a streamlined MRZ Scanner integration: a home screen with a single **Start Camera Scan** button, a result view that displays the portrait, the processed and original document images, and the parsed MRZ fields, and a re-scan flow that returns the user to a fresh scanning session.
 
 The walkthrough focuses on the integration patterns and the SDK API. The HTML in each step contains only the placeholder elements the JavaScript actually targets — styling, layout, and theming are deliberately omitted so the code stays focused on what the SDK requires. A fully styled, responsive reference implementation is linked at the end of the section.
 
@@ -137,11 +140,10 @@ Create a file named `index.html` at the project root with the following structur
   </head>
 
   <body>
-    <!-- Home: start screen with the two scan entry points -->
+    <!-- Home: start screen with the camera scan entry point -->
     <div id="home-section">
       <h1>MRZ Scanner</h1>
       <button id="startScan">Start Camera Scan</button>
-      <button id="uploadFile">Scan from File</button>
       <div id="home-error"></div>
     </div>
 
@@ -210,7 +212,6 @@ try {
   document.getElementById("home-error").textContent =
     `Failed to initialize scanner: ${error.message}`;
   document.getElementById("startScan").disabled = true;
-  document.getElementById("uploadFile").disabled = true;
 }
 ```
 
@@ -224,16 +225,14 @@ For the full list of configuration options, see the [MRZScannerConfig API]({{ si
 
 ### Step 3: Wire the Camera Scan Entry Point
 
-Add a `startScanning` function that disables both entry-point buttons during the scan, calls `mrzScanner.launch()` to open the live-camera UI, and hands the result off to a `displayResults` function (defined in step 5):
+Add a `startScanning` function that disables the start-scan button during the scan, calls `mrzScanner.launch()` to open the live-camera UI, and hands the result off to a `displayResults` function (defined in step 4):
 
 ```js
 async function startScanning() {
   const startBtn = document.getElementById("startScan");
-  const uploadBtn = document.getElementById("uploadFile");
   const homeError = document.getElementById("home-error");
 
   startBtn.disabled = true;
-  uploadBtn.disabled = true;
   homeError.textContent = "";
 
   try {
@@ -243,60 +242,15 @@ async function startScanning() {
     homeError.textContent = `Scanning error: ${error.message}`;
   } finally {
     startBtn.disabled = false;
-    uploadBtn.disabled = false;
   }
 }
 
 document.getElementById("startScan").addEventListener("click", startScanning);
 ```
 
-`launch()` opens the **MRZScannerView** — a full-screen container with a live camera feed, a guide frame, format selector, and toolbar buttons. When an MRZ is recognized, the promise resolves with an [**`MRZResult`**]({{ site.api }}mrz-scanner.html#mrzresult). When the user closes the scanner without scanning, the promise still resolves but with an empty `data` field, which the `displayResults` function handles in step 5.
+`launch()` opens the **MRZScannerView** — a full-screen container with a live camera feed, a guide frame, format selector, and toolbar buttons (including a built-in load-image button that lets the user pick a document image from inside the scanner UI). When an MRZ is recognized, the promise resolves with an [**`MRZResult`**]({{ site.api }}mrz-scanner.html#mrzresult). When the user closes the scanner without scanning, the promise still resolves but with an empty `data` field, which the `displayResults` function handles in step 4.
 
-### Step 4: Wire the File-Upload Entry Point
-
-`launch()` accepts an optional `Blob`, `File`, image URL, or HTML media element. When called with one of these, the scanner skips the camera and processes the supplied image directly. Wire up the upload button to a hidden `<input type="file">`, await the user's selection, and pass the resulting `File` to `launch()`:
-
-```js
-async function startFileUpload() {
-  const startBtn = document.getElementById("startScan");
-  const uploadBtn = document.getElementById("uploadFile");
-  const homeError = document.getElementById("home-error");
-
-  // Prompt the user to pick a file before doing any work
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-
-  const file = await new Promise((resolve) => {
-    input.onchange = (e) => resolve(e.target.files?.[0] ?? null);
-    input.addEventListener("cancel", () => resolve(null));
-    input.click();
-  });
-
-  if (!file) return;
-
-  startBtn.disabled = true;
-  uploadBtn.disabled = true;
-  homeError.textContent = "";
-
-  try {
-    const result = await mrzScanner.launch(file);
-    displayResults(result);
-  } catch (error) {
-    homeError.textContent = `File scan error: ${error.message}`;
-  } finally {
-    startBtn.disabled = false;
-    uploadBtn.disabled = false;
-  }
-}
-
-document.getElementById("uploadFile").addEventListener("click", startFileUpload);
-```
-
-> [!TIP]
-> To accept additional file types like PDF, set `input.accept` accordingly and convert the file to an image `Blob` before passing it to `launch()`. See [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) for a complete PDF flow.
-
-### Step 5: Render the Result
+### Step 4: Render the Result
 
 The `displayResults` function takes the `MRZResult` returned by `launch()` and populates the result view. It handles three concerns:
 
@@ -441,7 +395,7 @@ Key APIs in use:
 - **`DSImageData.toCanvas()`** — converts the image into an `HTMLCanvasElement` ready to append to the DOM. `toBlob()` is also available if you'd rather upload or store the image.
 - **`Dynamsoft.MRZDataLabel`** — a map of internal field keys (e.g. `documentNumber`) to human-readable labels (e.g. `"Document Number"`). The sample above uses inline labels for clarity, but `MRZDataLabel` is convenient when iterating over all fields generically.
 
-### Step 6: Wire Re-Scan and Return Home
+### Step 5: Wire Re-Scan and Return Home
 
 After a result is rendered, the user can re-launch the scanner with the same configuration or return to the home screen. Add the wiring:
 
@@ -475,6 +429,8 @@ document.querySelector(".btn-home").addEventListener("click", returnHome);
 ### Reference: The Complete Styled Sample
 
 The walkthrough above gives you a working integration with placeholder DOM and no styling. For a fully styled, mobile-and-desktop-responsive reference implementation — including a dark result theme, a two-column desktop layout, an info-menu dropdown, and configurable test controls — see [`samples/test-workflow-1.html`](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/test-workflow-1.html) in the [`Dynamsoft/mrz-scanner-javascript`](https://github.com/Dynamsoft/mrz-scanner-javascript) repository.
+
+Note that this sample includes an application-level file-upload entry point alongside the camera button. To mirror this guide's streamlined camera-only workflow, omit the file-upload button, the matching `startFileUpload` function, and the `#uploadFile` element from the sample.
 
 The styled sample is a useful starting point, but the visual design is one example of a production result UI rather than a prescription. The MRZ Scanner API hands you a parsed `MRZData` object and one or more `DSImageData` objects per scan — how you display them is entirely up to your design system.
 
@@ -615,7 +571,7 @@ The view consists of these UI elements:
 3. **Format Selector** — allows the user to choose which MRZ formats to recognize. Available formats are configured via `MRZScannerConfig.mrzFormatType`, while visibility is controlled via `MRZScannerViewConfig.showFormatSelector`. To learn about MRZ formats, see the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats) page.
 
     <div align="center">
-       <img src="../assets/imgs/format-selector-new.jpg" alt="Format Selector" width="40%" />
+       <img src="../assets/imgs/format-selector.png" alt="Format Selector" width="40%" />
     </div><br />
 
 **Camera Controls:**
@@ -626,7 +582,7 @@ The view consists of these UI elements:
 
 **Additional Options:**
 
-6. **Load Image Button** — scan an MRZ from an image file stored on the device. (Distinct from the application-level file-upload entry point in step 4 — this button is part of the scanner UI and works inside an active camera session.)
+6. **Load Image Button** — scan an MRZ from an image file stored on the device. This button is part of the scanner UI and works inside an active camera session.
 
 7. **Sound Button** — toggle audio feedback (beep) when an MRZ is recognized.
 
@@ -638,5 +594,5 @@ The view consists of these UI elements:
 ## Next Steps
 
 - [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization.html) — tailor the scanner UI, toolbar buttons, theme, on-screen messages, and multi-side scanning behavior.
-- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) — process image and PDF files as input instead of (or in addition to) the live camera feed.
+- Need a file-upload entry point on your landing page in addition to the camera scan? See the [main User Guide]({{ site.guides }}mrz-scanner.html) for a walkthrough that includes both entry points side-by-side.
 - For framework-specific implementations (React, Angular, Vue), see the [framework samples]({{ site.codegallery }}index.html#frameworks).
