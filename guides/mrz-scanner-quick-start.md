@@ -11,7 +11,10 @@ permalink: /guides/mrz-scanner-quick-start.html
 
 # Quick Start for the MRZ Scanner JavaScript Edition
 
-This Quick Start walks you through building a single-file Hello World page that scans MRZ (Machine Readable Zone) documents directly from your local disk. The MRZ Scanner is loaded via the jsDelivr CDN — there is no project to scaffold, no package to install, and no server to run.
+This Quick Start walks you through building a single-file Hello World page that scans MRZ (Machine Readable Zone) documents directly from your local disk. The MRZ Scanner is loaded via the jsDelivr CDN — no project to scaffold, no package to install, no server to run.
+
+> [!IMPORTANT]
+> The Hello World is intentionally minimal and applies **no styling**. The captured document image, portrait crop, and parsed fields render as raw, unstyled HTML, so the result view will look rough and the images may stack or size awkwardly. For a styled, production-ready result view, follow the full [User Guide]({{ site.guides }}mrz-scanner.html).
 
 > [!TIP]
 > Targeting a production deployment with npm, framework integration, or HTTPS hosting? See the full [User Guide]({{ site.guides }}mrz-scanner.html).
@@ -56,81 +59,37 @@ Create a new file named `hello-world.html` anywhere on your machine (e.g. on you
     <title>Dynamsoft MRZ Scanner - Hello World</title>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
   </head>
-
   <body>
-    <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
-    <div
-      id="results"
-      style="
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-        word-wrap: break-word;
-      "
-    ></div>
+    <h1>Dynamsoft MRZ Scanner</h1>
+    <div id="results"></div>
 
     <script>
-      const resultContainer = document.querySelector("#results");
-
+      const results = document.querySelector("#results");
       const mrzscanner = new Dynamsoft.MRZScanner({
         license: "YOUR_LICENSE_KEY_HERE",
         engineResourcePaths: {
-          dcvBundle: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-bundle@3.4.2000/dist/",
+          dcvBundle: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-bundle@3.4.2001/dist/",
           dcvData: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-data@1.2.1/",
         },
       });
 
       (async () => {
         const result = await mrzscanner.launch();
-        console.log(result);
-
-        if (result?.data) {
-          resultContainer.innerHTML = "";
-
-          const documentImage = result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ);
-          const portraitImage = result.getPortraitImage();
-
-          [documentImage, portraitImage].forEach((image) => {
-            if (!image?.toCanvas) return;
-            const canvas = image.toCanvas();
-            canvas.style.objectFit = "contain";
-            canvas.style.maxWidth = "100%";
-            resultContainer.appendChild(canvas);
-          });
-
-          Object.entries(result.data).forEach(([key, value]) => {
-            const label = Dynamsoft.MRZDataLabel[key];
-
-            const container = document.createElement("div");
-            container.className = "mrz-result-container";
-            const labelContainer = document.createElement("div");
-            const valueContainer = document.createElement("div");
-
-            labelContainer.textContent = label;
-            valueContainer.textContent = `${JSON.stringify(value)}`;
-
-            container.appendChild(labelContainer);
-            container.appendChild(valueContainer);
-            resultContainer.appendChild(container);
-          });
-        } else {
-          resultContainer.innerHTML = "<p>No MRZ scanned. Please try again.</p>";
+        if (!result?.data) {
+          results.textContent = "No MRZ scanned. Please try again.";
+          return;
         }
+
+        const doc = result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ);
+        const portrait = result.getPortraitImage();
+        if (doc?.toCanvas) results.appendChild(doc.toCanvas());
+        if (portrait?.toCanvas) results.appendChild(portrait.toCanvas());
+
+        const pre = document.createElement("pre");
+        pre.textContent = JSON.stringify(result.data, null, 2);
+        results.appendChild(pre);
       })();
     </script>
-
-    <style>
-      .mrz-result-container {
-        display: flex;
-        flex-direction: column;
-        padding-bottom: 1rem;
-      }
-
-      .mrz-result-container:first-of-type {
-        padding-top: 1rem;
-      }
-    </style>
   </body>
 </html>
 ```
@@ -144,7 +103,7 @@ Replace `YOUR_LICENSE_KEY_HERE` with the license key from [License](#license).
 
 Double-click `hello-world.html` to open it in your default browser, or right-click → **Open With** → **Google Chrome** / **Microsoft Edge**. The address bar should show a `file:///` URL.
 
-Grant camera permission when prompted. The MRZ Scanner UI takes over the page, and once a passport, ID, or visa is recognized — from the live camera feed or an uploaded image — the cropped document image, portrait, and parsed fields are rendered below the heading.
+Grant camera permission when prompted. The MRZ Scanner UI takes over the page, and once a passport, ID, or visa is recognized — from the live camera feed or an uploaded image — the cropped document image, portrait, and parsed fields are rendered below the heading. With no CSS applied, expect a bare, awkwardly-laid-out result view; styling is covered in the full [User Guide]({{ site.guides }}mrz-scanner.html).
 
 ## What's in the Hello World
 
@@ -152,7 +111,7 @@ Once `mrz-scanner.bundle.js` is loaded, it exposes a global `Dynamsoft` namespac
 
 1. **Construct an `MRZScanner`** with your license key and the engine resource paths.
 2. **Call `launch()`**, which opens the full-screen scanner UI and resolves with an `MRZResult` once an MRZ is recognized (or with an empty result if the user cancels).
-3. **Render the result** — the cropped document image (`getDocumentImage(EnumDocumentSide.MRZ)`), the portrait crop (`getPortraitImage()`), and the parsed fields, mapped to human-readable labels via `Dynamsoft.MRZDataLabel`.
+3. **Render the result** — the cropped document image (`getDocumentImage(EnumDocumentSide.MRZ)`), the portrait crop (`getPortraitImage()`), and the parsed fields dumped as raw JSON via `<pre>`.
 
 For a deeper walkthrough of the API and UI, see the full [User Guide]({{ site.guides }}mrz-scanner.html).
 
