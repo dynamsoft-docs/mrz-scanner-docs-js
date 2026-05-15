@@ -53,44 +53,42 @@ Create a new file named `hello-world.html` anywhere on your machine (e.g. on you
 ```html
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
-  </head>
-  <body>
-    <h1>Dynamsoft MRZ Scanner</h1>
-    <div id="results"></div>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dynamsoft MRZ Scanner - Hello World</title>
+		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
+	</head>
+	<body>
+		<h1>Dynamsoft MRZ Scanner</h1>
+		<div id="results"></div>
 
-    <script>
-      const results = document.querySelector("#results");
-      const mrzscanner = new Dynamsoft.MRZScanner({
-        license: "YOUR_LICENSE_KEY_HERE",
-        engineResourcePaths: {
-          dcvBundle: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-bundle@3.4.2001/dist/",
-          dcvData: "https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-data@1.2.1/",
-        },
-      });
+		<script>
+			const results = document.querySelector("#results");
+			const mrzscanner = new Dynamsoft.MRZScanner({
+				license: "YOUR_LICENSE_KEY_HERE",
+			});
 
-      (async () => {
-        const result = await mrzscanner.launch();
-        if (!result?.data) {
-          results.textContent = "No MRZ scanned. Please try again.";
-          return;
-        }
+			(async () => {
+				const result = await mrzscanner.launch();
+				if (!result?.data) {
+					results.textContent = "No MRZ scanned. Please try again.";
+					return;
+				}
 
-        const doc = result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ);
-        const portrait = result.getPortraitImage();
-        if (doc?.toCanvas) results.appendChild(doc.toCanvas());
-        if (portrait?.toCanvas) results.appendChild(portrait.toCanvas());
+				const mrzSide = result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ);
+				const portraitSide = result.getDocumentImage(Dynamsoft.EnumDocumentSide.Opposite);
+				const portrait = result.getPortraitImage();
+				if (portraitSide?.toCanvas) results.appendChild(portraitSide.toCanvas());
+				if (mrzSide?.toCanvas) results.appendChild(mrzSide.toCanvas());
+				if (portrait?.toCanvas) results.appendChild(portrait.toCanvas());
 
-        const pre = document.createElement("pre");
-        pre.textContent = JSON.stringify(result.data, null, 2);
-        results.appendChild(pre);
-      })();
-    </script>
-  </body>
+				const pre = document.createElement("pre");
+				pre.textContent = JSON.stringify(result.data, null, 2);
+				results.appendChild(pre);
+			})();
+		</script>
+	</body>
 </html>
 ```
 
