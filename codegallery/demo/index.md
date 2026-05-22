@@ -12,7 +12,7 @@ permalink: /codegallery/demo/index.html
 
 # MRZ Scanner JavaScript Edition - Demo
 
-The Dynamsoft MRZ Scanner Demo is a fully styled, mobile-and-desktop-responsive reference implementation. It pairs the SDK with a branded landing page, a desktop-to-mobile QR-code handoff, and a polished launch flow — all built on the same `MRZScanner` / `launch()` API used in the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) and the [User Guide]({{ site.guides }}mrz-scanner.html).
+The Dynamsoft MRZ Scanner Demo is a fully styled, mobile-and-desktop-responsive reference implementation. It pairs the SDK with a branded landing page, a desktop-to-mobile QR-code handoff, and a polished launch flow, all built on the same `MRZScanner` / `launch()` API used in the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) and the [User Guide]({{ site.guides }}mrz-scanner.html).
 
 ## Source
 
@@ -35,11 +35,15 @@ The full source lives at [`samples/demo/`](https://github.com/Dynamsoft/mrz-scan
     npm run dev
     ```
 
-The dev server prints two URLs — a `https://localhost:<port>` URL for the host machine, and a `https://<lan-ip>:<port>` URL for other devices on the same network. Open either, accept the self-signed certificate warning on first visit, and grant camera permission to use the demo.
+The dev server prints two URLs: a `https://localhost:<port>` URL for the host machine, and a `https://<lan-ip>:<port>` URL for other devices on the same network. Open either, accept the self-signed certificate warning on first visit, and grant camera permission to use the demo.
 
 ## Live Demo
 
 Try the [official Dynamsoft MRZ Scanner demo](https://demo.dynamsoft.com/mrz-scanner/) if you want to see the user flow before cloning.
+
+## Walkthrough
+
+For a step-by-step breakdown of how the demo is built, see the [Demo Walkthrough](walkthrough.html). It covers a simpler implementation with the same home and result UI but without the branded landing page, QR-code handoff, or theming layer, designed to drop into your own project.
 
 ## Next Steps
 
