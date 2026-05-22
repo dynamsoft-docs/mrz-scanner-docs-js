@@ -18,7 +18,7 @@ When it comes to reading MRZ documents, it is important to find a library that n
 
 ## Core Products
 
-The MRZ Scanner JavaScript Edition relies on four of Dynamsoft's core products:
+The MRZ Scanner JavaScript Edition relies on three of Dynamsoft's core products:
 
 1. [**Dynamsoft Label Recognizer**]({{ site.dcvb_root }}introduction/index.html#dynamsoft-label-recognizer) - A zonal OCR library that is responsible for the text extraction portion of the MRZ scanning workflow.
 
@@ -26,21 +26,17 @@ The MRZ Scanner JavaScript Edition relies on four of Dynamsoft's core products:
 
 3. [**Dynamsoft Camera Enhancer**]({{ site.dcvb_root }}introduction/index.html#dynamsoft-camera-enhancer) - The library that is responsible for all camera control features, in addition to camera enhancements and basic UI configuration features.
 
-4. [**Dynamsoft Document Normalizer**]({{ site.dcvb_root }}introduction/index.html#dynamsoft-document-normalizer) - The library responsible for detecting document boundaries and producing the deskewed document and portrait crops returned with each scan.
-
 ## Common Usage Scenarios
 
 1. **Passports** - Passports are the most popular type of identity document that utilizes MRZ. **MRZ Scanner JavaScript Edition** can help enhance the user experience for any application in the travel or aerospace field where passports are typically used.
 
 2. **ID Cards** - ID cards are another common type of identity document that makes use of MRZ. With the **MRZ Scanner JavaScript Edition**, scanning ID cards and extracting all of the information from it has never been easier.
 
-3. **Visas** - Many travel visas issued as stickers inside a passport also carry an MRZ. With the **MRZ Scanner JavaScript Edition**, scanning these visa stickers and extracting the encoded data is just as straightforward as scanning the passport itself.
-
 ## Supported MRZ Formats
 
 The Machine Readable Travel Documents (MRTD) standard specified by the International Civil Aviation Organization (ICAO) defines how to encode information for optical character recognition on official travel documents.
 
-The **MRZ Scanner JavaScript Edition** supports five types of MRTD, which encompass the majority of the MRZ documents that are used in various fields around the world. Here they are, grouped by document type:
+The **MRZ Scanner JavaScript Edition** supports three types of MRTD, which encompass the majority of the MRZ documents that are used in various fields around the world. Here they are in order of popularity:
 
 ### Passport (TD3)
 
@@ -66,22 +62,6 @@ In some more rare cases, an ID card can have a MRZ that conforms to the **TD2** 
    <img src="../assets/imgs/td2-id.png" alt="Example of TD2 MRZ" width="72%" />
 </div>
 
-### Visa (MRVA)
-
-Full-page machine-readable visas — the larger visa stickers commonly affixed to passport pages — conform to the **MRVA** format, which consists of **2 lines, 44 characters each**. Below is a sample of an MRVA MRZ to give you an idea of what it looks like:
-
-<div>
-   <img src="../assets/imgs/mrva-visa.png" alt="Example of MRVA MRZ" width="88%" />
-</div>
-
-### Visa (MRVB)
-
-Smaller machine-readable visa stickers conform to the **MRVB** format, which consists of **2 lines, 36 characters each**. Below is a sample of an MRVB MRZ to give you an idea of what it looks like:
-
-<div>
-   <img src="../assets/imgs/mrvb-visa.png" alt="Example of MRVB MRZ" width="72%" />
-</div>
-
 ## Design Principles
 
 We designed the **MRZ Scanner JavaScript Edition** with three core principles in mind:
@@ -90,23 +70,33 @@ We designed the **MRZ Scanner JavaScript Edition** with three core principles in
 2. **Ready-To-Use UI** - Pre-integrated components and a pre-designed UI simplify the process even more for any developer, enabling a **quick setup and saving any time and effort needed for the UI design**.
 3. **Effortless Customization** - Tailored configuration interfaces allow for **quick and simple customization** of the scanner settings and performance.
 
-We will now introduce the core view of the MRZ Scanner to offer a clearer idea of the design before you begin development on your own application.
+We will now introduce the two views that make up the core of the MRZ Scanner to offer a clearer idea of the design before you begin development on your own application.
 
 ### Views
 
-The **MRZ Scanner JavaScript Edition** centers on a single built-in view, the **`MRZScannerView`**.
+The **MRZ Scanner JavaScript Edition** is reliant on two core views, the **`MRZScannerView`** and the **`MRZResultView`**.
 
 #### `MRZScannerView`
 
-The **`MRZScannerView`** is the main view of the solution which displays the camera view, along with some UI elements that control the scanner and camera settings, along with icons to allow the user to load in a photo from the photo library as well as close the scanner. This view comes with a scan guide frame in the center to better guide the user on where to place the MRZ document for best results. Once a document is positioned inside the frame, a progress indicator appears within the frame itself to signal that the scanner has begun the recognition and extraction process.
+The **`MRZScannerView`** is the main view of the solution which displays the camera view, along with some UI elements that control the scanner and camera settings, along with icons to allow the user to load in a photo from the photo library as well as close the scanner. This view comes with a scan guide frame in the center to better guide the user on where to place the MRZ document for best results.
 
 Here is a quick screenshot at default look of the **`MRZScannerView`**:
 
-<div align="center">
-   <img src="../assets/imgs/mrzscannerview.PNG" alt="MRZScannerView Screenshot" width="25%" />
+<div>
+   <img src="../assets/imgs/mrzscannerview-sample-old.jpeg" alt="MRZScannerView Screenshot" width="25%" />
 </div>
 
-Once a scan completes, the `MRZScannerView` resolves the `launch()` promise with the parsed data and any returned images, and your application takes over the rendering. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-5-render-the-result) for the standard result-rendering pattern.
+#### `MRZResultView`
+
+The **`MRZResultView`** is responsible for displaying the final parsed results of the MRZ recognition process. The final parsed results, along with their corresponding field names, appear as a scrollable form view underneath the original image of the MRZ document.
+
+Included with those two things are two buttons, one that allows the user to scan again if needed, and the other to wrap up the scanning process and proceed to the next step (like navigating to another page).
+
+Here is a quick screenshot at the default look of the **`MRZResultView`**:
+
+<div>
+   <img src="../assets/imgs/mrzresultview-sample-old.jpeg" alt="MRZResultView Screenshot" width="25%" />
+</div>
 
 ## System Requirements
 

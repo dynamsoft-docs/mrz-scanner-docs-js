@@ -11,339 +11,959 @@ permalink: /guides/mrz-scanner.html
 
 # User Guide for the MRZ Scanner JavaScript Edition
 
-This user guide will walk you through a Hello World sample web application that scans MRZ documents using the MRZ Scanner JavaScript Edition SDK. We recommend using this sample as a reference when creating your own application.
+This user guide demonstrates how to integrate the MRZ Scanner JavaScript Edition SDK into a production web application. You'll install the library via npm, build a scanner that supports both live-camera and file-upload entry points, render the parsed MRZ data alongside the cropped document and portrait images, and deploy the application from your own server.
+
+> [!TIP]
+> If you're just trying out the MRZ Scanner for the first time and want a single-file Hello World you can open from disk, see the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) instead.
 
 ## License
 
 ### Trial License
 
-When getting started with MRZ Scanner, we recommend getting your own 30-day trial license through the following modal:
+Get started with a free 30-day trial license:
 
 {% include trialLicense.html %}
 
-The trial license can be renewed via the [customer portal](https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=guide&package=js) twice, each time for another 15 days, giving you a total of 60 days to develop your own application using the solution. Please contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) if you need more time for a full evaluation or have any questions.
+The trial license can be renewed twice via the [customer portal](https://www.dynamsoft.com/customer/license/trialLicense/?product=mrz&utm_source=guide&package=js) (15 days each renewal), giving you 60 days total for development and evaluation. Contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/) if you need additional time or have questions.
 
 > [!NOTE]
-> The **MRZ Scanner** license contains a license for the **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and the **Dynamsoft Camera Enhancer** since the MRZ Scanner builds on top of those three products.
+> The **MRZ Scanner** license includes licenses for **Dynamsoft Label Recognizer**, **Dynamsoft Code Parser**, and **Dynamsoft Camera Enhancer**, as the MRZ Scanner is built on these three products.
 
 ### Full License
 
 If you are fully satisfied with the solution and would like to move forward with a full license, please contact the [Dynamsoft Sales Team](https://www.dynamsoft.com/company/contact/).
 
-## Quick Start - Including the Library
+## Prerequisites
 
 > [!TIP]
-> Please visit the [Introduction]({{ site.introduction }}index.html) page to learn about the MRZ document formats, the architecture of the MRZ Scanner with respect to other Dynamsoft products, and the system requirements of the MRZ Scanner JavaScript Edition.
+> Visit the [Introduction]({{ site.introduction }}index.html) page to learn about MRZ document formats, the MRZ Scanner architecture, and system requirements.
 
-The purpose of this guide is to help you implement a Hello World application using the MRZ Scanner solution. To showcase this, we will be using vanilla JS. You can find the full code in the [samples Github repo](https://github.com/Dynamsoft/mrz-scanner-javascript).
+You'll need:
 
-The first step before writing the code is to include the SDK in your application. You can simply include the SDK by using the precompiled script, but you can also build the SDK from source yourself.
+- **Node.js** `^24.0.0` and **npm** `^11.0.0` to install the package and run the development server.
+- A **trial or full license key** (see [License](#license)).
+- A modern browser with `getUserMedia` support for camera scanning.
+
+## Including the Library
+
+You can include the MRZ Scanner SDK in your application by installing it from npm or by building it from the source repository.
 
 <div class="multi-panel-switching-prefix"></div>
 
 <div class="multi-panel-start"></div>
-<div class="multi-panel-title">Use the Precompiled Script</div>
+<div class="multi-panel-title">Install via npm</div>
 
-The simplest way to include the SDK is to use either the [**jsDelivr**](https://jsdelivr.com/) or [**UNPKG**](https://unpkg.com/) CDN. The Hello World sample that this guide will explore uses **jsDelivr**:
+The recommended way to include the SDK in a production application is to install it as a project dependency:
 
-- jsDelivr
-
-  ```html
-  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
-  ```
-
-- UNPKG
-
-  ```html
-  <script src="https://unpkg.com/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
-  ```
-
-When using a framework such as **React**, **Vue** or **Angular**, we recommend adding the package as a dependency using a package manager such as **npm** or **yarn**:
-
-  ```sh
-  npm i dynamsoft-mrz-scanner@3.0.0 -E
-  # or
-  yarn add dynamsoft-mrz-scanner@3.0.0 -E
-  ```
-
-> [!WARNING]
-> When using a package manager like **npm** or **yarn**, you likely need to specify the location of the engine files as a link to a CDN. Please see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for a code snippet on how to set the *engineResourcePaths*.
-
-Below is the complete Hello World sample page that uses the precompiled script served via a CDN.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
-  </head>
-
-  <body>
-    <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
-
-    <script>
-      // Initialize the Dynamsoft MRZ Scanner
-      const mrzScanner = new Dynamsoft.MRZScanner({
-        license: "YOUR_LICENSE_KEY_HERE",
-      });
-      (async () => {
-        // Launch the scanner and wait for the result
-        const result = await mrzScanner.launch();
-      })();
-    </script>
-  </body>
-</html>
+```sh
+npm i dynamsoft-mrz-scanner@4.0.0 -E
+# or
+yarn add dynamsoft-mrz-scanner@4.0.0 -E
 ```
 
-> [!NOTE]
->
-> This code is a more simplified version of the Hello World file that is hosted on [Github](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/hello-world.html). 
-> The file hosted on Github contains more code for a better final UI, but that extra code is not necessary to successfully launching the MRZ Scanner. All you need is the code shown above.
-> Please do not forget to replace `YOUR_LICENSE_KEY_HERE` with your own license key, whether it is trial or full.
+This installs the MRZ Scanner package along with its two peer dependencies, **`dynamsoft-capture-vision-bundle`** and **`dynamsoft-capture-vision-data`**. Together they provide the JavaScript bundle, the WebAssembly engine, and the model and template data files that power MRZ recognition.
 
-To run the sample, create a new file called `hello-world.html`, then copy and paste the code above into the file. Next, serve the page directly by deploying it to a server.
+After installation, the layout under `node_modules/` looks like:
 
-If you are using VS Code, a quick and easy way to serve the project is using the [Five Server VSCode extension](https://marketplace.visualstudio.com/items?itemName=yandeu.five-server). Simply install the extension, open the `hello-world.html` file in the editor, and click "Go Live" in the bottom right corner of the editor. This will serve the application at `http://127.0.0.1:5500/hello-world.html`.
+```
+node_modules/
+├── dynamsoft-mrz-scanner/              # the library bundle and UI/template assets
+├── dynamsoft-capture-vision-bundle/    # DCV engine (JS + WASM)
+└── dynamsoft-capture-vision-data/      # DCV model, template, and parser data
+```
 
-Alternatively, you can use other methods like `IIS` or `Apache` to serve the project, though we will omit those methods here for brevity.
+> [!WARNING]
+> When installing via npm, you must tell the SDK where to load the DCV engine resources from by setting the `engineResourcePaths` configuration option. The walkthrough in the next section shows how. See the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for the full option reference.
 
 <div class="multi-panel-end"></div>
 
 <div class="multi-panel-start"></div>
 <div class="multi-panel-title">Build from Source</div>
 
-While using the pre-compiled script is the easiest way to get started with the MRZ Scanner, we do also allow you to build the MRZ Scanner SDK from source. Building from source gives you the advantage of performing in-depth SDK customization.
+For deeper customization or to track the latest changes ahead of an npm release, you can build the SDK from the source repository.
 
-The MRZ Scanner is built using three constituent Dynamsoft products: [**Dynamsoft Label Recognizer**]({{ site.dlr_js }}api-reference/label-recognizer-module.html?lang=javascript), [**Dynamsoft Code Parser**]({{ site.dcp_js }}api-reference/code-parser-module.html?lang=javascript), and [**Dynamsoft Camera Enhancer**]({{ site.dce_js }}api-reference/index.html?lang=javascript), so any MRZ Scanner customization involves working with the foundational API of these products.
+The MRZ Scanner is built on three Dynamsoft products: [**Dynamsoft Label Recognizer**]({{ site.dlr_js }}api-reference/label-recognizer-module.html?lang=javascript), [**Dynamsoft Code Parser**]({{ site.dcp_js }}api-reference/code-parser-module.html?lang=javascript), and [**Dynamsoft Camera Enhancer**]({{ site.dce_js }}api-reference/index.html?lang=javascript). Building from source gives you direct access to the views and helpers that wire those products together.
 
-The first step to building the SDK from source is retrieving the **MRZ Scanner JavaScript Edition** source files from the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript), compiling them into a distributable package, and then runs a *ready-made* Hello World sample page that is already included in the repo.
+Follow these steps:
 
-Follow these steps in order to build from the source:
+1. Clone the [GitHub repository](https://github.com/Dynamsoft/mrz-scanner-javascript) (or download a ZIP and extract it).
 
-1. Download the **MRZ Scanner JavaScript Edition** source files from [Github](https://github.com/Dynamsoft/mrz-scanner-javascript) as a compressed folder ("Download ZIP" option).
+2. From the project root, install dependencies:
 
-2. Extract the contents of the compressed folder.
-
-3. Open the *Hello World* sample included with the source files located at `/samples/hello-world.html` (relative path to the decompressed directory) using your code editor of choice (like VS Code).
-
-4. Search for 'YOUR_LICENSE_KEY_HERE' and replace that with your own license key, whether it is trial or full.
-
-5. Install project dependencies - in the terminal, navigate to the project root directory and run the following:
     ```bash
     npm install
     ```
 
-6. Build the project - once the dependencies are installed, build the project by running:
+3. Build the library bundles:
+
     ```bash
     npm run build
     ```
 
-7. Serve the project via `localhost`:
+    This produces the `dist/` folder containing everything you need to include in your own application: `dist/mrz-scanner.mjs` (ESM), `dist/mrz-scanner.cjs` (CommonJS), `dist/mrz-scanner.bundle.js` (IIFE), and the type declarations in `dist/mrz-scanner.d.ts`. Reference these directly from your project or publish them to your own registry.
+
+4. **(Optional)** To try out the samples that ship with the repository, start the bundled Vite dev server:
+
     ```bash
-    npm run serve
+    npm run dev
     ```
-Once the server is running, open the application in a browser using the address provided in the terminal output from running `npm run serve`.
 
-<div class="multi-panel-end"></div>
-
-<div class="multi-panel-start"></div>
-<div class="multi-panel-title">Self-hosting the Library Resources</div>
-
-If you are looking to have a **completely offline setup**, we also provide the option to download the library's resource files, and then configuring them into your own server so that the users of your application would only need to connect to your server.
-
-### Acquiring the Resource Files
-
-The first step is to get a copy of the resources. There are two ways which you can do this:
-
-- Go to the official [Github repository](https://github.com/Dynamsoft/mrz-scanner-javascript). Download the repository as a ZIP and the library resources are in the *dist* folder. So all you need is just a copy of this *dist* folder.
-
-- If you are using `npm`, you could also install the package and extract the `dist` folder from the package in `node_modules`. Install the package using the command `npm i dynamsoft-mrz-scanner@3.0.0 -E`. Find the `dynamsoft-mrz-scanner` fodler in `node_modules` and the *dist* folder will be inside.
-
-### Modify the Build Script
-
-If you are working with a npm-dependent project (e.g. a *React* or *Angular* app), the build script in `package.json` needs to be modified to allow for the local source files to be copied over during the build process.
-
-Update the `scripts` section in `package.json` to automatically copy the libraries during the build process:
-
-```json
-"scripts": {
-    "serve": "node dev-server/index.js",
-    "build": "rollup -c && npm run copy-libs",
-    "copy-libs": "npx mkdirp dist/libs && npx cpx \"node_modules/dynamsoft-*/**/*\" dist/libs/ --dereference",
-    "build:production": "rollup -c --environment BUILD:production"
-},
-```
-
-### Update the Engine Resource Paths
-
-By default, the engine resource paths of the libraries are usually set to the CDN links for each library. Once you modify the build script, the library resource files are then available locally so the engine resource paths can now be set to the path defined in the previous step.
-
-```ts
-const mrzScanner = new Dynamsoft.DocumentScanner({
-    license: "YOUR_LICENSE_KEY_HERE",
-    scannerViewConfig: {
-        uiPath: "./dist/mrz-scanner.ui.html", // Use the local file
-    },
-    engineResourcePaths: {
-        std: "./dist/libs/dynamsoft-capture-vision-std/dist/",
-        dip: "./dist/libs/dynamsoft-image-processing/dist/",
-        core: "./dist/libs/dynamsoft-core/dist/",
-        license: "./dist/libs/dynamsoft-license/dist/",
-        cvr: "./dist/libs/dynamsoft-capture-vision-router/dist/",
-        dlr: "./dist/libs/dynamsoft-label-recognizer/dist/",
-        dcp: "./dist/libs/dynamsoft-code-parser/dist/"
-    },
-});
-```
-> [!TIP]
-> Please see [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig) for more info on the full configuration.
-
-### Server Requirements for Deployment
-
-Once you have the dist folder, the next step is to deploy it to a server of your choice. There are a couple of considerations to take into account when setting up the server:
-
-#### Secure context (HTTPS deployment)
-
-When deploying your application / website for production, make sure to serve it via a secure HTTPS connection. This is required for two reasons
-
-- Access to the camera video stream is only granted in a security context. Most browsers impose this restriction.
-> Some browsers like Chrome may grant the access for `http://127.0.0.1` and `http://localhost` or even for pages opened directly from the local disk (`file:///...`). This can be helpful for temporary development and test.
-
-- Dynamsoft License requires a secure context to work.
-    
-#### Set the MIME type for `.wasm` as `application/wasm`
-      
-The goal is to configure your server to send the correct Content-Type header for the wasm file so that it is processed correctly by the browser.
-  
-Different types of webservers are configured differently, for example:
-
-  + <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Apache_Configuration_htaccess#media_types_and_character_encodings" title="Apache">Apache</a>
-  + <a target="_blank" href="https://docs.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap" title="IIS">IIS</a>
-  + <a target="_blank" href="https://www.nginx.com/resources/wiki/start/topics/examples/full/#mime-types" title="NGINX">NGINX</a>
+    The dev server serves the `samples/` folder over HTTPS with a self-signed certificate, using the `dist/` you just built in step 3. Open the URL printed in the terminal output and navigate to a sample (for example, `samples/demo/index.html`). This step is not required to produce or use the built library — `dist/` already contains everything your own application needs.
 
 <div class="multi-panel-end"></div>
 
 <div class="multi-panel-switching-end"></div>
 
-## Breaking down Hello World
+## Building a Production Sample
 
-Let's now go through the code of the Hello World sample to understand how the code works in detail.
+This section walks you through building a complete MRZ Scanner integration end to end: a home screen with camera-scan and file-upload entry points, a result view that displays the portrait, the processed and original document images, and the parsed MRZ fields, and a re-scan flow that returns the user to a fresh scanning session.
 
-> [!NOTE]
-> If you are using a framework like React/Angular/Vue, please refer to the [framework samples]({{ site.codegallery }}index.html#frameworks) built by the development team.
+The walkthrough focuses on the SDK API and integration patterns rather than visual design — styling itself isn't discussed in the steps below. The HTML and JS, however, use class names that line up with the official Dynamsoft demo's stylesheets, so dropping the demo's CSS files into your project gives you a fully styled, responsive result view with no markup changes. See the [Reference](#reference-the-dynamsoft-mrz-scanner-demo) at the end of this section for the two files to lift.
 
-### Step 1: Setting up the HTML and Including the MRZ Scanner
+This walkthrough assumes you've installed the SDK via npm in a project at `mrz-scanner-app/` and that the page is served from the project root, so paths into `node_modules/` resolve as written. Adapt the paths to match your project layout.
+
+If you don't already have a project set up, create one now:
+
+```bash
+mkdir mrz-scanner-app
+cd mrz-scanner-app
+npm init -y
+npm i dynamsoft-mrz-scanner@4.0.0 -E
+```
+
+This produces a `package.json` and installs the SDK along with its two peer dependencies under `node_modules/`. The rest of the walkthrough adds an `index.html` and a `<script type="module">` block to this project.
+
+### Step 1: Set Up the App Structure
+
+Create a file named `index.html` at the project root with the following structure. The page has two top-level sections — `#home-section` (start screen) and `#result-section` (result view) — and the SDK bundle is loaded from `node_modules/`.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamsoft MRZ Scanner - Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.0.0/dist/mrz-scanner.bundle.js"></script>
+    <title>Dynamsoft MRZ Scanner</title>
+    <script src="node_modules/dynamsoft-mrz-scanner/dist/mrz-scanner.bundle.js"></script>
+    <style>
+      /* Minimal home-section styling so the entry-point buttons remain
+         visible whether or not the demo's stylesheets are linked. */
+      #home-section { padding: 24px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+      #home-section button { padding: 12px 16px; color: #fff; background: #333; }
+    </style>
   </head>
 
-  <body>
-    <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
-  </body>
+  <body data-view="landing">
+    <!-- Home: start screen with the two scan entry points -->
+    <div id="home-section">
+      <h1>MRZ Scanner</h1>
+      <button id="startScan">Start Camera Scan</button>
+      <button id="uploadFile">Scan from File</button>
+      <div id="home-error"></div>
+    </div>
 
+    <!-- Result: rendered after a successful scan -->
+    <div id="result-section" style="display: none">
+      <div class="result-header">
+        <h2>Result</h2>
+      </div>
+
+      <!-- Left panel: summary + image groups -->
+      <div class="result-left">
+        <div class="summary-card">
+          <div class="summary-info">
+            <div class="person-name" id="res-name"></div>
+            <div class="person-details" id="res-gender-age"></div>
+            <div class="person-details" id="res-expiry"></div>
+          </div>
+          <div class="portrait-box" id="portrait-container"></div>
+        </div>
+
+        <div class="data-section">
+          <div class="data-section-title">Processed images</div>
+          <div id="processed-images"></div>
+        </div>
+
+        <div class="data-section">
+          <div class="data-section-title">Original images</div>
+          <div id="original-images"></div>
+        </div>
+      </div>
+
+      <!-- Right panel: MRZ data fields + raw text -->
+      <div class="result-right">
+        <div class="data-section">
+          <div class="data-section-title">Personal Info</div>
+          <div id="personal-info-rows"></div>
+        </div>
+        <div class="data-section">
+          <div class="data-section-title">Document Info</div>
+          <div id="document-info-rows"></div>
+        </div>
+        <div class="mrz-text-section">
+          <div class="data-section-title">Raw MRZ Text</div>
+          <div class="mrz-raw-text" id="mrz-raw-text"></div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button type="button" class="btn-rescan">Re-scan</button>
+        <button type="button" class="btn-home">Return home</button>
+      </div>
+    </div>
+
+    <script type="module">
+      // The application code from the next steps goes here.
+    </script>
+  </body>
 </html>
 ```
 
-The first step in setting up the HTML in the Hello World project is to include the SDK. (We discussed the two available methods to include the SDK resources in the earlier [Quick Start](#quick-start---including-the-library) section) In this example, we include the precompiled MRZ Scanner SDK script via CDN in the header:
-
-MRZ Scanner comes with a **Ready-to-Use UI**. When the MRZ Scanner launches, it creates a container which it populates with the **Ready-to-Use UI**.
-
-### Step 2: Initializing the MRZ Scanner
-
-```html
-<body>
-  <h1 style="font-size: large">Dynamsoft MRZ Scanner</h1>
-
-  <script>
-    // Initialize the Dynamsoft MRZ Scanner
-    const mrzScanner = new Dynamsoft.MRZScanner({
-      license: "YOUR_LICENSE_KEY_HERE",
-    });
-  </script>
-</body>
-```
-
-Above is the **simplest** way to initialize the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner). Note the configuration object used to set the behaviour of the MRZ Scanner instance. The single property that is **required** to be defined in this configuration object is the **license key**. Without a valid license, the MRZ Scanner view fails to launch, and the user will be met with a license key error message. Please refer to the [licensing](#license) section of the guide for instructions on acquiring a license key.
-
-### Step 3: Launching the MRZ Scanner
-
-```html
-<script>
-  // Initialize the Dynamsoft MRZ Scanner
-  const mrzScanner = new Dynamsoft.MRZScanner({
-    license: "YOUR_LICENSE_KEY_HERE",
-  });
-  (async () => {
-    // Launch the scanner and wait for the result
-    const result = await mrzScanner.launch();
-    console.log(result);
-  })();
-</script>
-```
-
-Now that the [**`MRZScanner`**]({{ site.api }}mrz-scanner.html#mrzscanner) has been initialized and configured, it is ready to be launched! Upon launch, the MRZ Scanner presents the main **`MRZScannerView`** UI in its container on the page, and is ready to start scanning. Upon scanning an MRZ (via video or static image), the MRZ Scanner then switches to the **`MRZResultView`**, which displays a cropped image of the MRZ document as well as the parsed fields of the MRZ text. Let's break down these two Views:
-
-#### `MRZScannerView`
-
-The `MRZScannerView` is configured using [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig), which is composed of the following UI elements:
-
-1. **Camera View**: The Camera View is the camera viewfinder UI component within the `MRZScannerView`. This viewfinder occupies the majority of the space within the MRZScannerView to give the user a clear view and precise control of the image being scanned.
-
-2. **Scan Guide Frame**: The Scan Guide Frame is an overlay placed on top of the Camera View that guides the user to place the MRZ document in the middle of the Camera View, in order to achieve a fast and accurate scan. The guide frame is enabled **by default**, but may be hidden via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) interface. Note that if scan guide frame is enabled, the scanner also crops out the region outside the guide frame.
-
-    <div align="center">
-       <img src="../assets/imgs/mrz-scan-guides.png" alt="Scan Guide Frames" width="80%" />
-    </div><br />
-
-3. **Format Selector**: Below the scan guide frame, you will also notice a selector box that allows the user to choose which formats the MRZ Scanner should recognize. The formats that show up in the format selector are configurable via the [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface, while the visibility of the format selector itself is configurable via the [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) interface. To learn about MRZ formats, please refer to the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats) page.
-
-    <div align="center">
-       <img src="../assets/imgs/format-selector.png" alt="Scan Guide Frames" width="40%" />
-    </div><br />
-
-4. **Resolution/Camera Select Dropdown**: This dropdown allows the user to switch cameras (should they have more than one available on the device), or select a different resolution for the camera that is currently selected.
-
-5. **Load Image Button**: This button allows the user to scan a file of an image that contains a MRZ from the device's local storage.
-
-6. **Sound Button**: When toggled on, the MRZ Scanner plays a *beep* sound to signal when the scanner recognizes an MRZ.
-
-7. **Flash Button**: This button is responsible for toggling the flash of the camera (when one is available). The flash button does not appear if the device does not have a camera flash, or the browser does not support camera flash.
-
-8. **Close Scanner Button**: This button closes the MRZ Scanner and takes the user back to the landing page.
+Once `mrz-scanner.bundle.js` is loaded, it exposes a global `Dynamsoft` namespace that holds the `MRZScanner` constructor, the `EnumDocumentSide` enum, and other helpers used below.
 
 > [!NOTE]
-> To learn more on how to customize the MRZScannerView and its corresponding UI elements, we recommend reading the [Customizaton Guide]({{ site.guides }}mrz-scanner-customization.html) as that will shed a lot more light on how to customize the scanner UI to fit your needs.
+> If you're using a bundler (Vite, Webpack, Rollup, etc.) instead of a `<script>` tag, import the SDK from the `dynamsoft-mrz-scanner` package and use the named exports (`MRZScanner`, `EnumDocumentSide`, etc.) directly. The configuration shown below is identical.
 
-#### `MRZResultView`
+### Step 2: Initialize the Scanner
 
-Here is a quick breakdown of the constituent UI elements of the result view, controlled by [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig):
+Inside the `<script type="module">` block, declare a module-level `mrzScanner` variable and create the initial instance:
 
-1. **Original Image**: A cropped image of the scanned MRZ document - this gets displayed at the top of the `MRZResultView` by default.
+```js
+let mrzScanner;
 
-2. **Parsed Results**: The data parsed from the MRZ code, displayed with their corresponding field names (e.g. Given Name, Nationality, etc.) are placed below the cropped image of the MRZ corresponding field names. In addition to displaying these parsed results, the MRZ Scanner allows the user to edit the values of the fields in case of any errors by cross referencing from the cropped MRZ document displayed directly above.
+try {
+  mrzScanner = new Dynamsoft.MRZScanner({
+    license: "YOUR_LICENSE_KEY_HERE",
+    engineResourcePaths: {
+      dcvBundle: "node_modules/dynamsoft-capture-vision-bundle/dist/",
+      dcvData: "node_modules/dynamsoft-capture-vision-data/",
+    },
+    returnOriginalImage: true,
+    returnDocumentImage: true,
+    returnPortraitImage: true,
+  });
+} catch (error) {
+  document.getElementById("home-error").textContent =
+    `Failed to initialize scanner: ${error.message}`;
+  document.getElementById("startScan").disabled = true;
+  document.getElementById("uploadFile").disabled = true;
+}
+```
 
-3. **Re-take Button**: This button discards the previous scan and parsed data, then takes the user back to the **`MRZScannerView`** to scan another MRZ document.
+What's going on here:
 
-4. **Done Button**: This button closes the scanner and destroys the **`MRZScanner`** instance, and returns the result object containing the MRZ scan. At that point, the application goes back to the landing page. You can additionally dictate further actions upon the button click, such as allowing the user to perform some extra actions with the MRZ result, navigating to another page, passing the result object for further processing, and more.
+- **`license`** — replace `YOUR_LICENSE_KEY_HERE` with your trial or full key (see [License](#license)). An invalid license causes a launch error.
+- **`engineResourcePaths`** — required for npm-installed projects. The bundle defaults to looking for DCV resources next to itself inside `dist/`, but the actual peer dependencies sit at the sibling locations shown above. Without this override, the WebAssembly and data files will return a 404.
+- **`returnOriginalImage` / `returnDocumentImage` / `returnPortraitImage`** — control which image artifacts are attached to the result. `returnDocumentImage` and `returnPortraitImage` default to `true`; `returnOriginalImage` defaults to `false`. All three are set explicitly here so the result view can render every image kind the API offers. Setting `returnPortraitImage: false` also disables multi-side scanning — see [Multi-Side Scanning](#multi-side-scanning) below.
 
-5. **Cancel Button**: When the scanner is launched with a static file instead of using the default camera UI, this button will appear in the result view in place of the re-take button. Once this button is clicked, the MRZ result is discarded and the user returns to the landing page. You can dictate the action(s) that happen once the button is clicked using the `onCancel` callback function of the [`MRZResultViewConfig`]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) in case you do not want the user to go back to the same landing page they were on. 
+For the full list of configuration options, see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig).
 
-  > [!NOTE]
-  >  In the Hello World sample, no action is taken once the Done button is clicked. The scanner closes and the user is met with an empty page. In order to open the scanner again, the user must refresh the page. You may choose to implement a more user-friendly behavior in a production environment, such as presenting the user with an option to re-open the MRZ Scanner upon closing it.
+### Step 3: Wire the Camera Scan Entry Point
+
+Add a `startScanning` function that disables both entry-point buttons during the scan, calls `mrzScanner.launch()` to open the live-camera UI, and hands the result off to a `displayResults` function (defined in step 5):
+
+```js
+async function startScanning() {
+  const startBtn = document.getElementById("startScan");
+  const uploadBtn = document.getElementById("uploadFile");
+  const homeError = document.getElementById("home-error");
+
+  startBtn.disabled = true;
+  uploadBtn.disabled = true;
+  homeError.textContent = "";
+
+  try {
+    const result = await mrzScanner.launch();
+    displayResults(result);
+  } catch (error) {
+    homeError.textContent = `Scanning error: ${error.message}`;
+  } finally {
+    startBtn.disabled = false;
+    uploadBtn.disabled = false;
+  }
+}
+
+document.getElementById("startScan").addEventListener("click", startScanning);
+```
+
+`launch()` opens the **MRZScannerView** — a full-screen container with a live camera feed, a guide frame, format selector, and toolbar buttons. When an MRZ is recognized, the promise resolves with an [**`MRZResult`**]({{ site.api }}mrz-scanner.html#mrzresult). When the user closes the scanner without scanning, the promise still resolves but with `result.data` undefined, which the `displayResults` function handles in step 5.
+
+### Step 4: Wire the File-Upload Entry Point
+
+`launch()` accepts an optional `Blob`, `File`, image URL, or HTML media element. When called with one of these, the scanner skips the camera and processes the supplied image directly. Wire up the upload button to a hidden `<input type="file">`, await the user's selection, and pass the resulting `File` to `launch()`:
+
+```js
+async function startFileUpload() {
+  const startBtn = document.getElementById("startScan");
+  const uploadBtn = document.getElementById("uploadFile");
+  const homeError = document.getElementById("home-error");
+
+  // Prompt the user to pick a file before doing any work
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  const file = await new Promise((resolve) => {
+    input.onchange = (e) => resolve(e.target.files?.[0] ?? null);
+    input.addEventListener("cancel", () => resolve(null));
+    input.click();
+  });
+
+  if (!file) return;
+
+  startBtn.disabled = true;
+  uploadBtn.disabled = true;
+  homeError.textContent = "";
+
+  try {
+    const result = await mrzScanner.launch(file);
+    displayResults(result);
+  } catch (error) {
+    homeError.textContent = `File scan error: ${error.message}`;
+  } finally {
+    startBtn.disabled = false;
+    uploadBtn.disabled = false;
+  }
+}
+
+document.getElementById("uploadFile").addEventListener("click", startFileUpload);
+```
+
+> [!TIP]
+> To accept additional file types like PDF, set `input.accept` accordingly and convert the file to an image `Blob` before passing it to `launch()`. See [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) for a complete PDF flow.
+
+### Step 5: Render the Result
+
+The `displayResults` function takes the `MRZResult` returned by `launch()` and populates the result view. It handles three concerns:
+
+1. **Parsed data** — fields read from `result.data`.
+2. **Images** — read from `result.getDocumentImage(side)`, `result.getOriginalImage(side)`, and `result.getPortraitImage()`. Each returns a `DSImageData` whose `toCanvas()` method produces an `HTMLCanvasElement` ready to append to the DOM. Each method also returns `null` when the matching `return*` config flag was disabled or when the side wasn't captured (see [Multi-Side Scanning](#multi-side-scanning) below for when `EnumDocumentSide.Opposite` is populated).
+3. **View-state toggles** — hiding the home section and showing the result section.
+
+Add the following helpers and the main `displayResults` function:
+
+```js
+// ─── Helpers ─────────────────────────────────────────────────────────────
+
+function formatDate(dateObj) {
+  if (!dateObj || !dateObj.year) return "—";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${dateObj.year}-${pad(dateObj.month)}-${pad(dateObj.day)}`;
+}
+
+function escapeHTML(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function dataRow(label, value) {
+  return `<div class="data-row">
+    <span class="data-row-label">${escapeHTML(label)}</span>
+    <span class="data-row-value">${escapeHTML(value || "—")}</span>
+  </div>`;
+}
+
+function appendImageCard(container, imageData) {
+  if (!imageData?.toCanvas) return;
+  const card = document.createElement("div");
+  card.className = "tab-image-card";
+  card.appendChild(imageData.toCanvas());
+  container.appendChild(card);
+}
+
+function showHome() {
+  document.body.dataset.view = "landing";
+  document.getElementById("home-section").style.display = "";
+  document.getElementById("result-section").style.display = "none";
+}
+
+function showResult() {
+  document.body.dataset.view = "result";
+  document.getElementById("home-section").style.display = "none";
+  document.getElementById("result-section").style.display = "";
+}
+
+// ─── Main result-rendering function ──────────────────────────────────────
+
+function displayResults(result) {
+  // Cancelled scans and scans with no detected MRZ resolve with no `data`
+  if (!result?.data) {
+    document.getElementById("home-error").textContent =
+      "No MRZ data detected. Please try again.";
+    return;
+  }
+
+  const d = result.data;
+
+  // --- Summary ---
+  const name = [d.firstName, d.lastName].filter(Boolean).join(" ");
+  document.getElementById("res-name").textContent = name || "—";
+
+  const genderAge = [d.sex, d.age != null ? `${d.age} years old` : ""].filter(Boolean).join(", ");
+  document.getElementById("res-gender-age").textContent = genderAge;
+
+  const expiryStr = formatDate(d.dateOfExpiry);
+  document.getElementById("res-expiry").textContent =
+    expiryStr !== "—" ? `Expiry: ${expiryStr}` : "";
+
+  // --- Portrait ---
+  const portraitContainer = document.getElementById("portrait-container");
+  portraitContainer.innerHTML = "";
+  const portraitImage = result.getPortraitImage();
+  if (portraitImage?.toCanvas) {
+    portraitContainer.appendChild(portraitImage.toCanvas());
+  }
+
+  // --- Processed images: deskewed document crops via getDocumentImage() ---
+  const processedPanel = document.getElementById("processed-images");
+  processedPanel.innerHTML = "";
+  appendImageCard(processedPanel, result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ));
+  appendImageCard(processedPanel, result.getDocumentImage(Dynamsoft.EnumDocumentSide.Opposite));
+  if (processedPanel.children.length === 0) {
+    processedPanel.innerHTML = `<p class="tab-empty-msg">No document images available</p>`;
+  }
+
+  // --- Original images: raw captured frames via getOriginalImage() ---
+  const originalPanel = document.getElementById("original-images");
+  originalPanel.innerHTML = "";
+  appendImageCard(originalPanel, result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ));
+  appendImageCard(originalPanel, result.getOriginalImage(Dynamsoft.EnumDocumentSide.Opposite));
+  if (originalPanel.children.length === 0) {
+    originalPanel.innerHTML = `<p class="tab-empty-msg">No original images available</p>`;
+  }
+
+  // --- Parsed data ---
+  document.getElementById("personal-info-rows").innerHTML =
+    dataRow("Given Name", d.firstName) +
+    dataRow("Surname", d.lastName) +
+    dataRow("Date of Birth", formatDate(d.dateOfBirth)) +
+    dataRow("Gender", d.sex) +
+    dataRow("Nationality", d.nationality);
+
+  document.getElementById("document-info-rows").innerHTML =
+    dataRow("Doc. Type", d.documentType) +
+    dataRow("Doc. Number", d.documentNumber) +
+    dataRow("Issuing State", d.issuingState) +
+    dataRow("Expiry Date", formatDate(d.dateOfExpiry));
+
+  document.getElementById("mrz-raw-text").textContent = d.mrzText || "";
+
+  // Reveal the result view
+  showResult();
+}
+```
+
+Key APIs in use:
+
+- **`result.data`** — the parsed MRZ payload: `firstName`, `lastName`, `sex`, `age`, `nationality`, `documentType`, `documentNumber`, `issuingState`, `dateOfBirth`, `dateOfExpiry`, `mrzText`, and `optionalData1` / `optionalData2` when present. Dates are returned as `{ year, month, day }` objects.
+- **`result.getDocumentImage(side)`** — deskewed crop of the document for the given side. `Dynamsoft.EnumDocumentSide.MRZ` is the side carrying the MRZ; `EnumDocumentSide.Opposite` is the opposite side, populated only when multi-side scanning runs (see [Multi-Side Scanning](#multi-side-scanning)).
+- **`result.getOriginalImage(side)`** — the full unmodified frame for the given side. Only populated when `returnOriginalImage: true`.
+- **`result.getPortraitImage()`** — the portrait crop, regardless of which side it was found on.
+- **`DSImageData.toCanvas()`** — converts the image into an `HTMLCanvasElement` ready to append to the DOM. `toBlob()` is also available if you'd rather upload or store the image.
+
+### Step 6: Wire Re-Scan and Return Home
+
+After a result is rendered, the user can re-launch the scanner with the same configuration or return to the home screen. Add the wiring:
+
+```js
+async function rescan() {
+  const homeError = document.getElementById("home-error");
+  homeError.textContent = "";
+
+  try {
+    // launch() can be called repeatedly on the same instance — the SDK
+    // automatically disposes and re-initializes between calls.
+    const result = await mrzScanner.launch();
+    displayResults(result);
+  } catch (error) {
+    showHome();
+    homeError.textContent = `Scanning error: ${error.message}`;
+  }
+}
+
+function returnHome() {
+  showHome();
+}
+
+document.querySelector(".btn-rescan").addEventListener("click", rescan);
+document.querySelector(".btn-home").addEventListener("click", returnHome);
+```
+
+> [!NOTE]
+> If you need to **change the configuration** (different `mrzFormatType`, different `return*Image` flags, different `scannerViewConfig`) between scans, replace the instance instead of reusing it: `mrzScanner = new Dynamsoft.MRZScanner({ ...newConfig })` and then call `launch()`. Configuration is fixed at construction time. See [Lifecycle and Disposal](#lifecycle-and-disposal) for the full set of patterns.
+
+### Putting It All Together
+
+The full `index.html` after all six steps is shown below. Drop in your license key, serve the file (see [Local HTTPS via Vite](#local-https-via-vite) for a one-command dev server), and you have a working MRZ Scanner integration with camera and file-upload entry points, a result view, and a re-scan flow — all in one file.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamsoft MRZ Scanner</title>
+    <script src="node_modules/dynamsoft-mrz-scanner/dist/mrz-scanner.bundle.js"></script>
+    <style>
+      /* Minimal home-section styling so the entry-point buttons remain
+         visible whether or not the demo's stylesheets are linked. */
+      #home-section { padding: 24px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+      #home-section button { padding: 12px 16px; color: #fff; background: #333; }
+    </style>
+  </head>
+
+  <body data-view="landing">
+    <!-- Home: start screen with the two scan entry points -->
+    <div id="home-section">
+      <h1>MRZ Scanner</h1>
+      <button id="startScan">Start Camera Scan</button>
+      <button id="uploadFile">Scan from File</button>
+      <div id="home-error"></div>
+    </div>
+
+    <!-- Result: rendered after a successful scan -->
+    <div id="result-section" style="display: none">
+      <div class="result-header">
+        <h2>Result</h2>
+      </div>
+
+      <!-- Left panel: summary + image groups -->
+      <div class="result-left">
+        <div class="summary-card">
+          <div class="summary-info">
+            <div class="person-name" id="res-name"></div>
+            <div class="person-details" id="res-gender-age"></div>
+            <div class="person-details" id="res-expiry"></div>
+          </div>
+          <div class="portrait-box" id="portrait-container"></div>
+        </div>
+
+        <div class="data-section">
+          <div class="data-section-title">Processed images</div>
+          <div id="processed-images"></div>
+        </div>
+
+        <div class="data-section">
+          <div class="data-section-title">Original images</div>
+          <div id="original-images"></div>
+        </div>
+      </div>
+
+      <!-- Right panel: MRZ data fields + raw text -->
+      <div class="result-right">
+        <div class="data-section">
+          <div class="data-section-title">Personal Info</div>
+          <div id="personal-info-rows"></div>
+        </div>
+        <div class="data-section">
+          <div class="data-section-title">Document Info</div>
+          <div id="document-info-rows"></div>
+        </div>
+        <div class="mrz-text-section">
+          <div class="data-section-title">Raw MRZ Text</div>
+          <div class="mrz-raw-text" id="mrz-raw-text"></div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button type="button" class="btn-rescan">Re-scan</button>
+        <button type="button" class="btn-home">Return home</button>
+      </div>
+    </div>
+
+    <script type="module">
+      // ─── Initialize the scanner ──────────────────────────────────────────
+      let mrzScanner;
+
+      try {
+        mrzScanner = new Dynamsoft.MRZScanner({
+          license: "YOUR_LICENSE_KEY_HERE",
+          engineResourcePaths: {
+            dcvBundle: "node_modules/dynamsoft-capture-vision-bundle/dist/",
+            dcvData: "node_modules/dynamsoft-capture-vision-data/",
+          },
+          returnOriginalImage: true,
+          returnDocumentImage: true,
+          returnPortraitImage: true,
+        });
+      } catch (error) {
+        document.getElementById("home-error").textContent =
+          `Failed to initialize scanner: ${error.message}`;
+        document.getElementById("startScan").disabled = true;
+        document.getElementById("uploadFile").disabled = true;
+      }
+
+      // ─── Helpers ─────────────────────────────────────────────────────────
+
+      function formatDate(dateObj) {
+        if (!dateObj || !dateObj.year) return "—";
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${dateObj.year}-${pad(dateObj.month)}-${pad(dateObj.day)}`;
+      }
+
+      function escapeHTML(str) {
+        return String(str ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function dataRow(label, value) {
+        return `<div class="data-row">
+          <span class="data-row-label">${escapeHTML(label)}</span>
+          <span class="data-row-value">${escapeHTML(value || "—")}</span>
+        </div>`;
+      }
+
+      function appendImageCard(container, imageData) {
+        if (!imageData?.toCanvas) return;
+        const card = document.createElement("div");
+        card.className = "tab-image-card";
+        card.appendChild(imageData.toCanvas());
+        container.appendChild(card);
+      }
+
+      function showHome() {
+        document.body.dataset.view = "landing";
+        document.getElementById("home-section").style.display = "";
+        document.getElementById("result-section").style.display = "none";
+      }
+
+      function showResult() {
+        document.body.dataset.view = "result";
+        document.getElementById("home-section").style.display = "none";
+        document.getElementById("result-section").style.display = "";
+      }
+
+      // ─── Entry points ────────────────────────────────────────────────────
+
+      async function startScanning() {
+        const startBtn = document.getElementById("startScan");
+        const uploadBtn = document.getElementById("uploadFile");
+        const homeError = document.getElementById("home-error");
+
+        startBtn.disabled = true;
+        uploadBtn.disabled = true;
+        homeError.textContent = "";
+
+        try {
+          const result = await mrzScanner.launch();
+          displayResults(result);
+        } catch (error) {
+          homeError.textContent = `Scanning error: ${error.message}`;
+        } finally {
+          startBtn.disabled = false;
+          uploadBtn.disabled = false;
+        }
+      }
+
+      async function startFileUpload() {
+        const startBtn = document.getElementById("startScan");
+        const uploadBtn = document.getElementById("uploadFile");
+        const homeError = document.getElementById("home-error");
+
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        const file = await new Promise((resolve) => {
+          input.onchange = (e) => resolve(e.target.files?.[0] ?? null);
+          input.addEventListener("cancel", () => resolve(null));
+          input.click();
+        });
+
+        if (!file) return;
+
+        startBtn.disabled = true;
+        uploadBtn.disabled = true;
+        homeError.textContent = "";
+
+        try {
+          const result = await mrzScanner.launch(file);
+          displayResults(result);
+        } catch (error) {
+          homeError.textContent = `File scan error: ${error.message}`;
+        } finally {
+          startBtn.disabled = false;
+          uploadBtn.disabled = false;
+        }
+      }
+
+      // ─── Result rendering ────────────────────────────────────────────────
+
+      function displayResults(result) {
+        if (!result?.data) {
+          document.getElementById("home-error").textContent =
+            "No MRZ data detected. Please try again.";
+          return;
+        }
+
+        const d = result.data;
+
+        // Summary
+        const name = [d.firstName, d.lastName].filter(Boolean).join(" ");
+        document.getElementById("res-name").textContent = name || "—";
+
+        const genderAge = [d.sex, d.age != null ? `${d.age} years old` : ""].filter(Boolean).join(", ");
+        document.getElementById("res-gender-age").textContent = genderAge;
+
+        const expiryStr = formatDate(d.dateOfExpiry);
+        document.getElementById("res-expiry").textContent =
+          expiryStr !== "—" ? `Expiry: ${expiryStr}` : "";
+
+        // Portrait
+        const portraitContainer = document.getElementById("portrait-container");
+        portraitContainer.innerHTML = "";
+        const portraitImage = result.getPortraitImage();
+        if (portraitImage?.toCanvas) {
+          portraitContainer.appendChild(portraitImage.toCanvas());
+        }
+
+        // Processed images
+        const processedPanel = document.getElementById("processed-images");
+        processedPanel.innerHTML = "";
+        appendImageCard(processedPanel, result.getDocumentImage(Dynamsoft.EnumDocumentSide.MRZ));
+        appendImageCard(processedPanel, result.getDocumentImage(Dynamsoft.EnumDocumentSide.Opposite));
+        if (processedPanel.children.length === 0) {
+          processedPanel.innerHTML = `<p class="tab-empty-msg">No document images available</p>`;
+        }
+
+        // Original images
+        const originalPanel = document.getElementById("original-images");
+        originalPanel.innerHTML = "";
+        appendImageCard(originalPanel, result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ));
+        appendImageCard(originalPanel, result.getOriginalImage(Dynamsoft.EnumDocumentSide.Opposite));
+        if (originalPanel.children.length === 0) {
+          originalPanel.innerHTML = `<p class="tab-empty-msg">No original images available</p>`;
+        }
+
+        // Parsed data
+        document.getElementById("personal-info-rows").innerHTML =
+          dataRow("Given Name", d.firstName) +
+          dataRow("Surname", d.lastName) +
+          dataRow("Date of Birth", formatDate(d.dateOfBirth)) +
+          dataRow("Gender", d.sex) +
+          dataRow("Nationality", d.nationality);
+
+        document.getElementById("document-info-rows").innerHTML =
+          dataRow("Doc. Type", d.documentType) +
+          dataRow("Doc. Number", d.documentNumber) +
+          dataRow("Issuing State", d.issuingState) +
+          dataRow("Expiry Date", formatDate(d.dateOfExpiry));
+
+        document.getElementById("mrz-raw-text").textContent = d.mrzText || "";
+
+        showResult();
+      }
+
+      // ─── Re-scan and return-home ─────────────────────────────────────────
+
+      async function rescan() {
+        const homeError = document.getElementById("home-error");
+        homeError.textContent = "";
+
+        try {
+          const result = await mrzScanner.launch();
+          displayResults(result);
+        } catch (error) {
+          showHome();
+          homeError.textContent = `Scanning error: ${error.message}`;
+        }
+      }
+
+      function returnHome() {
+        showHome();
+      }
+
+      // ─── Wire event listeners ────────────────────────────────────────────
+
+      document.getElementById("startScan").addEventListener("click", startScanning);
+      document.getElementById("uploadFile").addEventListener("click", startFileUpload);
+      document.querySelector(".btn-rescan").addEventListener("click", rescan);
+      document.querySelector(".btn-home").addEventListener("click", returnHome);
+    </script>
+  </body>
+</html>
+```
+
+### Reference: The Dynamsoft MRZ Scanner Demo
+
+The walkthrough above gives you a working API integration with no styling applied. To skin it with the official Dynamsoft demo's dark, mobile-and-desktop-responsive result view, copy [`samples/demo/css/index.css`](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/demo/css/index.css) and [`samples/demo/css/result.css`](https://github.com/Dynamsoft/mrz-scanner-javascript/blob/main/samples/demo/css/result.css) into a `css/` folder in your project, and add two `<link>` tags to your `<head>`:
+
+```html
+<link rel="stylesheet" href="css/index.css" />
+<link rel="stylesheet" href="css/result.css" />
+```
+
+That's the full styling integration — the walkthrough's markup and JS already use the class names those two stylesheets expect, so no further code changes are required.
+
+For everything else the demo includes — a branded mobile landing page with a photo banner, a desktop-to-mobile QR-code handoff, an info-menu dropdown, and the responsive layouts that wrap them — see the full demo source at [`samples/demo/`](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/demo) in the [`Dynamsoft/mrz-scanner-javascript`](https://github.com/Dynamsoft/mrz-scanner-javascript) repository.
+
+The demo is one example of how to wrap the scanner rather than a prescription. The MRZ Scanner API hands you a parsed `MRZData` object and one or more `DSImageData` objects per scan — how you frame and chrome the rest of the app is entirely up to your design system.
+
+## Multi-Side Scanning
+
+Multi-side scanning is what produces a populated `EnumDocumentSide.Opposite` image on the result. It is **on by default** because `returnPortraitImage` defaults to `true`; setting `returnPortraitImage: false` disables it and `getDocumentImage(Opposite)` / `getOriginalImage(Opposite)` will always return `null`.
+
+The flow when multi-side scanning is enabled:
+
+1. The user scans the **MRZ side**. This populates the primary images returned by `getOriginalImage(MRZ)` and `getDocumentImage(MRZ)`.
+2. The scanner inspects the same side for a portrait. If it finds one (e.g. a passport, where the MRZ and the portrait are on the same photo page), the portrait crop fills `getPortraitImage()` and the scan ends. **`EnumDocumentSide.Opposite` stays `null`.**
+3. If no portrait is found on the MRZ side (typical for TD1 / TD2 ID cards, where the portrait sits on the side opposite the MRZ), the UI prompts the user to flip the document after `flipDocumentTimeout` milliseconds (default `3000`), captures the other side, and populates `getOriginalImage(Opposite)` and `getDocumentImage(Opposite)` along with the portrait crop.
+
+The API uses **`MRZ`** and **`Opposite`** rather than front/back because document layouts vary by country — there's no guarantee the MRZ is on the physical back or that the portrait is on the physical front. The scanner always captures the **MRZ side first** and labels it `MRZ`; whichever side the user flips to is labeled `Opposite`.
+
+In practice:
+
+| Document type | `getDocumentImage(MRZ)` | `getDocumentImage(Opposite)` | `getPortraitImage()` |
+| --- | --- | --- | --- |
+| Passports (TD3) | populated | `null` | populated (from the same side) |
+| ID cards (TD1 / TD2) | populated | populated | populated (from the `Opposite` side) |
+| Any document, with `returnPortraitImage: false` | populated | `null` | `null` |
+
+The same matrix applies to `getOriginalImage(side)` when `returnOriginalImage: true`.
+
+To customize the flip-document countdown duration, set `scannerViewConfig.flipDocumentTimeout` on the `MRZScannerConfig`. See the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html) for the full list of multi-side-scanning options.
+
+## Lifecycle and Disposal
+
+`MRZScanner` instances are stateful — they hold references to the camera, the WebAssembly engine, and DOM containers. The SDK manages most of this for you, but it's worth understanding the lifecycle when designing the re-scan flow or when integrating into a single-page application that mounts and unmounts the scanner.
+
+The key behaviors:
+
+- **`launch()` always disposes when it resolves.** On success, failure, or cancellation, `launch()` runs `dispose()` in its `finally` block. Camera handles, the CV router, and DOM containers are torn down, and the instance is marked uninitialized.
+- **`launch()` is re-entrant.** Calling `launch()` again on the same instance re-initializes from scratch. You don't need to manually dispose between calls.
+- **`dispose()` is idempotent.** Calling it twice is harmless; subsequent calls are no-ops.
+- **Configuration is fixed at construction time.** To change `license`, `mrzFormatType`, the `return*Image` flags, `engineResourcePaths`, or `scannerViewConfig`, you must construct a new `MRZScanner` instance.
+
+These behaviors collapse into three patterns:
+
+| Scenario | Right pattern |
+| --- | --- |
+| Re-scan with the **same configuration** | Call `mrzScanner.launch()` again on the existing instance — no manual `dispose()`, no new instance. |
+| Re-scan with a **different configuration** | Replace the instance: `mrzScanner = new Dynamsoft.MRZScanner({ ...newConfig })` and then `await mrzScanner.launch()`. The previous instance auto-disposed when its `launch()` resolved. |
+| Tear down without launching again (SPA component unmount, navigating to a different view permanently) | Call `mrzScanner.dispose()` explicitly. Without this, no automatic cleanup runs. |
+
+> [!NOTE]
+> Calling `mrzScanner.dispose()` defensively before re-creating the instance is redundant — the previous instance was already disposed by its own `launch()` finally block — but it does no harm. The simpler pattern shown in the table above is canonical.
+
+## Understanding the MRZScannerView
+
+When `launch()` is called without an image source, the MRZ Scanner opens the **MRZScannerView** in a full-screen container. The view is configured via [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig), which is nested under the `scannerViewConfig` field of `MRZScannerConfig`.
+
+The view consists of these UI elements:
+
+**Core Scanning Interface:**
+
+1. **Camera View** — the camera viewfinder UI component that occupies the majority of the space, giving the user a clear view and precise control of the image being scanned.
+
+2. **Scan Guide Frame** — an overlay that guides the user to position the MRZ document correctly for fast and accurate scanning. Enabled **by default**, and can be hidden via `MRZScannerViewConfig.showScanGuide`. When enabled, the scanner crops the region outside the guide frame.
+
+    <div align="center">
+       <img src="../assets/imgs/mrz-scan-guide-new.png" alt="Scan Guide Frames" width="60%" />
+    </div><br />
+
+3. **Format Selector** — allows the user to choose which MRZ formats to recognize. Available formats are configured via `MRZScannerConfig.mrzFormatType`, while visibility is controlled via `MRZScannerViewConfig.showFormatSelector`. To learn about MRZ formats, see the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats) page.
+
+    <div align="center">
+       <img src="../assets/imgs/format-selector-new.jpg" alt="Format Selector" width="60%" />
+    </div><br />
+
+**Camera Controls:**
+
+4. **Resolution / Camera Select Dropdown** — switch between available cameras or select different resolutions for the active camera.
+
+5. **Flash Button** — toggles the camera flash when available. Only appears if the device and browser support camera flash.
+
+**Additional Options:**
+
+6. **Load Image Button** — scan an MRZ from an image file stored on the device. (Distinct from the application-level file-upload entry point in step 4 — this button is part of the scanner UI and works inside an active camera session.)
+
+7. **Sound Button** — toggle audio feedback (beep) when an MRZ is recognized.
+
+8. **Close Scanner Button** — closes the MRZ Scanner. The `launch()` promise resolves with no `data`, and your `displayResults` function should treat that as a cancellation.
+
+> [!NOTE]
+> To learn more about customizing the MRZScannerView and its UI elements — toolbar buttons, theme, on-screen messages, format selector labels, the multi-side scanning timeout, and more — see the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html).
+
+## Local HTTPS via Vite
+
+The MRZ Scanner needs a secure context (HTTPS) for camera access and license validation. For development — especially when testing on a phone over the LAN — Vite combined with the [`@vitejs/plugin-basic-ssl`](https://www.npmjs.com/package/@vitejs/plugin-basic-ssl) plugin produces a self-signed certificate on the fly with no server setup.
+
+Install Vite and the plugin in your project:
+
+```bash
+npm i -D vite @vitejs/plugin-basic-ssl
+```
+
+Create a `vite.config.ts` (or `vite.config.js`) at your project root:
+
+```ts
+import { defineConfig } from "vite";
+import basicSsl from "@vitejs/plugin-basic-ssl";
+
+export default defineConfig({
+  plugins: [basicSsl()],
+  server: {
+    host: "0.0.0.0",
+    headers: {
+      // Enable SharedArrayBuffer so DCV can use the multi-threaded (pthread)
+      // WASM variant for better performance.
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
+});
+```
+
+Then run:
+
+```bash
+npx vite
+```
+
+Vite prints a `https://localhost:<port>` URL plus the LAN-accessible URL bound by `host: "0.0.0.0"`. Open the page, accept the self-signed certificate warning, and grant camera permission. The MRZ Scanner UI launches over HTTPS.
+
+> [!NOTE]
+> The COOP and COEP headers are not strictly required, but they enable `SharedArrayBuffer`, which lets the DCV engine load the multi-threaded WebAssembly variant for noticeably faster MRZ recognition. If your application embeds third-party content that doesn't set the matching `Cross-Origin-Resource-Policy` header, omit the COOP/COEP block.
+
+> [!WARNING]
+> Self-signed certificates trigger a "Your connection is not private" warning on first visit. Click **Advanced** → **Proceed to localhost (unsafe)** to continue. Browsers do not persist this exception across full reinstalls or profile resets.
+
+When you're ready to ship the application to a real server, see [Deployment](#deployment) below for the production hosting requirements.
+
+## Deployment
+
+When you're ready to ship your application to a production server, the MRZ Scanner is a static web SDK — any server capable of serving HTML, JavaScript, WebAssembly, and JSON files works. The requirements below apply to that production server; for local development over HTTPS, see [Local HTTPS via Vite](#local-https-via-vite) above.
+
+### Secure Context (HTTPS)
+
+Serve your application over HTTPS in production. This is required because:
+
+- **Camera Access** — browsers only grant access to the camera video stream in a secure context.
+- **License Validation** — the Dynamsoft License requires a secure context to function.
+
+> [!NOTE]
+> For development, some browsers (like Chrome) allow camera access on `http://127.0.0.1`, `http://localhost`, or `file:///` URLs as a developer convenience.
+
+### MIME Type for `.wasm` Files
+
+Configure your server to send the correct `Content-Type: application/wasm` header for WebAssembly files. Configuration varies by server:
+
+- [Apache](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Apache_Configuration_htaccess#media_types_and_character_encodings)
+- [IIS](https://docs.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap)
+- [NGINX](https://www.nginx.com/resources/wiki/start/topics/examples/full/#mime-types)
+
+### Resource Hosting
+
+After installing the SDK via npm, copy the contents of `node_modules/dynamsoft-mrz-scanner/dist/`, `node_modules/dynamsoft-capture-vision-bundle/dist/`, and `node_modules/dynamsoft-capture-vision-data/` into your deployment artifact, and update `engineResourcePaths` in your `MRZScannerConfig` to match the URLs your server serves them from.
 
 ## Next Steps
 
-Now that you got the most basic functionality of the MRZ Scanner up and running, it's time to explore the many ways in which the MRZ Scanner can be used, including customization and the ability to read directly from static images and PDFs. To learn more about those two topics, please visit the following articles
-
-- [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization.html)
-- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) 
+- [Customizing the MRZ Scanner]({{ site.guides }}mrz-scanner-customization.html) — tailor the scanner UI, toolbar buttons, theme, on-screen messages, and multi-side scanning behavior.
+- [Setting up the MRZ Scanner for Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) — process image and PDF files as input instead of (or in addition to) the live camera feed.
+- For framework-specific implementations (React, Angular, Vue), see the [framework samples]({{ site.codegallery }}index.html#frameworks).

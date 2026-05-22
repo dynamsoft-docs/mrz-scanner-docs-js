@@ -10,40 +10,60 @@ description: MRZ Scanner JavaScript Edition Documentation API Reference Index
 
 # API Reference Index
 
-The MRZ Scanner library comes with a number of classes and interfaces which we will dive into in the API documentation. There are three main classes: **MRZScanner**, **MRZScannerView**, **MRZResultView**, and **MRZResult**. In terms of interfaces, the main ones are: **MRZScannerConfig**, **MRZScannerViewConfig**, and **MRZResultViewConfig**.
+The MRZ Scanner JavaScript Edition exposes one main class — **MRZScanner** — together with a focused set of configuration and result interfaces. The single entry point [**`MRZScanner`**](mrz-scanner.md#mrzscanner) drives the entire scanning workflow; its configuration is layered through [**`MRZScannerConfig`**](mrz-scanner.md#mrzscannerconfig) and the nested [**`MRZScannerViewConfig`**](mrz-scanner.md#mrzscannerviewconfig). Scan results are returned as [**`MRZResult`**](mrz-scanner.md#mrzresult) objects carrying parsed [**`MRZData`**](mrz-scanner.md#mrzdata) and any opted-in [**`MRZImage`**](mrz-scanner.md#mrzimage) crops.
 
-Please read through the [**full API reference**](mrz-scanner.md), but you can find a summarized list of the classes, interfaces, and enums below.
+Read through the [**full API reference**](mrz-scanner.md), or use the summarized lists below to jump directly to a specific class, interface, or enum.
 
 ## Classes
 
-1. [MRZScanner](mrz-scanner.md#mrzscanner) - The main class of the MRZ Scanner, which is used to create and configure the MRZ Scanner instance.
+1. [MRZScanner](mrz-scanner.md#mrzscanner) - The main class of the MRZ Scanner. Constructed with an [`MRZScannerConfig`](mrz-scanner.md#mrzscannerconfig) and used to launch the scanning workflow via [`launch()`](mrz-scanner.md#launch).
 
-2. MRZScannerView - Represents the main view of the MRZ Scanner where the scanning operation occurs.
+2. [MRZScannerView](mrz-scanner.md#mrzscannerview) - The live-camera scanner UI. Exported by the SDK but constructed and managed internally by `MRZScanner`; application code does not instantiate it directly.
 
-3. MRZResultView - Displays the parsed MRZ result in human readable fields, along with a cropped image of the MRZ document.
+## Configuration Interfaces
 
-## Interfaces
+1. [MRZScannerConfig](mrz-scanner.md#mrzscannerconfig) - The top-level configuration interface for the `MRZScanner`. Configures the license, supported MRTD formats, the set of returned images, and the nested `MRZScannerView` configuration.
 
-1. [MRZScannerConfig](mrz-scanner.md#mrzscannerconfig) - The main configuration class of the MRZScanner. It is used to assign the supported MRTD formats of your application as well as the configurations of the **MRZScannerView** and the **MRZResultView**.
+2. [MRZScannerViewConfig](mrz-scanner.md#mrzscannerviewconfig) - Configures the live-camera `MRZScannerView` UI: visible elements, the multi-side flip timeout, the load-image flow, and the four UI customization sub-configs listed below.
 
-2. [MRZScannerViewConfig](mrz-scanner.md#mrzscannerviewconfig) - Configures the different UI elements of the **MRZScannerView**.
+3. [ToolbarButtonsConfig](mrz-scanner.md#toolbarbuttonsconfig) - Per-button overrides for the seven `MRZScannerView` toolbar buttons.
 
-3. [MRZResultViewConfig](mrz-scanner.md#mrzresultviewconfig) - Configures the different UI elements of the **MRZResultView**.
+4. [ToolbarButton](mrz-scanner.md#toolbarbutton) - The full shape of a single toolbar button.
 
-4. [MRZResultViewToolbarButtonsConfig](mrz-scanner.md#mrzresultviewtoolbarbuttonsconfig) - Configures the toolbar buttons of the **MRZResultView**.
+5. [ToolbarButtonConfig](mrz-scanner.md#toolbarbuttonconfig) - The override shape applied to a single toolbar button.
 
-5. [MRZResult](mrz-scanner.md#mrzresult) - Represents a typical MRZ result along with all of the parsed fields that come with it.
+6. [FormatSelectorConfig](mrz-scanner.md#formatselectorconfig) - Override labels for the four format selector buttons.
 
-6. [MRZData](mrz-scanner.md#mrzdata) - Represents the parsed MRZ data that is part of the `MRZResult`.
+7. [MessagesConfig](mrz-scanner.md#messagesconfig) - Override every on-screen message displayed in the scanner view.
 
-7. [MRZDate](mrz-scanner.md#mrzdate) - Represents a date in the MRZ fields - which is usually used for date of birth and the date of expiry.
+8. [ThemeConfig](mrz-scanner.md#themeconfig) - Override the scanner overlay's CSS color, typography, and spacing tokens.
+
+## Result Interfaces
+
+1. [MRZResult](mrz-scanner.md#mrzresult) - The full result returned by `launch()`. Carries the status, the parsed `MRZData`, and three getter methods exposing the captured images.
+
+2. [MRZImage](mrz-scanner.md#mrzimage) - The image type returned by the `MRZResult` image getters. Extends `DSImageData` with `toCanvas()` and `toBlob()` helpers.
+
+3. [MRZData](mrz-scanner.md#mrzdata) - The parsed MRZ fields (names, document number, dates, nationality, etc.).
+
+4. [MRZDate](mrz-scanner.md#mrzdate) - The shape of date fields on `MRZData`.
+
+5. [ResultStatus](mrz-scanner.md#resultstatus) - A standalone helper type pairing an `EnumResultStatus` code with an optional message.
 
 ## Enumerations
 
-All of the enumerations can be found [**here**](enums-mrz-scanner.md). Here is a summarized list of the available enumerations.
+All enumerations live in [**`enums-mrz-scanner.md`**](enums-mrz-scanner.md). Summarized list:
 
-1. [EnumMRZDocumentType](enums-mrz-scanner.md#enummrzdocumenttype) - An enumeration to represent the different types of MRTD formats that the MRZScanner supports.
+1. [EnumMRZDocumentType](enums-mrz-scanner.md#enummrzdocumenttype) - The MRTD formats the scanner can be restricted to.
 
-2. [EnumResultStatus](enums-mrz-scanner.md#enumresultstatus) - An enumeration to represent the status of a MRZ result.
+2. [EnumDocumentSide](enums-mrz-scanner.md#enumdocumentside) - Identifies the MRZ-bearing side and the opposite side of a document when retrieving images.
 
-3. [EnumMRZData](enums-mrz-scanner.md) - An enumeration to represent the different fields of the `MRZData` interface.
+3. [EnumResultStatus](enums-mrz-scanner.md#enumresultstatus) - The status code carried by `MRZResult.status`.
+
+4. [EnumMRZData](enums-mrz-scanner.md#enummrzdata) - The set of field keys on the parsed `MRZData` object.
+
+## Helpers
+
+1. [displayMRZDate](mrz-scanner.md#displaymrzdate) - Formats an `MRZDate` as a `YYYY-MM-DD` string.
+
+2. [MRZDataLabel](mrz-scanner.md#mrzdatalabel) - A map of `EnumMRZData` keys to human-readable labels.
