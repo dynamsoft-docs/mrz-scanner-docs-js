@@ -206,10 +206,12 @@ const mrzConfig = {
     returnDocumentImage: true,
     returnPortraitImage: true,
 
-    // engineResourcePaths is required when installing via npm — point at the DCV peers
+    // engineResourcePaths is required when installing via npm. The paths below
+    // assume the DCV folders have been copied into public/ and are served at root.
+    // (see the User Guide for the staging setup).
     engineResourcePaths: {
-        dcvBundle: "node_modules/dynamsoft-capture-vision-bundle/dist/",
-        dcvData: "node_modules/dynamsoft-capture-vision-data/",
+        dcvBundle: "/dynamsoft-capture-vision-bundle/dist/",
+        dcvData: "/dynamsoft-capture-vision-data/",
     },
     scannerViewConfig: {
         // the MRZScannerViewConfig goes in here - see MRZScannerViewConfig section
