@@ -12,6 +12,42 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 4.0.0 (05/22/2026)
+
+A major release with a redesigned scanner UI, a new image-extraction pipeline, multi-side scanning, first-class visa support, and a leaner API surface that drops the bundled result view in favor of consumer-rendered results.
+
+### Highlighted Features
+
+- **Image extraction in scan results.** Opt in via `returnOriginalImage` / `returnDocumentImage` / `returnPortraitImage` on `MRZScannerConfig`, then read the deskewed crop, the full original frame, and the portrait crop via `MRZResult.getDocumentImage(side)`, `getOriginalImage(side)`, and `getPortraitImage()`. Each returns a `DSImageData` with `toCanvas()` / `toBlob()` helpers.
+- **Multi-side scanning.** When the portrait sits on the opposite side of the MRZ (typical of TD1 / TD2 ID cards), the scanner prompts the user to flip the document and captures both sides in one session. The new `EnumDocumentSide` (`MRZ` / `Opposite`) selects which side to retrieve. Tunable via `flipDocumentTimeout` (default `3000`ms).
+- **First-class visa types.** Visas are no longer conflated with Passport / TD2. `EnumMRZDocumentType` gains `MRVA` (TD3-sized) and `MRVB` (TD2-sized), with matching values in `EnumMRZScanMode`.
+- **Redesigned `MRZScannerView`.** New SVG guide frames, animated scan spinner, and refreshed toolbar. Four new `scannerViewConfig` interfaces give full customization: `toolbarButtonsConfig` (per-button icon / label / className / visibility), `formatSelectorConfig` (localize format buttons), `messagesConfig` (localize all on-screen text, including a `{seconds}` placeholder for the flip-document countdown), and `themeConfig` (color, typography, and spacing tokens).
+- **URL input to `launch()`.** `launch()` now accepts a string URL alongside `Blob`, `DSImageData`, and HTML media elements; the library fetches and decodes the URL internally.
+- **`OptionalData1` and `OptionalData2`** ICAO optional-data fields now exposed on `EnumMRZData`. `MRZData.documentType` is now typed as DCV's `EnumCodeType`.
+
+### Breaking Changes
+
+- **`MRZResultView` is removed**, along with `MRZResultViewConfig`, `MRZResultViewToolbarButtonsConfig`, `resultViewConfig`, and `showResultView`. Consumers render the result themselves — see the [User Guide]({{ site.guides }}mrz-scanner.html) for a worked example.
+- **`MRZResult.originalImageResult` and `MRZResult.imageData` are removed**, replaced by `getOriginalImage(side)`. The MWC-specific `_imageData` internal is also gone.
+- **API renames:** `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`, `EnumMRZScanMode.Passport` → `EnumMRZScanMode.TD3`.
+- **`EnumMRZDocumentType` string values changed** to disambiguate visas: `Passport`'s value is now `"td3_passport"` (was `"passport"`), `TD1` is `"td1_id"` (was `"td1"`), `TD2` is `"td2_id"` (was `"td2"`). Code using the enum references is unaffected; raw-string comparisons must be updated.
+- **`MRZResult` shape changed.** Now an interface with image-getter methods. The `status` field is optional and uses `EnumResultStatus` directly (was a `ResultStatus` object with `code` / `message`).
+- **DCV namespace flattened.** DCV exports are now reachable directly under `Dynamsoft.*` instead of the previous `Dynamsoft.Dynamsoft.*` nesting.
+
+### Fixes & Improvements
+
+- Upgraded the underlying DCV to **3.4.2001** under new package names: `dynamsoft-capture-vision-bundle` and `dynamsoft-capture-vision-data`.
+- New scan-quality controls: `enableMultiFrameCrossFilter` (default `true`) for DCV multi-frame cross-verification, and `enableScanRegion` (default `true`) for the rectangular guide frame.
+- Engine resource paths now resolve relative to the script's own URL, so consumers no longer hard-code CDN paths.
+- `UtilizedTemplateNames` accepts either a string or a `TemplatePair` (`{ full, mrzOnly }`) per scan mode, enabling separate full-frame and MRZ-only templates.
+- Reduced repeated camera permission prompts on Firefox Android.
+- Removed spurious TD3-visa matches from passport scanning.
+- Prevented portrait-image clipping on capture via asymmetric margins.
+- Format selector and scan results now respect `mrzFormatType`, only surfacing the categories the consumer opted into.
+- Visual guide-frame visibility properly respects `enableScanRegion`.
+- The configured `cameraAccessDenied` message is now displayed on permission denial.
+- Bundle pruned to ESM + CJS + a single IIFE; template files renamed from `.html` to `.xml` (`mrz-scanner.ui.xml`, `mrz-scanner.template.json`); fixed nested `dist/` artifact in the published package.
+
 ## 3.1.0 (01/13/2026)
 
 ### Highlighted Features
