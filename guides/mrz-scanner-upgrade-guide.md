@@ -24,38 +24,40 @@ The table below ranks every breaking change by impact. Severity ▲ marks archit
 
 | Severity | Change | Effect on a v3.x integration |
 |----------|--------|------------------------------|
-| ▲ | [Result view removed](#1-the-built-in-result-view-is-gone) | `MRZResultView`, `MRZResultViewConfig`, `onDone`, `onCancel`, `showResultView` and the entire result-rendering UI are gone. Your app now renders results. |
-| ▲ | [Images via getter methods](#2-images-are-now-retrieved-via-getter-methods) | `result.originalImageResult` is gone. Use `result.getOriginalImage(side)`, `getDocumentImage(side)`, `getPortraitImage()`. |
-| ▲ | [`engineResourcePaths` restructured](#3-package-dependencies-and-engineresourcepaths) | `rootDirectory` and per-module paths (`std`, `dip`, `core`, …) are replaced by `dcvBundle` + `dcvData`. |
-| ○ | [`MRZData.documentType` silently changed](#5-mrzdatadocumenttype-silently-changed-shape) | Was a humanized string (`"Passport (TD3)"`); now a DCV `EnumCodeType` (`"CT_MRTD_TD3_PASSPORT"`). Any string comparison breaks at runtime, not compile time. |
-| ○ | [`EnumMRZDocumentType` string values changed](#6-enummrzdocumenttype-string-values-changed) | `"passport"` → `"td3_passport"`, `"td1"` → `"td1_id"`, `"td2"` → `"td2_id"`. Enum-reference users are fine; raw-string users break silently. |
-| ▲ | [`MRZResult.status` shape changed](#4-mrzresult-shape-and-status) | Was `{ code, message }` object; now `EnumResultStatus` value directly. `result.status.code` throws. |
-| ● | [Scanner view property renames](#8-mrzscannerviewconfig-property-renames) | `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`. |
-| ● | [`EnumMRZScanMode.Passport` → `TD3`](#7-enummrzscanmode-passport--td3) | Only relevant if you used the scan-mode enum (custom templates). |
-| ● | [`cameraEnhancerUIPath` removed](#8-mrzscannerviewconfig-property-renames) | The v3.x deprecated alias is gone. Use `uiPath`. |
-| ○ | [`Dynamsoft` namespace flattened](#10-dynamsoft-namespace-flattened) | DCV exports are reachable at `Dynamsoft.*`, not `Dynamsoft.Dynamsoft.*`. Anyone deep-importing the SDK namespace breaks. |
+| ▲ | [Result view removed](#the-built-in-result-view-is-gone) | `MRZResultView`, `MRZResultViewConfig`, `onDone`, `onCancel`, `showResultView` and the entire result-rendering UI are gone. Your app now renders results. |
+| ▲ | [Images via getter methods](#images-are-now-retrieved-via-getter-methods) | `result.originalImageResult` is gone. Use `result.getOriginalImage(side)`, `getDocumentImage(side)`, `getPortraitImage()`. |
+| ▲ | [`engineResourcePaths` restructured](#package-dependencies-and-engineresourcepaths) | `rootDirectory` and per-module paths (`std`, `dip`, `core`, …) are replaced by `dcvBundle` + `dcvData`. |
+| ○ | [`MRZData.documentType` silently changed](#mrzdatadocumenttype-silently-changed-shape) | Was a humanized string (`"Passport (TD3)"`); now a DCV `EnumCodeType` (`"CT_MRTD_TD3_PASSPORT"`). Any string comparison breaks at runtime, not compile time. |
+| ○ | [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed) | `"passport"` → `"td3_passport"`, `"td1"` → `"td1_id"`, `"td2"` → `"td2_id"`. Enum-reference users are fine; raw-string users break silently. |
+| ▲ | [`MRZResult.status` shape changed](#mrzresult-shape-and-status) | Was `{ code, message }` object; now `EnumResultStatus` value directly. `result.status.code` throws. |
+| ● | [Scanner view property renames](#mrzscannerviewconfig-property-renames) | `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`. |
+| ● | [`EnumMRZScanMode.Passport` → `TD3`](#enummrzscanmode-passport--td3) | Only relevant if you used the scan-mode enum (custom templates). |
+| ● | [`cameraEnhancerUIPath` removed](#mrzscannerviewconfig-property-renames) | The v3.x deprecated alias is gone. Use `uiPath`. |
+| ○ | [`Dynamsoft` namespace flattened](#dynamsoft-namespace-flattened) | DCV exports are reachable at `Dynamsoft.*`, not `Dynamsoft.Dynamsoft.*`. Anyone deep-importing the SDK namespace breaks. |
 | ○ | [Multi-side scanning on by default](#multi-side-scanning-on-by-default) | `returnPortraitImage` defaults to `true`. TD1/TD2 ID scans now prompt for a document flip unless you opt out. |
 
-If your v3.x integration uses only `new MRZScanner({ license })`, awaits `launch()`, and reads `result.data.firstName`-style fields, you may need only the changes in sections [3](#3-package-dependencies-and-engineresourcepaths), [4](#4-mrzresult-shape-and-status), and the section appropriate to your image needs ([2](#2-images-are-now-retrieved-via-getter-methods)). Otherwise, work through every section below in order.
+If your v3.x integration uses only `new MRZScanner({ license })`, awaits `launch()`, and reads `result.data.firstName`-style fields, you may need only the changes in [Package, dependencies, and `engineResourcePaths`](#package-dependencies-and-engineresourcepaths) and [`MRZResult` shape and status](#mrzresult-shape-and-status), plus the section appropriate to your image needs ([Images are now retrieved via getter methods](#images-are-now-retrieved-via-getter-methods)). Otherwise, work through every section below in order.
 
 ## Before you upgrade: audit your v3.x integration
 
 Run this list against your codebase before changing anything. Each item maps to a section below, so knowing which apply lets you scope the work.
 
-- [ ] Do you read `result.originalImageResult`? → [Section 2](#2-images-are-now-retrieved-via-getter-methods)
-- [ ] Do you read `result.status.code` or `result.status.message`? → [Section 4](#4-mrzresult-shape-and-status)
-- [ ] Do you compare `result.data.documentType` against any string? → [Section 5](#5-mrzdatadocumenttype-silently-changed-shape)
-- [ ] Do you pass raw string format names (`"passport"`, `"td1"`) to `mrzFormatType`? → [Section 6](#6-enummrzdocumenttype-string-values-changed)
-- [ ] Do you pass any `MRZResultViewConfig` (e.g. `onDone`, `showOriginalImage`, `allowResultEditing`)? → [Section 1](#1-the-built-in-result-view-is-gone)
-- [ ] Do you set `showResultView: false`? → [Section 1](#1-the-built-in-result-view-is-gone)
-- [ ] Do you set `cameraEnhancerUIPath` anywhere? → [Section 8](#8-mrzscannerviewconfig-property-renames)
-- [ ] Do you set `showUploadImage`, `uploadAcceptedTypes`, `uploadFileConverter`, or `showScanGuide`? → [Section 8](#8-mrzscannerviewconfig-property-renames)
-- [ ] Are you self-hosting DCV engine assets with per-module paths (`std`, `dip`, `core`, …)? → [Section 3](#3-package-dependencies-and-engineresourcepaths)
-- [ ] Do you reach into `Dynamsoft.Dynamsoft.*` to call DCV directly? → [Section 10](#10-dynamsoft-namespace-flattened)
-- [ ] Do you use `utilizedTemplateNames` with custom templates? → [Section 11](#11-custom-templates-and-utilizedtemplatenames)
-- [ ] Are you scanning TD1 or TD2 ID cards and relying on a single-side capture? → [Multi-side scanning, on by default](#multi-side-scanning-on-by-default)
+<ul class="list-unstyled">
+  <li><input type="checkbox"> Do you read <code>result.originalImageResult</code>? → <a href="#images-are-now-retrieved-via-getter-methods">Images are now retrieved via getter methods</a></li>
+  <li><input type="checkbox"> Do you read <code>result.status.code</code> or <code>result.status.message</code>? → <a href="#mrzresult-shape-and-status"><code>MRZResult</code> shape and status</a></li>
+  <li><input type="checkbox"> Do you compare <code>result.data.documentType</code> against any string? → <a href="#mrzdatadocumenttype-silently-changed-shape"><code>MRZData.documentType</code> silently changed shape</a></li>
+  <li><input type="checkbox"> Do you pass raw string format names (<code>"passport"</code>, <code>"td1"</code>) to <code>mrzFormatType</code>? → <a href="#enummrzdocumenttype-string-values-changed"><code>EnumMRZDocumentType</code> string values changed</a></li>
+  <li><input type="checkbox"> Do you pass any <code>MRZResultViewConfig</code> (e.g. <code>onDone</code>, <code>showOriginalImage</code>, <code>allowResultEditing</code>)? → <a href="#the-built-in-result-view-is-gone">The built-in result view is gone</a></li>
+  <li><input type="checkbox"> Do you set <code>showResultView: false</code>? → <a href="#the-built-in-result-view-is-gone">The built-in result view is gone</a></li>
+  <li><input type="checkbox"> Do you set <code>cameraEnhancerUIPath</code> anywhere? → <a href="#mrzscannerviewconfig-property-renames"><code>MRZScannerViewConfig</code> property renames</a></li>
+  <li><input type="checkbox"> Do you set <code>showUploadImage</code>, <code>uploadAcceptedTypes</code>, <code>uploadFileConverter</code>, or <code>showScanGuide</code>? → <a href="#mrzscannerviewconfig-property-renames"><code>MRZScannerViewConfig</code> property renames</a></li>
+  <li><input type="checkbox"> Are you self-hosting DCV engine assets with per-module paths (<code>std</code>, <code>dip</code>, <code>core</code>, …)? → <a href="#package-dependencies-and-engineresourcepaths">Package, dependencies, and <code>engineResourcePaths</code></a></li>
+  <li><input type="checkbox"> Do you reach into <code>Dynamsoft.Dynamsoft.*</code> to call DCV directly? → <a href="#dynamsoft-namespace-flattened"><code>Dynamsoft</code> namespace flattened</a></li>
+  <li><input type="checkbox"> Do you use <code>utilizedTemplateNames</code> with custom templates? → <a href="#custom-templates-and-utilizedtemplatenames">Custom templates and <code>utilizedTemplateNames</code></a></li>
+  <li><input type="checkbox"> Are you scanning TD1 or TD2 ID cards and relying on a single-side capture? → <a href="#multi-side-scanning-on-by-default">Multi-side scanning, on by default</a></li>
+</ul>
 
-## 1. The built-in result view is gone
+## The built-in result view is gone
 
 This is the largest behavioral change in v4. v3.x shipped a complete two-stage UI: the camera scanner, then a built-in result view (`MRZResultView`) that showed the parsed fields, the cropped image, edit controls, and Done/Re-scan/Cancel buttons. **v4 removes every part of that.**
 
@@ -102,7 +104,7 @@ await mrzScanner.launch();
 const mrzScanner = new Dynamsoft.MRZScanner({
   license: "YOUR_LICENSE_KEY_HERE",
   // returnDocumentImage and returnPortraitImage default to true
-  // see section 2 for image retrieval
+  // see the image-getter section below
 });
 
 const result = await mrzScanner.launch();
@@ -134,9 +136,9 @@ if (!result?.data) {
 }
 ```
 
-`result.status` is still present and is now an `EnumResultStatus` value (not a wrapper object). Use it if you need to distinguish cancellation from no-MRZ-found. See [Section 4](#4-mrzresult-shape-and-status) for the full shape.
+`result.status` is still present and is now an `EnumResultStatus` value (not a wrapper object). Use it if you need to distinguish cancellation from no-MRZ-found. See [`MRZResult` shape and status](#mrzresult-shape-and-status) for the full shape.
 
-## 2. Images are now retrieved via getter methods
+## Images are now retrieved via getter methods
 
 v3.x attached a single image to the result as a property:
 
@@ -222,7 +224,7 @@ const oppositeSideProcessed = result.getDocumentImage(Dynamsoft.EnumDocumentSide
 
 v3.x had two undocumented fields on `MRZResult` used by Dynamsoft Mobile Web Capture for interop: `imageData?: boolean` and `_imageData?: DSImageData`. Both are removed in v4. They were never part of the public surface, but if your code reaches into them, replace those reads with the appropriate getter call.
 
-## 3. Package, dependencies, and `engineResourcePaths`
+## Package, dependencies, and `engineResourcePaths`
 
 The npm package name is unchanged (`dynamsoft-mrz-scanner`); only the version bumps to `4.0.0`. The peer-dependency packages and their layout under `node_modules/` did change.
 
@@ -318,7 +320,7 @@ engineResourcePaths: {
 
 The requirement is just that the contents of those two npm packages are reachable at the URLs you provide. If you previously had Webpack / Vite / Rollup config that copied per-module DCV directories into `dist/`, simplify it to copy only `dynamsoft-capture-vision-bundle` and `dynamsoft-capture-vision-data`.
 
-## 4. `MRZResult` shape and status
+## `MRZResult` shape and status
 
 The result object's shape changed in two ways. The status field is the more dangerous one because the v3.x access pattern (`result.status.code`) throws at runtime in v4 instead of failing at compile time.
 
@@ -327,8 +329,8 @@ The result object's shape changed in two ways. The status field is the more dang
 | v3.x | v4 | Notes |
 |------|----|-------|
 | `status: ResultStatus` (required `{ code, message }` object) | `status?: EnumResultStatus` (optional enum value) | Shape changed and field is now optional. See below. |
-| `originalImageResult?: DSImageData` | *(removed)* | Use `getOriginalImage(side)`. See [Section 2](#2-images-are-now-retrieved-via-getter-methods). |
-| `data?: MRZData` | `data?: MRZData` | Unchanged at this level; the `MRZData` interface itself gained two fields. See [Section 5](#5-mrzdatadocumenttype-silently-changed-shape). |
+| `originalImageResult?: DSImageData` | *(removed)* | Use `getOriginalImage(side)`. See [Images are now retrieved via getter methods](#images-are-now-retrieved-via-getter-methods). |
+| `data?: MRZData` | `data?: MRZData` | Unchanged at this level; the `MRZData` interface itself gained two fields. See [`MRZData.documentType` silently changed shape](#mrzdatadocumenttype-silently-changed-shape). |
 | *(none)* | `getDocumentImage(side): MRZImage \| null` | New. |
 | *(none)* | `getOriginalImage(side): MRZImage \| null` | New. |
 | *(none)* | `getPortraitImage(): MRZImage \| null` | New. |
@@ -375,7 +377,7 @@ The `EnumResultStatus` enum itself is unchanged (`RS_SUCCESS = 0`, `RS_CANCELLED
 
 v4 still exports a standalone `ResultStatus = { code: EnumResultStatus; message?: string }` type as a helper. **It is not the type of `MRZResult.status`**. That field is now `EnumResultStatus` directly. If you imported `ResultStatus` only to type the result's status field, drop the import.
 
-## 5. `MRZData.documentType` silently changed shape
+## `MRZData.documentType` silently changed shape
 
 This change does not produce a TypeScript error and does not throw at runtime. It just returns different values from what your v3.x code expected. **Audit any code that compares `result.data.documentType` against a string literal.**
 
@@ -418,7 +420,7 @@ if (result.data.documentType === "CT_MRTD_TD3_PASSPORT") {
 
 ### Migration recipe
 
-If you previously displayed `result.data.documentType` directly to users, replace that with your own mapping from `EnumCodeType` (or from `EnumMRZDocumentType`; see [Section 6](#6-enummrzdocumenttype-string-values-changed)) to a localized display label. The new `MRZDataLabel` helper handles field-key labels but **not** document-type labels, so those are yours to provide.
+If you previously displayed `result.data.documentType` directly to users, replace that with your own mapping from `EnumCodeType` (or from `EnumMRZDocumentType`; see [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed)) to a localized display label. The new `MRZDataLabel` helper handles field-key labels but **not** document-type labels, so those are yours to provide.
 
 If you branched on the value, swap the string comparisons:
 
@@ -443,7 +445,7 @@ These are additive, so existing code is unaffected. They appear on `EnumMRZData`
 
 `IssuingStateRaw` and `NationalityRaw` were already present on `MRZData` in v3.x (added in v2.1); v4 promotes them to the documented surface but the values themselves are unchanged.
 
-## 6. `EnumMRZDocumentType` string values changed
+## `EnumMRZDocumentType` string values changed
 
 The enum still exists and still has the same TypeScript-side names, but the underlying string values changed to disambiguate the new visa formats.
 
@@ -485,7 +487,7 @@ enum EnumMRZDocumentType {
 
 In v3.x, the scanner internally recognized visa code-types but mapped them back onto `Passport` or `TD2` for the purposes of `EnumMRZDocumentType`. If your v3.x app received `Passport` results that were actually visas, those will now arrive as `MRVA` (TD3-sized) or `MRVB` (TD2-sized) instead. This is a behavioral improvement, but worth flagging if your downstream pipeline assumed every `Passport` was a true passport.
 
-## 7. `EnumMRZScanMode`: `Passport` → `TD3`
+## `EnumMRZScanMode`: `Passport` → `TD3`
 
 `EnumMRZScanMode` is the broader internal mode enum that includes combined modes (`PassportAndTD1`, etc.). Only relevant if you used it to key into `utilizedTemplateNames` for custom templates.
 
@@ -493,7 +495,7 @@ The breaking rename: **`EnumMRZScanMode.Passport` is now `EnumMRZScanMode.TD3`**
 
 If you have a `utilizedTemplateNames` object keyed by `EnumMRZScanMode.Passport`, rename the key to `EnumMRZScanMode.TD3`.
 
-## 8. `MRZScannerViewConfig` property renames
+## `MRZScannerViewConfig` property renames
 
 Four renames in the scanner view config. Each is mechanical. Your TypeScript compiler will catch them if you're using types, but plain-JS callers should grep their source.
 
@@ -511,11 +513,11 @@ At the top level (the constructor's config object):
 
 | v3.x | v4 | Notes |
 |------|----|-------|
-| `resultViewConfig` | *(removed)* | See [Section 1](#1-the-built-in-result-view-is-gone). |
-| `showResultView` | *(removed)* | See [Section 1](#1-the-built-in-result-view-is-gone). |
-| *(none)* | `returnOriginalImage`, `returnDocumentImage`, `returnPortraitImage` | New image-output flags. See [Section 2](#2-images-are-now-retrieved-via-getter-methods). |
+| `resultViewConfig` | *(removed)* | See [The built-in result view is gone](#the-built-in-result-view-is-gone). |
+| `showResultView` | *(removed)* | See [The built-in result view is gone](#the-built-in-result-view-is-gone). |
+| *(none)* | `returnOriginalImage`, `returnDocumentImage`, `returnPortraitImage` | New image-output flags. See [Images are now retrieved via getter methods](#images-are-now-retrieved-via-getter-methods). |
 
-`templateFilePath` and `utilizedTemplateNames` are still supported. See [Section 11](#11-custom-templates-and-utilizedtemplatenames).
+`templateFilePath` and `utilizedTemplateNames` are still supported. See [Custom templates and `utilizedTemplateNames`](#custom-templates-and-utilizedtemplatenames).
 
 ### `MRZScannerViewConfig` additive fields
 
@@ -529,7 +531,7 @@ v4 also adds several new optional fields. None of these break v3.x code, but the
 
 See the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html) for the full options.
 
-## 9. `launch()` signature
+## `launch()` signature
 
 The `launch()` signature is effectively unchanged. v3.x already accepted the wide input union; v4 keeps it. Listed here only because the v3.x API docs understated the parameter type.
 
@@ -546,7 +548,7 @@ launch(imageSource: Blob | string | DSImageData | HTMLImageElement | HTMLVideoEl
 
 The only thing to note: v4 documents that `launch()` calls `dispose()` automatically in its `finally` block on every resolution path. `dispose()` is idempotent, so only call it manually if you want to tear down the scanner without ever launching it. v3.x documented `dispose()` more loosely.
 
-## 10. `Dynamsoft` namespace flattened
+## `Dynamsoft` namespace flattened
 
 v3.x published its bundle with a double-nested `Dynamsoft.Dynamsoft.*` namespace path for reaching into the underlying DCV SDK. v4 flattens this: DCV exports are now reachable directly under `Dynamsoft.*`.
 
@@ -562,7 +564,7 @@ The MRZ Scanner's own public exports (`MRZScanner`, `MRZScannerView`, the enums,
 
 If you only use `import { Dynamsoft } from "dynamsoft-mrz-scanner"` (or the global `Dynamsoft.MRZScanner` on the CDN bundle), nothing changes. If you grep your code for `Dynamsoft.Dynamsoft` and find no matches, you're done with this section.
 
-## 11. Custom templates and `utilizedTemplateNames`
+## Custom templates and `utilizedTemplateNames`
 
 If you do **not** use `templateFilePath` or `utilizedTemplateNames`, skip this section.
 
@@ -570,12 +572,12 @@ For integrations with custom Capture Vision templates:
 
 - `templateFilePath` is unchanged.
 - `utilizedTemplateNames` is still supported. The v4 type widens each value: it now accepts either a `string` (the v3.x shape) or a `TemplatePair` (`{ full, mrzOnly }`) per scan mode. The string form continues to work, with existing keys keeping their original semantics. Use the pair form only if you want separate templates for full-frame vs MRZ-only capture.
-- The `EnumMRZScanMode` keys are unchanged, **except** `Passport` was renamed to `TD3`. See [Section 7](#7-enummrzscanmode-passport--td3).
+- The `EnumMRZScanMode` keys are unchanged, **except** `Passport` was renamed to `TD3`. See [`EnumMRZScanMode`: `Passport` → `TD3`](#enummrzscanmode-passport--td3).
 - `DEFAULT_TEMPLATE_NAMES` (the default scan-mode → template-name map exported by the package) is still available.
 
 If you maintain a non-trivial custom template setup, contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for help validating your migration; the underlying DCV runtime upgrade in v4 (DCV 3.4.2001) may interact with parameter-level customizations that aren't visible in the MRZ Scanner surface.
 
-## 12. New v4 features worth knowing about
+## New v4 features worth knowing about
 
 These are additive and do not break v3.x code, but several materially change default runtime behavior. Read at least the [multi-side scanning](#multi-side-scanning-on-by-default) section before deploying.
 
@@ -602,11 +604,11 @@ const dob = Dynamsoft.displayMRZDate(result.data.dateOfBirth);   // "1985-07-12"
 const label = Dynamsoft.MRZDataLabel[Dynamsoft.EnumMRZData.FirstName]; // "First Name"
 ```
 
-Note that `MRZDataLabel` provides labels for field *keys*, not for `documentType` values. See [Section 5](#5-mrzdatadocumenttype-silently-changed-shape) for that.
+Note that `MRZDataLabel` provides labels for field *keys*, not for `documentType` values. See [`MRZData.documentType` silently changed shape](#mrzdatadocumenttype-silently-changed-shape) for that.
 
-## 13. Static-image scanning migration
+## Static-image scanning migration
 
-If your v3.x app uses the static-image (file / PDF / blob) flow via `launch(file)`, the migration is small. The two property renames in [Section 8](#8-mrzscannerviewconfig-property-renames) apply:
+If your v3.x app uses the static-image (file / PDF / blob) flow via `launch(file)`, the migration is small. The two property renames in [`MRZScannerViewConfig` property renames](#mrzscannerviewconfig-property-renames) apply:
 
 ```ts
 // v3.x
@@ -668,59 +670,60 @@ await mrzScanner.launch();
 
 ```ts
 // Stage the three Dynamsoft folders into your project's `public/` directory
-// so the SDK's defaults resolve every engine resource. No engineResourcePaths
-// needed. See Section 3.
+// so the SDK's defaults resolve every engine resource. No engineResourcePaths needed.
 const mrzScanner = new Dynamsoft.MRZScanner({
   license: "YOUR_LICENSE_KEY_HERE",
-  mrzFormatType: ["td3_passport", "td1_id"],            // Section 6 — string values changed
-  returnOriginalImage: true,                             // Section 2 — opt in for the original frame
+  mrzFormatType: ["td3_passport", "td1_id"],            // string values changed in v4
+  returnOriginalImage: true,                             // opt in for the original frame
   // returnDocumentImage / returnPortraitImage default to true
   scannerViewConfig: {
-    enableScanRegion: true,                              // Section 8 — renamed from showScanGuide
-    showLoadImageButton: true,                           // Section 8 — renamed from showUploadImage
-    loadImageAcceptedTypes: "image/*,application/pdf",   // Section 8 — renamed
-    loadImageFileConverter: async (file) => convertPdfToBlob(file), // Section 8 — renamed
+    enableScanRegion: true,                              // renamed from showScanGuide
+    showLoadImageButton: true,                           // renamed from showUploadImage
+    loadImageAcceptedTypes: "image/*,application/pdf",   // renamed from uploadAcceptedTypes
+    loadImageFileConverter: async (file) => convertPdfToBlob(file), // renamed from uploadFileConverter
   },
-  // No resultViewConfig (Section 1)
+  // resultViewConfig removed in v4
 });
 
 const result = await mrzScanner.launch();
 
-if (!result?.data) {                                     // Section 1, Section 4 — cancellation / no-MRZ check
+if (!result?.data) {                                     // cancellation or no-MRZ check
   navigateHome();
   return;
 }
 
 console.log(result.data.firstName);
-console.log(result.data.documentType);                   // "CT_MRTD_TD3_PASSPORT" (Section 5)
-const original = result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ); // Section 2
+console.log(result.data.documentType);                   // "CT_MRTD_TD3_PASSPORT" (was a humanized label in v3.x)
+const original = result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ); // image getter replaces originalImageResult
 if (original) imageContainer.appendChild(original.toCanvas());
 await submitToServer(result.data);
 
-// If you previously had allowResultEditing: true, build that UI yourself now (Section 1).
+// If you previously had allowResultEditing: true, build that UI yourself now.
 ```
 
 ## Migration checklist
 
 Copy this into your tracking system and work through it linearly.
 
-1. [ ] Bump `dynamsoft-mrz-scanner` to `4.0.0`; remove any v3.x per-module DCV dependencies; verify the two peer packages installed.
-2. [ ] Update CDN URLs to `@4.0.0` if applicable.
-3. [ ] Stage the three Dynamsoft folders (`dynamsoft-mrz-scanner`, `dynamsoft-capture-vision-bundle`, `dynamsoft-capture-vision-data`) into your project's `public/` directory so they're served at `/`. With the folders staged, **delete `engineResourcePaths` from your config**. Only keep it (in the new `{ dcvBundle, dcvData }` shape) if you must serve the folders from a different origin or path prefix.
-4. [ ] Remove `resultViewConfig`, `showResultView`, `onDone`, `onCancel` from your constructor config. Move the work each callback did into code that runs after `await mrzScanner.launch()`.
-5. [ ] Build a result UI in your application: parsed fields, document image, portrait image (if you keep `returnPortraitImage: true`), and any re-scan / done / cancel affordances your design system requires.
-6. [ ] Replace `result.originalImageResult` reads with `result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)` (and add `returnOriginalImage: true` to your config if you need this image).
-7. [ ] If you display the deskewed document crop, use `result.getDocumentImage(side)`. If you display the portrait, use `result.getPortraitImage()`.
-8. [ ] Replace `result.status.code` with `result.status`. Replace `result.status.message` with your own enum-to-string mapping.
-9. [ ] Use `if (!result?.data)` as your cancellation / no-result branch.
-10. [ ] Search the codebase for raw string format names (`"passport"`, `"td1"`, `"td2"`) and update them (`"td3_passport"`, `"td1_id"`, `"td2_id"`). Prefer enum references over strings going forward.
-11. [ ] Search the codebase for comparisons against `result.data.documentType`. The values are now `CT_MRTD_*` code types, not display labels. Update comparisons or compute display labels from a new mapping.
-12. [ ] Rename `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`, `cameraEnhancerUIPath` → `uiPath` in any `scannerViewConfig` you pass.
-13. [ ] If you key custom templates by `EnumMRZScanMode.Passport`, rename to `EnumMRZScanMode.TD3`.
-14. [ ] Search for `Dynamsoft.Dynamsoft.` and flatten any matches to `Dynamsoft.`.
-15. [ ] Decide on multi-side scanning. If you scan TD1 / TD2 ID cards and want to preserve v3.x's single-capture behavior, set `returnPortraitImage: false`. Otherwise, update your scanner-active UI to reflect the longer flip-and-capture flow.
-16. [ ] Run your full integration test suite. TypeScript will catch the renames, but the runtime changes (`result.status`, `documentType` values, raw format strings) will only surface in test or in production.
-17. [ ] Smoke-test the camera flow and (if applicable) the static-image / PDF flow against real documents.
+<ol class="list-unstyled">
+  <li><input type="checkbox"> 1. Bump <code>dynamsoft-mrz-scanner</code> to <code>4.0.0</code>; remove any v3.x per-module DCV dependencies; verify the two peer packages installed.</li>
+  <li><input type="checkbox"> 2. Update CDN URLs to <code>@4.0.0</code> if applicable.</li>
+  <li><input type="checkbox"> 3. Stage the three Dynamsoft folders (<code>dynamsoft-mrz-scanner</code>, <code>dynamsoft-capture-vision-bundle</code>, <code>dynamsoft-capture-vision-data</code>) into your project's <code>public/</code> directory so they're served at <code>/</code>. With the folders staged, <strong>delete <code>engineResourcePaths</code> from your config</strong>. Only keep it (in the new <code>{ dcvBundle, dcvData }</code> shape) if you must serve the folders from a different origin or path prefix.</li>
+  <li><input type="checkbox"> 4. Remove <code>resultViewConfig</code>, <code>showResultView</code>, <code>onDone</code>, <code>onCancel</code> from your constructor config. Move the work each callback did into code that runs after <code>await mrzScanner.launch()</code>.</li>
+  <li><input type="checkbox"> 5. Build a result UI in your application: parsed fields, document image, portrait image (if you keep <code>returnPortraitImage: true</code>), and any re-scan / done / cancel affordances your design system requires.</li>
+  <li><input type="checkbox"> 6. Replace <code>result.originalImageResult</code> reads with <code>result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)</code> (and add <code>returnOriginalImage: true</code> to your config if you need this image).</li>
+  <li><input type="checkbox"> 7. If you display the deskewed document crop, use <code>result.getDocumentImage(side)</code>. If you display the portrait, use <code>result.getPortraitImage()</code>.</li>
+  <li><input type="checkbox"> 8. Replace <code>result.status.code</code> with <code>result.status</code>. Replace <code>result.status.message</code> with your own enum-to-string mapping.</li>
+  <li><input type="checkbox"> 9. Use <code>if (!result?.data)</code> as your cancellation / no-result branch.</li>
+  <li><input type="checkbox"> 10. Search the codebase for raw string format names (<code>"passport"</code>, <code>"td1"</code>, <code>"td2"</code>) and update them (<code>"td3_passport"</code>, <code>"td1_id"</code>, <code>"td2_id"</code>). Prefer enum references over strings going forward.</li>
+  <li><input type="checkbox"> 11. Search the codebase for comparisons against <code>result.data.documentType</code>. The values are now <code>CT_MRTD_*</code> code types, not display labels. Update comparisons or compute display labels from a new mapping.</li>
+  <li><input type="checkbox"> 12. Rename <code>showUploadImage</code> → <code>showLoadImageButton</code>, <code>uploadAcceptedTypes</code> → <code>loadImageAcceptedTypes</code>, <code>uploadFileConverter</code> → <code>loadImageFileConverter</code>, <code>showScanGuide</code> → <code>enableScanRegion</code>, <code>cameraEnhancerUIPath</code> → <code>uiPath</code> in any <code>scannerViewConfig</code> you pass.</li>
+  <li><input type="checkbox"> 13. If you key custom templates by <code>EnumMRZScanMode.Passport</code>, rename to <code>EnumMRZScanMode.TD3</code>.</li>
+  <li><input type="checkbox"> 14. Search for <code>Dynamsoft.Dynamsoft.</code> and flatten any matches to <code>Dynamsoft.</code>.</li>
+  <li><input type="checkbox"> 15. Decide on multi-side scanning. If you scan TD1 / TD2 ID cards and want to preserve v3.x's single-capture behavior, set <code>returnPortraitImage: false</code>. Otherwise, update your scanner-active UI to reflect the longer flip-and-capture flow.</li>
+  <li><input type="checkbox"> 16. Run your full integration test suite. TypeScript will catch the renames, but the runtime changes (<code>result.status</code>, <code>documentType</code> values, raw format strings) will only surface in test or in production.</li>
+  <li><input type="checkbox"> 17. Smoke-test the camera flow and (if applicable) the static-image / PDF flow against real documents.</li>
+</ol>
 
 ## Further reading
 
