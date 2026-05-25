@@ -12,7 +12,7 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
-## 4.0.0 (XX/XX/2026)
+## 4.0.0 (05/22/2026)
 
 A major release with a redesigned scanner UI, a new image-extraction pipeline, multi-side scanning, first-class visa support, and a leaner API surface that drops the bundled result view in favor of consumer-rendered results.
 
