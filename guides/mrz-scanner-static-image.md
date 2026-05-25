@@ -13,10 +13,10 @@ permalink: /guides/mrz-scanner-static-image.html
 
 The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview) for selecting photos from your device.
 
-Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static images and PDFs without requiring the default file picker. This guide shows you how to implement this functionality programmatically, supporting multiple image formats and PDF documents.
+The MRZ Scanner can read MRZs directly from static images and PDFs without requiring the default file picker. This guide shows you how to implement this functionality programmatically, supporting multiple image formats and PDF documents.
 
 > [!NOTE]
-> To follow along with this guide, refer to the [use-file-input sample](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/scenarios/use-file-input.html) in the MRZ Scanner GitHub repository.
+> To follow along with this guide, refer to the [use-file-input sample](https://github.com/Dynamsoft/mrz-scanner-javascript/tree/main/samples/use-file-input.html) in the MRZ Scanner GitHub repository.
 
 ## Prerequisites
 
@@ -40,9 +40,9 @@ Here's the basic HTML structure:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Use File Input</title>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.1.0/dist/mrz-scanner.bundle.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script> -->
     <!-- To use locally: -->
-    <script src="../../dist/mrz-scanner.bundle.js"></script>
+    <script src="../dist/mrz-scanner.bundle.js"></script>
 
     <!-- PDF.js library  -->
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
@@ -74,7 +74,7 @@ Here's the basic HTML structure:
 Configure the PDF.js library to enable PDF loading in your application:
 
 ```html
-<script>
+<script type="module">
     // Setup PDF.js
     const pdfjsLib = window["pdfjs-dist/build/pdf"];
     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -92,9 +92,10 @@ Initialize the MRZ Scanner with custom configuration to handle static images and
 // Initialize the Dynamsoft MRZ Scanner
 const mrzscanner = new Dynamsoft.MRZScanner({
     license: "YOUR_LICENSE_KEY_HERE",
+    returnOriginalImage: true, // include the original frame on the result so we can display it
     scannerViewConfig: {
-        uploadAcceptedTypes: "image/*,application/pdf",
-        uploadFileConverter: async (file) => {
+        loadImageAcceptedTypes: "image/*,application/pdf",
+        loadImageFileConverter: async (file) => {
             if (file.type === "application/pdf") {
                 // Example PDF to image conversion
                 const pdfData = await convertPDFToImage(file);
@@ -109,10 +110,11 @@ const mrzscanner = new Dynamsoft.MRZScanner({
 });
 ```
 
-Note the new properties in [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig):
+Note the properties used here:
 
-- **`uploadAcceptedTypes`**: Specifies accepted file formats (images and PDFs in this example)
-- **`uploadFileConverter`**: Converts PDFs to images before processing, as the scanner requires image input
+- **`returnOriginalImage`** (on `MRZScannerConfig`): set to `true` so the result carries the original frame, retrievable via `result.getOriginalImage(side)`. It defaults to `false` in v4, so this opt-in is required if your UI displays the scanned input.
+- **`loadImageAcceptedTypes`** (on [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig)): specifies accepted file formats (images and PDFs in this example).
+- **`loadImageFileConverter`** (on [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig)): converts PDFs to images before processing, as the scanner requires image input.
 
 ### Step 4: Implementing the PDF Conversion Function
 
@@ -176,7 +178,7 @@ This function converts a **single-page** PDF file to a PNG Blob, making it compa
 
 ### Step 5: Launching the MRZ Scanner
 
-With the PDF conversion function in place, connect everything to the [`launch`]({{ site.api }}mrz-scanner.html#launch) method. Starting in v2.1, the `launch` method accepts a file input parameter.
+With the PDF conversion function in place, connect everything to the [`launch`]({{ site.api }}mrz-scanner.html#launch) method. `launch` accepts an optional file input parameter.
 
 The code below shows two ways to trigger the scanner:
 
@@ -185,6 +187,8 @@ The code below shows two ways to trigger the scanner:
 
 ```js
 document.getElementById("start-scan").onclick = async function () {
+    // Reset the file input so re-selecting the same file later still fires onchange
+    document.getElementById("initialFile").value = "";
     const result = await mrzscanner.launch();
     displayResult(result);
 };
@@ -204,7 +208,10 @@ document.getElementById("initialFile").onchange = async function () {
             displayResult(result);
         } catch (error) {
             console.error("Error processing file:", error);
-            resultContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+            const errorMessage = document.createElement("p");
+            errorMessage.textContent = `Error: ${error.message}`;
+            resultContainer.innerHTML = "";
+            resultContainer.appendChild(errorMessage);
         }
     }
 };
@@ -226,16 +233,16 @@ function displayResult(result) {
     if (result?.data) {
         resultContainer.innerHTML = ""; // Clear placeholder content
 
-        if (result.originalImageResult?.toCanvas) {
-        const canvas = result.originalImageResult?.toCanvas();
+        const originalImage = result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ);
+        if (originalImage) {
+            const canvas = originalImage.toCanvas();
 
-        canvas.style.objectFit = "contain";
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        resultContainer.appendChild(canvas);
+            canvas.style.objectFit = "contain";
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            resultContainer.appendChild(canvas);
         }
 
-        let resultHTML = ``;
         Object.entries(result.data).forEach(([key, value]) => {
             const label = Dynamsoft.MRZDataLabel[key];
 
