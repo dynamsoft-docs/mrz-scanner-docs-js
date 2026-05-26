@@ -3,9 +3,9 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Upgrading the MRZ Scanner JavaScript Edition from v3.x to v4.0
-keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Upgrade, Migration, v3.x, v4.0, Breaking Changes
-description: A step-by-step migration guide for upgrading a production MRZ Scanner JavaScript Edition integration from v3.x to v4.0.
+title: Migrating the MRZ Scanner JavaScript Edition from v3.x to v4.0
+keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Migration, Upgrade, v3.x, v4.0, Breaking Changes
+description: A step-by-step guide for migrating a production MRZ Scanner JavaScript Edition integration from v3.x to v4.0.
 permalink: /guides/mrz-scanner-upgrade-guide.html
 ---
 
@@ -23,12 +23,12 @@ permalink: /guides/mrz-scanner-upgrade-guide.html
 }
 </style>
 
-# Upgrading from v3.x to v4.0
+# Migrating from v3.x to v4.0
 
 This guide is written for teams already shipping the MRZ Scanner JavaScript Edition on any **v3.x** release and planning to move to **v4.0**. v4.0 is a major release: most config field renames are mechanical, but two architectural shifts (the removal of the built-in result view and a new image-extraction API) require code-level changes that the TypeScript compiler will surface and that your integration tests must cover.
 
 > [!IMPORTANT]
-> Do not perform this upgrade as a drop-in dependency bump. Read at least the [TL;DR](#tldr) and the [Migration Checklist](#migration-checklist) end-to-end before changing any code, and exercise the full scan-to-result flow in a staging environment before promoting to production.
+> Do not perform this migration as a drop-in dependency bump. Read at least the [TL;DR](#tldr) and the [Migration Checklist](#migration-checklist) end-to-end before changing any code, and exercise the full scan-to-result flow in a staging environment before promoting to production.
 
 If you are starting fresh on v4, ignore this guide and follow the [User Guide]({{ site.guides }}mrz-scanner.html) instead. The v3.x documentation remains available in this site as the `-v3.1` companion files (v3.1 was the last v3.x release, so its docs cover the entire v3.x line). See the [v3.x user guide]({{ site.guides }}mrz-scanner-v3.1.html) and the [v3.x API reference]({{ site.api }}mrz-scanner-v3.1.html).
 
@@ -52,7 +52,7 @@ The table below ranks every breaking change by impact. Severity ▲ marks archit
 
 If your v3.x integration uses only `new MRZScanner({ license })`, awaits `launch()`, and reads `result.data.firstName`-style fields, you may need only the changes in [Package, dependencies, and `engineResourcePaths`](#package-dependencies-and-engineresourcepaths) and [`MRZResult` shape and status](#mrzresult-shape-and-status), plus the section appropriate to your image needs ([Images are now retrieved via getter methods](#images-are-now-retrieved-via-getter-methods)). Otherwise, work through every section below in order.
 
-## Before you upgrade: audit your v3.x integration
+## Before you migrate: audit your v3.x integration
 
 Run this list against your codebase before changing anything. Each item maps to a section below, so knowing which apply lets you scope the work.
 

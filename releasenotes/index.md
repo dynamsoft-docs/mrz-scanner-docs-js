@@ -27,6 +27,8 @@ A major release with a redesigned scanner UI, a new image-extraction pipeline, m
 
 ### Breaking Changes
 
+Migrating an existing v3.x integration? Work through the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html), which covers each change below in detail with before/after code.
+
 - **`MRZResultView` is removed**, along with `MRZResultViewConfig`, `MRZResultViewToolbarButtonsConfig`, `resultViewConfig`, and `showResultView`. Consumers render the result themselves — see the [User Guide]({{ site.guides }}mrz-scanner.html) for a worked example.
 - **`MRZResult.originalImageResult` and `MRZResult.imageData` are removed**, replaced by `getOriginalImage(side)`. The MWC-specific `_imageData` internal is also gone.
 - **API renames:** `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`, `EnumMRZScanMode.Passport` → `EnumMRZScanMode.TD3`.

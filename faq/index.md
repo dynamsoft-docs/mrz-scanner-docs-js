@@ -12,7 +12,7 @@ permalink: /faq/index.html
 
 # Frequently Asked Questions
 
-This page collects answers to common questions about the MRZ Scanner JavaScript Edition. For step-by-step walkthroughs see the [User Guide]({{ site.guides }}mrz-scanner.html); for migrating from v3.x see the [Upgrade Guide]({{ site.guides }}mrz-scanner-upgrade-guide.html).
+This page collects answers to common questions about the MRZ Scanner JavaScript Edition. For step-by-step walkthroughs see the [User Guide]({{ site.guides }}mrz-scanner.html); for migrating from v3.x see the [Migration Guide]({{ site.guides }}mrz-scanner-upgrade-guide.html).
 
 **Capability and supported formats**
 
@@ -90,7 +90,7 @@ v4 enables multi-side scanning by default (`returnPortraitImage: true` on `MRZSc
 
 ### Why does the document type now return a code like CT_MRTD_TD3_PASSPORT instead of a readable label?
 
-In v4, `result.data.documentType` returns the underlying DCV code-type identifier (an `EnumCodeType` value like `"CT_MRTD_TD3_PASSPORT"` or `"CT_MRTD_TD1_ID"`), not the humanized label v3.x produced (`"Passport (TD3)"`). The change makes the value stable and machine-readable, but it does mean you can no longer display `documentType` directly to end users. Map the code-type to a localized label in your application code; the `MRZDataLabel` helper covers field *keys* only, not document-type values. See the [upgrade guide]({{ site.guides }}mrz-scanner-upgrade-guide.html#mrzdatadocumenttype-silently-changed-shape) for the full value table.
+In v4, `result.data.documentType` returns the underlying DCV code-type identifier (an `EnumCodeType` value like `"CT_MRTD_TD3_PASSPORT"` or `"CT_MRTD_TD1_ID"`), not the humanized label v3.x produced (`"Passport (TD3)"`). The change makes the value stable and machine-readable, but it does mean you can no longer display `documentType` directly to end users. Map the code-type to a localized label in your application code; the `MRZDataLabel` helper covers field *keys* only, not document-type values. See the [Migration Guide]({{ site.guides }}mrz-scanner-upgrade-guide.html#mrzdatadocumenttype-silently-changed-shape) for the full value table.
 
 ### Why do I get a resource-initialization error when the scanner launches?
 
