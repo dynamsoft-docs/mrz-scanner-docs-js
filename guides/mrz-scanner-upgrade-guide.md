@@ -11,10 +11,11 @@ permalink: /guides/mrz-scanner-upgrade-guide.html
 
 <style>
 /* Scoped overrides for the checklist <ul>/<ol> below. The template paints */
-/* <ul> bullets as ::before pseudo-elements (basis.css), which list-style: none */
-/* cannot suppress. Hide the painted marker and disable the real <ol> marker. */
+/* <ul> bullets via ::before, and sets list-style: decimal on <ol> *li* */
+/* directly (basis.css), so the override needs to reach the <li> level too. */
 .markdown-body ul.checkbox-list,
-.markdown-body ol.checkbox-list {
+.markdown-body ol.checkbox-list,
+.markdown-body ol.checkbox-list li {
   list-style: none;
 }
 .markdown-body ul.checkbox-list li::before {
