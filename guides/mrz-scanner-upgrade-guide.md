@@ -9,6 +9,19 @@ description: A step-by-step migration guide for upgrading a production MRZ Scann
 permalink: /guides/mrz-scanner-upgrade-guide.html
 ---
 
+<style>
+/* Scoped overrides for the checklist <ul>/<ol> below. The template paints */
+/* <ul> bullets as ::before pseudo-elements (basis.css), which list-style: none */
+/* cannot suppress. Hide the painted marker and disable the real <ol> marker. */
+.markdown-body ul.checkbox-list,
+.markdown-body ol.checkbox-list {
+  list-style: none;
+}
+.markdown-body ul.checkbox-list li::before {
+  content: none;
+}
+</style>
+
 # Upgrading from v3.x to v4.0
 
 This guide is written for teams already shipping the MRZ Scanner JavaScript Edition on any **v3.x** release and planning to move to **v4.0**. v4.0 is a major release: most config field renames are mechanical, but two architectural shifts (the removal of the built-in result view and a new image-extraction API) require code-level changes that the TypeScript compiler will surface and that your integration tests must cover.
@@ -42,7 +55,7 @@ If your v3.x integration uses only `new MRZScanner({ license })`, awaits `launch
 
 Run this list against your codebase before changing anything. Each item maps to a section below, so knowing which apply lets you scope the work.
 
-<ul class="no-list">
+<ul class="checkbox-list">
   <li><input type="checkbox"> Do you read <code>result.originalImageResult</code>? → <a href="#images-are-now-retrieved-via-getter-methods">Images are now retrieved via getter methods</a></li>
   <li><input type="checkbox"> Do you read <code>result.status.code</code> or <code>result.status.message</code>? → <a href="#mrzresult-shape-and-status"><code>MRZResult</code> shape and status</a></li>
   <li><input type="checkbox"> Do you compare <code>result.data.documentType</code> against any string? → <a href="#mrzdatadocumenttype-silently-changed-shape"><code>MRZData.documentType</code> silently changed shape</a></li>
@@ -705,7 +718,7 @@ await submitToServer(result.data);
 
 Copy this into your tracking system and work through it linearly.
 
-<ol class="no-list">
+<ol class="checkbox-list">
   <li><input type="checkbox"> 1. Bump <code>dynamsoft-mrz-scanner</code> to <code>4.0.0</code>; remove any v3.x per-module DCV dependencies; verify the two peer packages installed.</li>
   <li><input type="checkbox"> 2. Update CDN URLs to <code>@4.0.0</code> if applicable.</li>
   <li><input type="checkbox"> 3. Stage the three Dynamsoft folders (<code>dynamsoft-mrz-scanner</code>, <code>dynamsoft-capture-vision-bundle</code>, <code>dynamsoft-capture-vision-data</code>) into your project's <code>public/</code> directory so they're served at <code>/</code>. With the folders staged, <strong>delete <code>engineResourcePaths</code> from your config</strong>. Only keep it (in the new <code>{ dcvBundle, dcvData }</code> shape) if you must serve the folders from a different origin or path prefix.</li>
