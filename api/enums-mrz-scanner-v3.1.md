@@ -11,6 +11,9 @@ description: "Explore MRZ Scanner values in Dynamsoft MRZ Scanner Web API and le
 
 # MRZ Scanner API Enumerations
 
+> [!IMPORTANT]
+> This page documents **v3.x** of the MRZ Scanner JavaScript Edition. If you are moving to **v4.0**, see the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html).
+
 The MRZ Scanner comes with a few enumerations for some of the configuration properties.
 
 ## EnumMRZDocumentType

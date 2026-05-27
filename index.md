@@ -12,7 +12,7 @@ description: MRZ Scanner JavaScript Edition Documentation Homepage
   - [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html)
   - [MRZ Scanner Customization Guide]({{ site.guides }}mrz-scanner-customization.html)
   - [MRZ Scanner - Reading from Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html)
-  - [Upgrade Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html)
+  - [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html)
 - Getting Started
   - [System Requirements]({{ site.gettingstarted }}sys_requirement.html)
   - [Dependencies]({{ site.gettingstarted }}add_dependency.html)
