@@ -16,6 +16,9 @@ This user guide walks you through integrating the MRZ Scanner JavaScript Edition
 > [!TIP]
 > If you want a single-file Hello World you can open from disk, see the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) instead.
 
+> [!IMPORTANT]
+> Upgrading an existing **v3.x** integration rather than starting fresh? Work through the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html) first, which covers the breaking changes in v4.0 with before/after code.
+
 ## License
 
 ### Trial License

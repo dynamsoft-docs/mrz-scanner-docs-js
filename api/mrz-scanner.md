@@ -684,7 +684,7 @@ if (documentImage) {
 ```ts
 interface MRZData {
   [EnumMRZData.InvalidFields]?: EnumMRZData[]; // invalidFields
-  [EnumMRZData.DocumentType]: EnumCodeType; // documentType
+  [EnumMRZData.DocumentType]: EnumMRZDocumentType; // documentType
   [EnumMRZData.DocumentNumber]: string; // documentNumber
   [EnumMRZData.MRZText]: string; // mrzText
   [EnumMRZData.FirstName]: string; // firstName
@@ -707,7 +707,7 @@ interface MRZData {
 | Property | Type | Description |
 | --- | --- | --- |
 | `invalidFields` | [`EnumMRZData`]({{ site.api }}enums-mrz-scanner.html#enummrzdata) array | List of field keys that failed validation (e.g. failed check-digit verification). |
-| `documentType` | `EnumCodeType` | The MRTD code type, as defined by the Dynamsoft Capture Vision bundle (e.g. `CT_MRTD_TD3_PASSPORT`). |
+| `documentType` | [`EnumMRZDocumentType`]({{ site.api }}enums-mrz-scanner.html#enummrzdocumenttype) | The MRTD format of the scanned document (e.g. `"td3_passport"`, `"td1_id"`). |
 | `documentNumber` | `string` | The MRZ document number. |
 | `mrzText` | `string` | The raw unparsed text of the MRZ (line breaks preserved). |
 | `firstName` | `string` | The given name(s) of the document holder. |

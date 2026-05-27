@@ -6,13 +6,16 @@ noTitleIndex: false
 title: Customizing the MRZ Scanner JavaScript Edition
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Customization
 description: Customizing the Dynamsoft MRZ Scanner
-permalink: /guides/mrz-scanner-customization.html
+permalink: /guides/mrz-scanner-customization-v3.1.html
 ---
 
 # Customizing the MRZ Scanner JavaScript Edition
 
+> [!IMPORTANT]
+> This page documents **v3.x** of the MRZ Scanner JavaScript Edition. If you are moving to **v4.0**, see the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html).
+
 > [!NOTE]
-> Before customizing the MRZ Scanner, read the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html).
+> Before customizing the MRZ Scanner, read the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner-v3.1.html).
 
 ## Quick Links
 
@@ -25,17 +28,17 @@ permalink: /guides/mrz-scanner-customization.html
 
 ## Introduction
 
-This guide builds on the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) by exploring UI and performance customization options. You'll learn to use three main configuration interfaces:
+This guide builds on the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner-v3.1.html) by exploring UI and performance customization options. You'll learn to use three main configuration interfaces:
 
-- [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) - Main configuration
-- [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) - Scanner view customization
-- [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) - Result view customization
+- [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzscannerconfig) - Main configuration
+- [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzscannerviewconfig) - Scanner view customization
+- [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzresultviewconfig) - Result view customization
 
 These interfaces make customization straightforward—simply add or modify properties in the constructor. Each example shows only the configuration changes needed, building on the Hello World sample.
 
 ## `MRZScannerConfig` Overview
 
-The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface configures most customization options for MRZ scanning. The MRZ Scanner passes an `MRZScannerConfig` object to the constructor when creating an instance. It contains the following properties:
+The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzscannerconfig) interface configures most customization options for MRZ scanning. The MRZ Scanner passes an `MRZScannerConfig` object to the constructor when creating an instance. It contains the following properties:
 
 1. **`license`** - The license key is the only property that **must be specified** when instantiating the MRZ Scanner. If the license is undefined, invalid, or expired, the scanner displays an error message instructing the user to contact the site administrator.
 
@@ -51,7 +54,7 @@ The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) in
 
 7. **`resultViewConfig`** - Configuration interface for the `MRZResultView`, which displays the scanned MRZ document and parsed data after a successful scan. See the [`MRZResultViewConfig` overview](#mrzresultviewconfig-overview) for details.
 
-8. **`mrzFormatType`** - Configure the available MRTD formats for scanning. The formats set here appear in the format selector box within the `MRZScannerView`. By default, all supported MRTD formats are included. Learn more about supported formats in the [Introduction]({{ site.introduction }}index.html#supported-mrz-formats).
+8. **`mrzFormatType`** - Configure the available MRTD formats for scanning. The formats set here appear in the format selector box within the `MRZScannerView`. By default, all supported MRTD formats are included. Learn more about supported formats in the [Introduction]({{ site.introduction }}index-v3.1.html#supported-mrz-formats).
 
 9. **`showResultView`** (default: `true`) - Toggle the visibility of the `MRZResultView`. When `false`, the scanner immediately closes after a successful scan and proceeds to your application's next workflow step. In the Hello World sample, this returns the user to the landing page.
 
@@ -60,7 +63,7 @@ The following sections show how to use these properties to customize the scanner
 ### Setting Available MRTD formats
 
 > [!TIP]
-> Prerequisite: [Introduction to MRZ Formats]({{ site.introduction }}index.html#supported-mrz-formats)
+> Prerequisite: [Introduction to MRZ Formats]({{ site.introduction }}index-v3.1.html#supported-mrz-formats)
 
 The MRZ Scanner reads all three MRZ formats by default, but you can restrict which formats to recognize. For example, to scan only **TD1** and **TD3 (Passport)** documents while ignoring **TD2**:
 
@@ -86,7 +89,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 ## `MRZScannerViewConfig` Overview
 
-[**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig) controls the UI elements of the `**MRZScannerView**`, which is the view responsible for scanning operations. Here are its properties in detail:
+[**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzscannerviewconfig) controls the UI elements of the `**MRZScannerView**`, which is the view responsible for scanning operations. Here are its properties in detail:
 
 1. **`uiPath`** (formerly `cameraEnhancerUIPath`) - Specifies the path to a custom HTML user interface file for the `MRZScannerView`. The `MRZScannerView` is based on the Dynamsoft Camera Enhancer SDK UI. Contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for assistance creating custom UI files.
 
@@ -165,11 +168,11 @@ Contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/)
 
 Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static images and PDFs. Configure the `MRZScannerViewConfig` properties `uploadAcceptedTypes` and `uploadFileConverter` to enable this functionality, particularly for PDF support.
 
-For a complete implementation guide, see [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html), which includes a full File Input sample.
+For a complete implementation guide, see [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image-v3.1.html), which includes a full File Input sample.
 
 ## `MRZResultViewConfig` Overview
 
-The `MRZResultView` displays parsed MRZ results and a cropped image of the MRTD document, eliminating the need to build a custom viewer. The [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) contains the following settings:
+The `MRZResultView` displays parsed MRZ results and a cropped image of the MRTD document, eliminating the need to build a custom viewer. The [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzresultviewconfig) contains the following settings:
 
 1. **`container`** - Assigns a specific DOM element to contain the `MRZResultView`. When not specified, the MRZ Scanner automatically creates its own container.
 
@@ -183,7 +186,7 @@ The `MRZResultView` displays parsed MRZ results and a cropped image of the MRTD 
 
 6. **`onDone`** - A callback function executed when the user clicks the *Done* button. This callback receives the `MRZResult` object (including the scanned image and parsed data) for processing after the scanner closes. See [Configuring the onDone Callback](#configuring-the-ondone-callback) for implementation details.
 
-7. **`onCancel`** - A callback function executed when the user clicks the *Cancel* button (only appears when scanning a static file). By default, clicking cancel discards the result and returns to the landing page. Use this callback to define custom behavior. See the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) API reference for implementation details.
+7. **`onCancel`** - A callback function executed when the user clicks the *Cancel* button (only appears when scanning a static file). By default, clicking cancel discards the result and returns to the landing page. Use this callback to define custom behavior. See the [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzresultviewconfig) API reference for implementation details.
 
 ### Using the `MRZResultViewConfig`
 
@@ -219,7 +222,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 ### Configuring the `onDone` Callback
 
-By default, clicking the *Done* button closes the scanner and returns to the landing page. The `onDone` callback in [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner.html#mrzresultviewconfig) lets you define custom behavior to integrate the scanner into your application workflow. The callback receives the `MRZResult` object containing all parsed data. For example:
+By default, clicking the *Done* button closes the scanner and returns to the landing page. The `onDone` callback in [**`MRZResultViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzresultviewconfig) lets you define custom behavior to integrate the scanner into your application workflow. The callback receives the `MRZResult` object containing all parsed data. For example:
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -281,7 +284,7 @@ These configuration options work together to create a seamless scanning experien
 
 For more information about the MRZ Scanner JavaScript Edition, explore these resources:
 
-- [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) - Getting started with basic implementation
-- [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image.html) - Complete guide for file input support
-- [API Reference]({{ site.api }}mrz-scanner.html) - Detailed documentation for all configuration interfaces
-- [Introduction]({{ site.introduction }}index.html) - Overview of MRZ formats and capabilities 
+- [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner-v3.1.html) - Getting started with basic implementation
+- [Using the MRZ Scanner with Static Images and PDFs]({{ site.guides }}mrz-scanner-static-image-v3.1.html) - Complete guide for file input support
+- [API Reference]({{ site.api }}mrz-scanner-v3.1.html) - Detailed documentation for all configuration interfaces
+- [Introduction]({{ site.introduction }}index-v3.1.html) - Overview of MRZ formats and capabilities 

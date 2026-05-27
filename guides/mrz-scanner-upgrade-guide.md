@@ -3,9 +3,9 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Upgrading the MRZ Scanner JavaScript Edition from v3.x to v4.0
-keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Upgrade, Migration, v3.x, v4.0, Breaking Changes
-description: A step-by-step migration guide for upgrading a production MRZ Scanner JavaScript Edition integration from v3.x to v4.0.
+title: Migrating the MRZ Scanner JavaScript Edition from v3.x to v4.0
+keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Migration, Upgrade, v3.x, v4.0, Breaking Changes
+description: A step-by-step guide for migrating a production MRZ Scanner JavaScript Edition integration from v3.x to v4.0.
 permalink: /guides/mrz-scanner-upgrade-guide.html
 ---
 
@@ -23,12 +23,12 @@ permalink: /guides/mrz-scanner-upgrade-guide.html
 }
 </style>
 
-# Upgrading from v3.x to v4.0
+# Migrating from v3.x to v4.0
 
 This guide is written for teams already shipping the MRZ Scanner JavaScript Edition on any **v3.x** release and planning to move to **v4.0**. v4.0 is a major release: most config field renames are mechanical, but two architectural shifts (the removal of the built-in result view and a new image-extraction API) require code-level changes that the TypeScript compiler will surface and that your integration tests must cover.
 
 > [!IMPORTANT]
-> Do not perform this upgrade as a drop-in dependency bump. Read at least the [TL;DR](#tldr) and the [Migration Checklist](#migration-checklist) end-to-end before changing any code, and exercise the full scan-to-result flow in a staging environment before promoting to production.
+> Do not perform this migration as a drop-in dependency bump. Read at least the [TL;DR](#tldr) and the [Migration Checklist](#migration-checklist) end-to-end before changing any code, and exercise the full scan-to-result flow in a staging environment before promoting to production.
 
 If you are starting fresh on v4, ignore this guide and follow the [User Guide]({{ site.guides }}mrz-scanner.html) instead. The v3.x documentation remains available in this site as the `-v3.1` companion files (v3.1 was the last v3.x release, so its docs cover the entire v3.x line). See the [v3.x user guide]({{ site.guides }}mrz-scanner-v3.1.html) and the [v3.x API reference]({{ site.api }}mrz-scanner-v3.1.html).
 
@@ -41,7 +41,7 @@ The table below ranks every breaking change by impact. Severity ▲ marks archit
 | ▲ | [Result view removed](#the-built-in-result-view-is-gone) | `MRZResultView`, `MRZResultViewConfig`, `onDone`, `onCancel`, `showResultView` and the entire result-rendering UI are gone. Your app now renders results. |
 | ▲ | [Images via getter methods](#images-are-now-retrieved-via-getter-methods) | `result.originalImageResult` is gone. Use `result.getOriginalImage(side)`, `getDocumentImage(side)`, `getPortraitImage()`. |
 | ▲ | [`engineResourcePaths` restructured](#package-dependencies-and-engineresourcepaths) | `rootDirectory` and per-module paths (`std`, `dip`, `core`, …) are replaced by `dcvBundle` + `dcvData`. |
-| ○ | [`MRZData.documentType` silently changed](#mrzdatadocumenttype-silently-changed-shape) | Was a humanized string (`"Passport (TD3)"`); now a DCV `EnumCodeType` (`"CT_MRTD_TD3_PASSPORT"`). Any string comparison breaks at runtime, not compile time. |
+| ○ | [`MRZData.documentType` silently changed](#mrzdatadocumenttype-silently-changed-shape) | Was a humanized string (`"Passport (TD3)"`); now an `EnumMRZDocumentType` value (`"td3_passport"`). Any string comparison breaks at runtime, not compile time. |
 | ○ | [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed) | `"passport"` → `"td3_passport"`, `"td1"` → `"td1_id"`, `"td2"` → `"td2_id"`. Enum-reference users are fine; raw-string users break silently. |
 | ▲ | [`MRZResult.status` shape changed](#mrzresult-shape-and-status) | Was `{ code, message }` object; now `EnumResultStatus` value directly. `result.status.code` throws. |
 | ● | [Scanner view property renames](#mrzscannerviewconfig-property-renames) | `showUploadImage` → `showLoadImageButton`, `uploadAcceptedTypes` → `loadImageAcceptedTypes`, `uploadFileConverter` → `loadImageFileConverter`, `showScanGuide` → `enableScanRegion`. |
@@ -52,7 +52,7 @@ The table below ranks every breaking change by impact. Severity ▲ marks archit
 
 If your v3.x integration uses only `new MRZScanner({ license })`, awaits `launch()`, and reads `result.data.firstName`-style fields, you may need only the changes in [Package, dependencies, and `engineResourcePaths`](#package-dependencies-and-engineresourcepaths) and [`MRZResult` shape and status](#mrzresult-shape-and-status), plus the section appropriate to your image needs ([Images are now retrieved via getter methods](#images-are-now-retrieved-via-getter-methods)). Otherwise, work through every section below in order.
 
-## Before you upgrade: audit your v3.x integration
+## Before you migrate: audit your v3.x integration
 
 Run this list against your codebase before changing anything. Each item maps to a section below, so knowing which apply lets you scope the work.
 
@@ -417,34 +417,34 @@ if (result.data.documentType.startsWith("Passport")) {
 
 ### v4 behavior
 
-`MRZData.documentType: EnumCodeType` returns the DCV code-type identifier, which is the underlying enum value, not a display label:
+`MRZData.documentType: EnumMRZDocumentType` returns the curated MRZ-scanner enum value, not a display label:
 
-- `"CT_MRTD_TD3_PASSPORT"`
-- `"CT_MRTD_TD1_ID"`
-- `"CT_MRTD_TD2_ID"`
-- `"CT_MRTD_TD3_VISA"`
-- `"CT_MRTD_TD2_VISA"`
+- `"td3_passport"`
+- `"td1_id"`
+- `"td2_id"`
+- `"mrva_visa"`
+- `"mrvb_visa"`
 
 ```ts
 // v4 — same field, different shape
-if (result.data.documentType === "CT_MRTD_TD3_PASSPORT") {
+if (result.data.documentType === Dynamsoft.EnumMRZDocumentType.Passport) { // "td3_passport"
   // ...
 }
 ```
 
 ### Migration recipe
 
-If you previously displayed `result.data.documentType` directly to users, replace that with your own mapping from `EnumCodeType` (or from `EnumMRZDocumentType`; see [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed)) to a localized display label. The new `MRZDataLabel` helper handles field-key labels but **not** document-type labels, so those are yours to provide.
+If you previously displayed `result.data.documentType` directly to users, replace that with your own mapping from `EnumMRZDocumentType` (whose string values also changed in v4; see [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed)) to a localized display label. The new `MRZDataLabel` helper handles field-key labels but **not** document-type labels, so those are yours to provide.
 
 If you branched on the value, swap the string comparisons:
 
-| v3.x value (humanized) | v4 value (`EnumCodeType`) |
-|------------------------|---------------------------|
-| `"Passport (TD3)"` | `"CT_MRTD_TD3_PASSPORT"` |
-| `"ID (TD1)"` | `"CT_MRTD_TD1_ID"` |
-| `"ID (TD2)"`, `"French ID (TD2)"` | `"CT_MRTD_TD2_ID"` |
-| `"Visa (TD3)"`, `"ID (VISA)"` (TD3-sized) | `"CT_MRTD_TD3_VISA"` |
-| `"Visa (TD2)"`, `"ID (VISA)"` (TD2-sized) | `"CT_MRTD_TD2_VISA"` |
+| v3.x value (humanized) | v4 value (`EnumMRZDocumentType`) |
+|------------------------|----------------------------------|
+| `"Passport (TD3)"` | `"td3_passport"` (`Passport`) |
+| `"ID (TD1)"` | `"td1_id"` (`TD1`) |
+| `"ID (TD2)"`, `"French ID (TD2)"` | `"td2_id"` (`TD2`) |
+| `"Visa (TD3)"`, `"ID (VISA)"` (TD3-sized) | `"mrva_visa"` (`MRVA`) |
+| `"Visa (TD2)"`, `"ID (VISA)"` (TD2-sized) | `"mrvb_visa"` (`MRVB`) |
 
 ### Two new `MRZData` fields
 
@@ -707,7 +707,7 @@ if (!result?.data) {                                     // cancellation or no-M
 }
 
 console.log(result.data.firstName);
-console.log(result.data.documentType);                   // "CT_MRTD_TD3_PASSPORT" (was a humanized label in v3.x)
+console.log(result.data.documentType);                   // "td3_passport" (was a humanized label in v3.x)
 const original = result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ); // image getter replaces originalImageResult
 if (original) imageContainer.appendChild(original.toCanvas());
 await submitToServer(result.data);
@@ -730,7 +730,7 @@ Copy this into your tracking system and work through it linearly.
   <li><input type="checkbox"> 8. Replace <code>result.status.code</code> with <code>result.status</code>. Replace <code>result.status.message</code> with your own enum-to-string mapping.</li>
   <li><input type="checkbox"> 9. Use <code>if (!result?.data)</code> as your cancellation / no-result branch.</li>
   <li><input type="checkbox"> 10. Search the codebase for raw string format names (<code>"passport"</code>, <code>"td1"</code>, <code>"td2"</code>) and update them (<code>"td3_passport"</code>, <code>"td1_id"</code>, <code>"td2_id"</code>). Prefer enum references over strings going forward.</li>
-  <li><input type="checkbox"> 11. Search the codebase for comparisons against <code>result.data.documentType</code>. The values are now <code>CT_MRTD_*</code> code types, not display labels. Update comparisons or compute display labels from a new mapping.</li>
+  <li><input type="checkbox"> 11. Search the codebase for comparisons against <code>result.data.documentType</code>. The values are now <code>EnumMRZDocumentType</code> values (<code>"td3_passport"</code>, <code>"td1_id"</code>, …), not display labels. Update comparisons or compute display labels from a new mapping.</li>
   <li><input type="checkbox"> 12. Rename <code>showUploadImage</code> → <code>showLoadImageButton</code>, <code>uploadAcceptedTypes</code> → <code>loadImageAcceptedTypes</code>, <code>uploadFileConverter</code> → <code>loadImageFileConverter</code>, <code>showScanGuide</code> → <code>enableScanRegion</code>, <code>cameraEnhancerUIPath</code> → <code>uiPath</code> in any <code>scannerViewConfig</code> you pass.</li>
   <li><input type="checkbox"> 13. If you key custom templates by <code>EnumMRZScanMode.Passport</code>, rename to <code>EnumMRZScanMode.TD3</code>.</li>
   <li><input type="checkbox"> 14. Search for <code>Dynamsoft.Dynamsoft.</code> and flatten any matches to <code>Dynamsoft.</code>.</li>
