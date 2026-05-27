@@ -7,10 +7,13 @@ title: MRZ Scanner JavaScript Edition - Introduction
 keywords: Documentation, MRZ Scanner JavaScript Edition, Introduction
 breadcrumbText: Introduction
 description: MRZ Scanner JavaScript Edition Documentation Introduction
-permalink: /introduction/index.html
+permalink: /introduction/index-v3.1.html
 ---
 
 # Introduction
+
+> [!IMPORTANT]
+> This page documents **v3.x** of the MRZ Scanner JavaScript Edition. If you are moving to **v4.0**, see the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html).
 
 In today's world of constant travel and activities that require identity verification, it is important to have the tools necessary in order to quickly and accurately capture and recognize all of that personal information in one go. Most travel and identity documents today come with a *Machine Readable Zone* (MRZ for short) that stores and encrypts all of the information of that identity document in just a few lines.
 
@@ -135,4 +138,4 @@ For the best demonstration of the full capabilities of the MRZ Scanner JavaScrip
 
 ## Next Steps
 
-If you are looking to create your own MRZ scanning application for browsers, then the **MRZ Scanner JavaScript Edition** is the solution for you! To get started with the development, please refer to the [**User Guide**]({{ site.guides }}mrz-scanner.html) that will walk you through the steps to get a *Hello World* implementation going as well as the different ways you can customize the **MRZ Scanner**.
+If you are looking to create your own MRZ scanning application for browsers, then the **MRZ Scanner JavaScript Edition** is the solution for you! To get started with the development, please refer to the [**User Guide**]({{ site.guides }}mrz-scanner-v3.1.html) that will walk you through the steps to get a *Hello World* implementation going as well as the different ways you can customize the **MRZ Scanner**.

@@ -14,6 +14,9 @@ The MRZ Scanner JavaScript Edition exposes one main class — **MRZScanner** —
 
 Read through the [**full API reference**](mrz-scanner.md), or use the summarized lists below to jump directly to a specific class, interface, or enum.
 
+> [!NOTE]
+> Coming from **v3.x**? The API surface changed in v4.0 (the result view was removed, images moved to getter methods, and several fields and enums were renamed or retyped). See the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html) for a field-by-field breakdown.
+
 ## Classes
 
 1. [MRZScanner](mrz-scanner.md#mrzscanner) - The main class of the MRZ Scanner. Constructed with an [`MRZScannerConfig`](mrz-scanner.md#mrzscannerconfig) and used to launch the scanning workflow via [`launch()`](mrz-scanner.md#launch).

@@ -6,12 +6,15 @@ noTitleIndex: false
 title: Setting up a MRZ Scanner for Static Images and PDFs
 keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Static Image, PDF
 description: "Learn how to use Dynamsoft MRZ Scanner Web features with practical setup guidance, workflow tips, and examples for building reliable capture apps today."
-permalink: /guides/mrz-scanner-static-image.html
+permalink: /guides/mrz-scanner-static-image-v3.1.html
 ---
 
 # Using the MRZ Scanner with Static Images and PDFs
 
-The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview) for selecting photos from your device.
+> [!IMPORTANT]
+> This page documents **v3.x** of the MRZ Scanner JavaScript Edition. If you are moving to **v4.0**, see the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html).
+
+The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner-v3.1.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner-v3.1.html#mrzscannerview) for selecting photos from your device.
 
 Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static images and PDFs without requiring the default file picker. This guide shows you how to implement this functionality programmatically, supporting multiple image formats and PDF documents.
 
@@ -20,7 +23,7 @@ Starting with **v2.1**, the MRZ Scanner can read MRZs directly from static image
 
 ## Prerequisites
 
-You'll need a valid license key to get started. Refer to the [Licensing]({{ site.guides }}mrz-scanner.html#license) section of the main User Guide for instructions on obtaining one.
+You'll need a valid license key to get started. Refer to the [Licensing]({{ site.guides }}mrz-scanner-v3.1.html#license) section of the main User Guide for instructions on obtaining one.
 
 ## Understanding the Implementation
 
@@ -109,7 +112,7 @@ const mrzscanner = new Dynamsoft.MRZScanner({
 });
 ```
 
-Note the new properties in [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig):
+Note the new properties in [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner-v3.1.html#mrzscannerviewconfig):
 
 - **`uploadAcceptedTypes`**: Specifies accepted file formats (images and PDFs in this example)
 - **`uploadFileConverter`**: Converts PDFs to images before processing, as the scanner requires image input
@@ -176,7 +179,7 @@ This function converts a **single-page** PDF file to a PNG Blob, making it compa
 
 ### Step 5: Launching the MRZ Scanner
 
-With the PDF conversion function in place, connect everything to the [`launch`]({{ site.api }}mrz-scanner.html#launch) method. Starting in v2.1, the `launch` method accepts a file input parameter.
+With the PDF conversion function in place, connect everything to the [`launch`]({{ site.api }}mrz-scanner-v3.1.html#launch) method. Starting in v2.1, the `launch` method accepts a file input parameter.
 
 The code below shows two ways to trigger the scanner:
 
