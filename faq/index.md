@@ -30,7 +30,7 @@ This page collects answers to common questions about the MRZ Scanner JavaScript 
 **Defaults and gotchas**
 
 - [Why does scanning a TD1 or TD2 ID card prompt the user to flip the document?](#why-does-scanning-a-td1-or-td2-id-card-prompt-the-user-to-flip-the-document)
-- [Why does the document type now return a code like CT_MRTD_TD3_PASSPORT instead of a readable label?](#why-does-the-document-type-now-return-a-code-like-ct_mrtd_td3_passport-instead-of-a-readable-label)
+- [Why does the document type now return a value like td3_passport instead of a readable label?](#why-does-the-document-type-now-return-a-value-like-td3_passport-instead-of-a-readable-label)
 - [Why do I get a resource-initialization error when the scanner launches?](#why-do-i-get-a-resource-initialization-error-when-the-scanner-launches)
 - [Why does `getDocumentImage(Opposite)` return `null`?](#why-does-getdocumentimageopposite-return-null)
 
@@ -88,9 +88,9 @@ All image capture, enhancement, and MRZ parsing run on-device in WebAssembly. Th
 
 v4 enables multi-side scanning by default (`returnPortraitImage: true` on `MRZScannerConfig`). For TD1 and TD2 ID cards the portrait is on the opposite side from the MRZ, so the scanner captures the MRZ side first, pauses (3 seconds by default, controlled by `scannerViewConfig.flipDocumentTimeout`), and prompts the user to flip the document before capturing the portrait. To disable the flip flow and end the scan after the MRZ side, set `returnPortraitImage: false` in the constructor config. For passports the portrait is on the same side as the MRZ, so the second capture is skipped automatically.
 
-### Why does the document type now return a code like CT_MRTD_TD3_PASSPORT instead of a readable label?
+### Why does the document type now return a value like td3_passport instead of a readable label?
 
-In v4, `result.data.documentType` returns the underlying DCV code-type identifier (an `EnumCodeType` value like `"CT_MRTD_TD3_PASSPORT"` or `"CT_MRTD_TD1_ID"`), not the humanized label v3.x produced (`"Passport (TD3)"`). The change makes the value stable and machine-readable, but it does mean you can no longer display `documentType` directly to end users. Map the code-type to a localized label in your application code; the `MRZDataLabel` helper covers field *keys* only, not document-type values. See the [Migration Guide]({{ site.guides }}mrz-scanner-upgrade-guide.html#mrzdatadocumenttype-silently-changed-shape) for the full value table.
+In v4, `result.data.documentType` is an [`EnumMRZDocumentType`]({{ site.api }}enums-mrz-scanner.html#enummrzdocumenttype) value like `"td3_passport"` or `"td1_id"`, not the humanized label v3.x produced (`"Passport (TD3)"`). The change makes the value stable and machine-readable, but it does mean you can no longer display `documentType` directly to end users. Map the value to a localized label in your application code; the `MRZDataLabel` helper covers field *keys* only, not document-type values. See the [Migration Guide]({{ site.guides }}mrz-scanner-upgrade-guide.html#mrzdatadocumenttype-silently-changed-shape) for the full value table.
 
 ### Why do I get a resource-initialization error when the scanner launches?
 

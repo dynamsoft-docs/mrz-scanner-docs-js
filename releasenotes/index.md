@@ -23,7 +23,7 @@ A major release with a redesigned scanner UI, a new image-extraction pipeline, m
 - **First-class visa types.** Visas are no longer conflated with Passport / TD2. `EnumMRZDocumentType` gains `MRVA` (TD3-sized) and `MRVB` (TD2-sized), with matching values in `EnumMRZScanMode`.
 - **Redesigned `MRZScannerView`.** New SVG guide frames, animated scan spinner, and refreshed toolbar. Four new `scannerViewConfig` interfaces give full customization: `toolbarButtonsConfig` (per-button icon / label / className / visibility), `formatSelectorConfig` (localize format buttons), `messagesConfig` (localize all on-screen text, including a `{seconds}` placeholder for the flip-document countdown), and `themeConfig` (color, typography, and spacing tokens).
 - **URL input to `launch()`.** `launch()` now accepts a string URL alongside `Blob`, `DSImageData`, and HTML media elements; the library fetches and decodes the URL internally.
-- **`OptionalData1` and `OptionalData2`** ICAO optional-data fields now exposed on `EnumMRZData`. `MRZData.documentType` is now typed as DCV's `EnumCodeType`.
+- **`OptionalData1` and `OptionalData2`** ICAO optional-data fields now exposed on `EnumMRZData`. `MRZData.documentType` is now typed as `EnumMRZDocumentType`.
 
 ### Breaking Changes
 
