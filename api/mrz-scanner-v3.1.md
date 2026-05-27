@@ -11,6 +11,9 @@ description: Dynamsoft MRZ Scanner JavaScript Edition - API Reference
 
 # MRZ Scanner JavaScript Edition API Reference
 
+> [!IMPORTANT]
+> This page documents **v3.x** of the MRZ Scanner JavaScript Edition. If you are moving to **v4.0**, see the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html).
+
 The `MRZScanner` class is responsible for the main scanning process, including MRZ recognition, text parsing, and result display.
 
 ## Constructor
@@ -108,7 +111,7 @@ console.log("Scanner resources released.");
 
 The **MRZScannerConfig** is responsible for assigning the MRZ Scanner license, configuring the MRTD formats, and setting the MRZScannerViewConfig and MRZResultViewConfig. Please note that the only thing that is **required** to be defined is the **license**. A MRZ Scanner instance **must** be initialized with a MRZScannerConfig object.
 
-To get the full picture on how to use *MRZScannerConfig*, please visit the [Customizing MRZ Scanner - MRZScannerConfig]({{ site.guides }}mrz-scanner-customization.html#mrzscannerconfig-overview) page.
+To get the full picture on how to use *MRZScannerConfig*, please visit the [Customizing MRZ Scanner - MRZScannerConfig]({{ site.guides }}mrz-scanner-customization-v3.1.html#mrzscannerconfig-overview) page.
 
 #### Syntax
 
@@ -142,7 +145,7 @@ interface MRZScannerConfig {
 | `engineResourcePaths`   | `EngineResourcePaths`          | Paths to the necessary resources for the MRZ scanning engine.  |
 | `scannerViewConfig`     | [`MRZScannerViewConfig`](#mrzscannerviewconfig)         | Configuration settings for the MRZ scanner view.                    |
 | `resultViewConfig`      | [`MRZResultViewConfig`](#mrzresultviewconfig)          | Configuration settings for the MRZ result view.                     |
-| `mrzFormatType`         | [`EnumMRZDocumentType`]({{ site.api }}enums-mrz-scanner.html#enummrzdocumenttype)          | Specifies the MRTD formats that the application will support.  |
+| `mrzFormatType`         | [`EnumMRZDocumentType`]({{ site.api }}enums-mrz-scanner-v3.1.html#enummrzdocumenttype)          | Specifies the MRTD formats that the application will support.  |
 | `showResultView`        | `boolean`                      | Determines whether the final result view (MRZResultView) will be shown or not. |
 
 #### Example
@@ -176,7 +179,7 @@ const mrzScanner = new Dynamsoft.MRZScanner(mrzConfig);
 
 ### MRZScannerViewConfig
 
-The MRZScannerViewConfig is used to configure the UI elements of the **MRZScannerView**. If the MRZScannerViewConfig is not assigned, then the library will use the default MRZScannerView. For the full details of the properties of the MRZScannerViewConfig, please read through the [Customizing the MRZ Scanner - MRZScannerViewConfig]({{ site.guides }}mrz-scanner-customization.html#mrzscannerviewconfig-overview) page.
+The MRZScannerViewConfig is used to configure the UI elements of the **MRZScannerView**. If the MRZScannerViewConfig is not assigned, then the library will use the default MRZScannerView. For the full details of the properties of the MRZScannerViewConfig, please read through the [Customizing the MRZ Scanner - MRZScannerViewConfig]({{ site.guides }}mrz-scanner-customization-v3.1.html#mrzscannerviewconfig-overview) page.
 
 #### Syntax
 
@@ -246,7 +249,7 @@ const mrzConfig = {
 
 ### MRZResultViewConfig
 
-The MRZResultViewConfig is used to configure the UI elements of the **MRZResultView**. If the MRZResultViewConfig is not assigned, then the library will use the default MRZResultView. For the full details of the properties of the MRZResultViewConfig, please read through the [Customizing the MRZ Scanner - MRZResultViewConfig]({{ site.guides }}mrz-scanner-customization.html#mrzresultviewconfig-overview) page.
+The MRZResultViewConfig is used to configure the UI elements of the **MRZResultView**. If the MRZResultViewConfig is not assigned, then the library will use the default MRZResultView. For the full details of the properties of the MRZResultViewConfig, please read through the [Customizing the MRZ Scanner - MRZResultViewConfig]({{ site.guides }}mrz-scanner-customization-v3.1.html#mrzresultviewconfig-overview) page.
 
 #### Syntax
 
