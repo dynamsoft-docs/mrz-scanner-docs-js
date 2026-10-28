@@ -17,7 +17,7 @@ This user guide walks you through integrating the MRZ Scanner JavaScript Edition
 > If you want a single-file Hello World you can open from disk, see the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) instead.
 
 > [!IMPORTANT]
-> Upgrading an existing **v3.x** integration rather than starting fresh? Work through the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html) first, which covers the breaking changes in v4.0 with before/after code.
+> Upgrading an existing **v3.x** integration rather than starting fresh? Work through the [Migration Guide (v3.x to v4.x)]({{ site.guides }}mrz-scanner-upgrade-guide.html) first, which covers the breaking changes in v4.0 with before/after code.
 
 ## License
 
@@ -62,9 +62,9 @@ You can include the MRZ Scanner SDK in your application by installing it from np
 The recommended way to include the SDK is to install it as a project dependency:
 
 ```sh
-npm i dynamsoft-mrz-scanner@4.0.0 -E
+npm i dynamsoft-mrz-scanner@4.1.0 -E
 # or
-yarn add dynamsoft-mrz-scanner@4.0.0 -E
+yarn add dynamsoft-mrz-scanner@4.1.0 -E
 ```
 
 This installs the MRZ Scanner package along with its two peer dependencies, **`dynamsoft-capture-vision-bundle`** and **`dynamsoft-capture-vision-data`**. Together they provide the JavaScript bundle, the WebAssembly engine, and the model and template data files that power MRZ recognition.
@@ -79,7 +79,7 @@ node_modules/
 ```
 
 > [!IMPORTANT]
-> The SDK's runtime resources (UI templates, WebAssembly engine, model data) live inside `node_modules/`, which isn't served to the browser. Before launching the scanner you need to do two things: copy the three Dynamsoft folders into a `public/` directory served at the same origin as your page, and set `engineResourcePaths` on the scanner config to point at the staged `dcvBundle` and `dcvData` locations. Skipping `engineResourcePaths` when installing via npm causes a resource-initialization error at launch. The next section covers both steps. See [Resource Hosting](#resource-hosting) for deployment variants.
+> The SDK's runtime resources (the library bundle, WebAssembly engine, model data) live inside `node_modules/`, which isn't served to the browser. To self-host them you need to do two things: copy the three Dynamsoft folders into a `public/` directory served at the same origin as your page, and set `engineResourcePaths` on the scanner config to point at the staged `dcvBundle` and `dcvData` locations. If you skip `engineResourcePaths`, the SDK ignores your staged copies and loads the engine and model data from jsDelivr instead. The next section covers both steps. See [Resource Hosting](#resource-hosting) for deployment variants.
 
 <div class="multi-panel-end"></div>
 
@@ -132,10 +132,10 @@ If you don't already have a project set up, create one now:
 mkdir mrz-scanner-app
 cd mrz-scanner-app
 npm init -y
-npm i dynamsoft-mrz-scanner@4.0.0 -E
+npm i dynamsoft-mrz-scanner@4.1.0 -E
 ```
 
-This installs the SDK and its two peer dependencies under `node_modules/`. Next, create a `public/` directory and copy the three Dynamsoft folders into it. At runtime the bundler (or any static server pointed at the project) serves `public/` at `/`, which is exactly where the SDK looks for its UI/template assets and the DCV engine resources:
+This installs the SDK and its two peer dependencies under `node_modules/`. Next, create a `public/` directory and copy the three Dynamsoft folders into it. At runtime the bundler (or any static server pointed at the project) serves `public/` at `/`, where your page loads the library bundle and where `engineResourcePaths` points the SDK at the DCV engine resources (the scanner's UI and template are built into the bundle):
 
 ```bash
 # macOS / Linux
@@ -213,11 +213,11 @@ const mrzscanner = new Dynamsoft.MRZScanner({
 
 What's going on here:
 
-- **`license`** — replace `YOUR_LICENSE_KEY_HERE` with your trial or full key (see [License](#license)). An invalid license causes a launch error.
-- **`engineResourcePaths`** — tells the SDK where to find the DCV engine bundle and model data files. These paths are **required** when installing via npm. The values above match the `public/` layout staged in the previous section, where the bundle lives at `/dynamsoft-capture-vision-bundle/dist/` and the data files live at `/dynamsoft-capture-vision-data/`. If you host the assets from a different path or CDN, see [Resource Hosting](#resource-hosting).
+- **`license`** — replace `YOUR_LICENSE_KEY_HERE` with your trial or full key (see [License](#license)). An invalid or expired license reports a license error, and `launch()` resolves with `status: EnumResultStatus.RS_FAILED` and no `data`.
+- **`engineResourcePaths`** — tells the SDK where to find the DCV engine bundle and model data files. These paths are **required** to self-host the resources from your own origin. The values above match the `public/` layout staged in the previous section, where the bundle lives at `/dynamsoft-capture-vision-bundle/dist/` and the data files live at `/dynamsoft-capture-vision-data/`. If you host the assets from a different path or CDN, see [Resource Hosting](#resource-hosting).
 
 > [!WARNING]
-> Omitting `engineResourcePaths` when the SDK is installed via npm causes a resource-initialization error at launch. The SDK has no built-in default that points at a local `public/` directory, so it must be told where to look. The CDN distribution covered in the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) is the only setup where `engineResourcePaths` can be omitted.
+> If `engineResourcePaths` is omitted, the SDK loads the engine and model data from jsDelivr, even when it is installed via npm. The SDK has no built-in default that points at a local `public/` directory, so to self-host (for offline use, a strict CSP, or version pinning) it must be told where to look. The CDN setup covered in the [Quick Start]({{ site.guides }}mrz-scanner-quick-start.html) relies on this jsDelivr default.
 
 For the full list of configuration options, see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig).
 
@@ -243,13 +243,13 @@ if (!result?.data) {
 }
 ```
 
-`launch()` opens the **MRZScannerView**, a full-screen container with a live camera feed, a guide frame, format selector, and toolbar buttons (including a built-in **Load Image** button for scanning a file instead of using the camera). When an MRZ is recognized, the promise resolves with an [**`MRZResult`**]({{ site.api }}mrz-scanner.html#mrzresult). When the user cancels or no MRZ is detected, the promise still resolves but with `result.data` undefined, which the `if` branch handles by surfacing a short message.
+`launch()` opens the **MRZScannerView**, a full-screen container with a live camera feed, a guide frame, format selector, and toolbar buttons (including a built-in **Load Image** button for scanning a file instead of using the camera). When an MRZ is recognized, the promise resolves with an [**`MRZResult`**]({{ site.api }}mrz-scanner.html#mrzresult). When the user cancels or the scan fails, the promise still resolves but with `result.data` undefined, which the `if` branch handles by surfacing a short message. `launch()` always resolves with an `MRZResult`; check `result.status` (`RS_SUCCESS`, `RS_CANCELLED`, `RS_FAILED`) to tell a cancelled scan from a failed one. An image loaded through the **Load Image** button that contains no MRZ resolves with an empty `data` object, so check for the fields you need (for example `result.data.documentNumber`), not just that `data` exists.
 
 Key APIs in use:
 
 - **`result.data`** — the parsed MRZ payload: `firstName`, `lastName`, `sex`, `age`, `nationality`, `documentType`, `documentNumber`, `issuingState`, `dateOfBirth`, `dateOfExpiry`, `mrzText`, and `optionalData1` / `optionalData2` when present. Dates are returned as `{ year, month, day }` objects.
 - **`result.getDocumentImage(side)`** — deskewed crop of the document for the given side. `Dynamsoft.EnumDocumentSide.MRZ` is the side carrying the MRZ; `EnumDocumentSide.Opposite` is the opposite side, populated only when multi-side scanning runs (see [Multi-Side Scanning](#multi-side-scanning)).
-- **`result.getOriginalImage(side)`** — the full unmodified frame for the given side. Only populated when `returnOriginalImage: true` is passed to the constructor (it defaults to `false`).
+- **`result.getOriginalImage(side)`** — the full unmodified frame for the given side. Returned by default; pass `returnOriginalImage: false` to the constructor to withhold it.
 - **`result.getPortraitImage()`** — the portrait crop, regardless of which side it was found on.
 - **`DSImageData.toCanvas()`** — converts the image into an `HTMLCanvasElement` ready to append to the DOM. `toBlob()` is also available if you'd rather upload or store the image.
 
@@ -317,7 +317,7 @@ The flow when multi-side scanning is enabled:
 
 1. The user scans the **MRZ side**. This populates the primary images returned by `getOriginalImage(MRZ)` and `getDocumentImage(MRZ)`.
 2. The scanner inspects the same side for a portrait. If it finds one (e.g. a passport, where the MRZ and the portrait are on the same photo page), the portrait crop fills `getPortraitImage()` and the scan ends. **`EnumDocumentSide.Opposite` stays `null`.**
-3. If no portrait is found on the MRZ side (typical for TD1 / TD2 ID cards, where the portrait sits on the side opposite the MRZ), the UI prompts the user to flip the document after `flipDocumentTimeout` milliseconds (default `3000`), captures the other side, and populates `getOriginalImage(Opposite)` and `getDocumentImage(Opposite)` along with the portrait crop.
+3. If no portrait is found on the MRZ side (typical for TD1 / TD2 ID cards, where the portrait sits on the side opposite the MRZ), the UI immediately shows a flip prompt with a countdown lasting `flipDocumentTimeout` milliseconds (default `3000`). Scanning does not pause: as soon as the opposite side is in view, it is captured, even if the user flips before the countdown ends. The scanner then populates `getOriginalImage(Opposite)` and `getDocumentImage(Opposite)` along with the portrait crop.
 
 The API uses **`MRZ`** and **`Opposite`** rather than front/back because document layouts vary by country, and there's no guarantee the MRZ is on the physical back or that the portrait is on the physical front. The scanner always captures the **MRZ side first** and labels it `MRZ`; whichever side the user flips to is labeled `Opposite`.
 
@@ -329,7 +329,7 @@ In practice:
 | ID cards (TD1 / TD2) | populated | populated | populated (from the `Opposite` side) |
 | Any document, with `returnPortraitImage: false` | populated | `null` | `null` |
 
-The same matrix applies to `getOriginalImage(side)` when `returnOriginalImage: true`.
+The same matrix applies to `getOriginalImage(side)` unless `returnOriginalImage: false`.
 
 To customize the flip-document countdown duration, set `scannerViewConfig.flipDocumentTimeout` on the `MRZScannerConfig`. See the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html) for the full list of multi-side-scanning options.
 
@@ -366,7 +366,7 @@ The view consists of these UI elements:
 
 **Camera Controls:**
 
-4. **Resolution / Camera Select Dropdown** — switch between available cameras or select different resolutions for the active camera.
+4. **Camera Switch Button** — toggles between the rear and front cameras. Only appears when more than one camera is available.
 
 5. **Flash Button** — toggles the camera flash when available. Only appears if the device and browser support camera flash.
 
@@ -376,7 +376,7 @@ The view consists of these UI elements:
 
 7. **Sound Button** — toggle audio feedback (beep) when an MRZ is recognized.
 
-8. **Close Scanner Button** — closes the MRZ Scanner. The `launch()` promise resolves with no `data`, which your result-rendering code should treat as a cancellation.
+8. **Close Scanner Button** — closes the MRZ Scanner. If the MRZ side was already captured and the scanner is waiting for the opposite side, `launch()` resolves with the MRZ-side result (`data` populated, no `Opposite` images). Otherwise it resolves with `status: EnumResultStatus.RS_CANCELLED` and no `data`, which your result-rendering code should treat as a cancellation.
 
 > [!NOTE]
 > To learn more about customizing the MRZScannerView and its UI elements — toolbar buttons, theme, on-screen messages, format selector labels, the multi-side scanning timeout, and more — see the [Customization Guide]({{ site.guides }}mrz-scanner-customization.html).

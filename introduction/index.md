@@ -106,7 +106,7 @@ Here is a quick screenshot at default look of the **`MRZScannerView`**:
    <img src="../assets/imgs/mrzscannerview.PNG" alt="MRZScannerView Screenshot" width="25%" />
 </div>
 
-Once a scan completes, the `MRZScannerView` resolves the `launch()` promise with the parsed data and any returned images, and your application takes over the rendering. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-5-render-the-result) for the standard result-rendering pattern.
+Once a scan completes, the `MRZScannerView` resolves the `launch()` promise with the parsed data and any returned images, and your application takes over the rendering. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-3-launch-the-scanner-and-render-the-result) for the standard result-rendering pattern.
 
 ## System Requirements
 

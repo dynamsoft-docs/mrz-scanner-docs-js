@@ -87,7 +87,13 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 Starts the **MRZ scanning workflow**. If the method is run without an argument, the `MRZScannerView` UI will open and allow the user to scan an MRZ using their camera. Alternatively, if the method is called with a static image source (`Blob`, `File`, image URL, `DSImageData`, or an `HTMLImageElement`/`HTMLVideoElement`/`HTMLCanvasElement`), the MRZ Scanner will read the MRZ from that source directly without opening the camera view.
 
-The promise resolves with an [`MRZResult`](#mrzresult). On successful scans, the result carries the parsed [`MRZData`](#mrzdata) and any opted-in images. On cancellation (the user closes the scanner) or failure, the result carries only the [`status`](#resultstatus) field — no `data` and no images. Your application is responsible for rendering the result; v4 does not include a built-in result view.
+The promise always resolves with an [`MRZResult`](#mrzresult):
+
+- **Success** (`RS_SUCCESS`): the parsed [`MRZData`](#mrzdata) plus any images not disabled via the `return*Image` flags. If a static image contains no MRZ, `data` is an empty object, so check for the fields you need.
+- **Closed at the flip prompt**: `RS_SUCCESS` with the MRZ-side data and images only.
+- **Cancelled or failed** (`RS_CANCELLED` / `RS_FAILED`, including an unreadable static image or an invalid container): only the [`status`](#resultstatus) field.
+
+Calling `launch()` while a scan is already in progress rejects with `"Capture session already in progress"`. Your application is responsible for rendering the result; v4 does not include a built-in result view.
 
 #### Syntax
 
@@ -185,10 +191,10 @@ interface MRZScannerConfig {
 | `license`               | `string`                       | —       | The license key for using the `MRZScanner`. **Required.** |
 | `container`             | `HTMLElement \| string`        | —       | The container element or selector for the `MRZScanner` UI. When omitted, the scanner mounts a full-viewport `<div>` on `<body>`. |
 | `templateFilePath`      | `string`                       | bundled | Path to a custom Capture Vision template JSON file. Contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for assistance with custom template work. |
-| `engineResourcePaths`   | `EngineResourcePaths`          | —       | Paths to the DCV engine WASM and data files. Required when installing the SDK via npm. |
+| `engineResourcePaths`   | `EngineResourcePaths`          | `{ rootDirectory: "https://cdn.jsdelivr.net/npm/" }` | Paths to the DCV engine WASM and data files. When omitted, the DCV resources load from jsDelivr - set it to self-host them from your own origin. |
 | `scannerViewConfig`     | [`MRZScannerViewConfig`](#mrzscannerviewconfig) | — | Configuration settings for the `MRZScannerView`. |
 | `mrzFormatType`         | [`EnumMRZDocumentType`]({{ site.api }}enums-mrz-scanner.html#enummrzdocumenttype) array | all formats | Restricts recognition to a subset of MRTD formats. Strings are accepted (e.g. `"td3_passport"`) for readability. |
-| `returnOriginalImage`   | `boolean`                      | `false` | When `true`, attaches the full unmodified frame on the result. Retrieved via `result.getOriginalImage(side)`. |
+| `returnOriginalImage`   | `boolean`                      | `true`  | When `true`, attaches the full unmodified frame on the result. Retrieved via `result.getOriginalImage(side)`. Set to `false` to withhold it; `getOriginalImage()` then returns `null` for both sides. |
 | `returnDocumentImage`   | `boolean`                      | `true`  | When `true`, attaches a deskewed crop of the document on the result. Retrieved via `result.getDocumentImage(side)`. |
 | `returnPortraitImage`   | `boolean`                      | `true`  | When `true`, attaches a cropped portrait on the result and activates multi-side scanning when needed. Retrieved via `result.getPortraitImage()`. |
 
@@ -206,8 +212,8 @@ const mrzConfig = {
     returnDocumentImage: true,
     returnPortraitImage: true,
 
-    // engineResourcePaths is required when installing via npm. The paths below
-    // assume the DCV folders have been copied into public/ and are served at root.
+    // engineResourcePaths self-hosts the DCV resources (when omitted they load from
+    // jsDelivr). The paths below assume the DCV folders are copied into public/ and served at root.
     // (see the User Guide for the staging setup).
     engineResourcePaths: {
         dcvBundle: "/dynamsoft-capture-vision-bundle/dist/",
@@ -361,7 +367,7 @@ const mrzScanViewConfig = {
 
 ### ToolbarButton
 
-The full toolbar button type that every button in the `MRZScannerView` toolbar conforms to. [`ToolbarButtonConfig`](#toolbarbuttonconfig) is a partial of this with the internally-managed `id` field removed.
+The full toolbar button type that every button in the `MRZScannerView` toolbar conforms to. [`ToolbarButtonConfig`](#toolbarbuttonconfig) is a `Partial` of its `icon`, `label`, `className`, and `isHidden` fields.
 
 #### Syntax
 
@@ -387,12 +393,12 @@ interface ToolbarButton {
 
 ### ToolbarButtonConfig
 
-The override shape applied to a single toolbar button — a `Partial` of [`ToolbarButton`](#toolbarbutton) with the internally-managed `id` field removed. Every field is optional; omitted fields fall back to the button's default rendering.
+The override shape applied to a single toolbar button — a `Partial` of the `icon`, `label`, `className`, and `isHidden` fields of [`ToolbarButton`](#toolbarbutton). Every field is optional; omitted fields fall back to the button's default rendering.
 
 #### Syntax
 
 ```ts
-type ToolbarButtonConfig = Partial<Omit<ToolbarButton, "id">>;
+type ToolbarButtonConfig = Partial<Pick<ToolbarButton, "icon" | "label" | "className" | "isHidden">>;
 ```
 
 Equivalent to:
@@ -619,7 +625,7 @@ interface MRZResult {
 | Method | Returns | Description |
 | --- | --- | --- |
 | `getDocumentImage(side)` | [`MRZImage`](#mrzimage) \| `null` | Returns the deskewed crop of the document for the given side. Requires `returnDocumentImage: true` on `MRZScannerConfig`. Returns `null` if the side wasn't captured (see [`EnumDocumentSide`]({{ site.api }}enums-mrz-scanner.html#enumdocumentside)). |
-| `getOriginalImage(side)` | [`MRZImage`](#mrzimage) \| `null` | Returns the full unmodified frame for the given side. Requires `returnOriginalImage: true` on `MRZScannerConfig`. Returns `null` if the side wasn't captured. |
+| `getOriginalImage(side)` | [`MRZImage`](#mrzimage) \| `null` | Returns the full unmodified frame for the given side. Returned unless `returnOriginalImage` is set to `false` on `MRZScannerConfig`. Returns `null` if the side wasn't captured. |
 | `getPortraitImage()` | [`MRZImage`](#mrzimage) \| `null` | Returns the cropped portrait, regardless of which side it was found on. Requires `returnPortraitImage: true` on `MRZScannerConfig`. |
 
 #### Example

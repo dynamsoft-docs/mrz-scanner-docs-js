@@ -32,4 +32,4 @@ If you'd like a sample for a framework that isn't listed, let the [Dynamsoft tea
 
 The Demo is a fully styled, mobile-and-desktop-responsive reference implementation — useful as a starting point for a presentable, production-ready MRZ scanning UI.
 
-See the [Demo page](demo/index.md) for the source and run instructions, or try the hosted version at the [official Dynamsoft MRZ Scanner JavaScript demo](https://demo.dynamsoft.com/mrz-scanner/).
+See the [Demo page]({{ site.codegallery }}demo/index.html) for the source and run instructions, or try the hosted version at the [official Dynamsoft MRZ Scanner JavaScript demo](https://demo.dynamsoft.com/mrz-scanner/).

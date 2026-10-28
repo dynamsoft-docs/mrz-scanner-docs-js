@@ -12,6 +12,24 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
+## 4.1.0 (MM/DD/2026)
+
+A drop-in update from 4.0.0 with no API changes.
+
+### Highlighted Features
+
+- Upgraded Dynamsoft Capture Vision to [3.6.3200](https://www.dynamsoft.com/capture-vision/docs/web/programming/javascript/release-notes/dcvb-3.html) (`dynamsoft-capture-vision-data` 1.2.2), with improved iOS browser compatibility, including a fix for video distortion when switching cameras in Edge on iPhone.
+
+### Fixes & Improvements
+
+- `returnOriginalImage: false` now withholds the original image; the option was previously ignored. It still defaults to `true`.
+- The scanner opens the main rear camera on multi-lens phones, for a sharper preview. This also fixes starting on the front camera on devices such as Microsoft Surface.
+- Double-sided documents flipped quickly now capture the opposite-side portrait.
+- `launch()` always resolves to an `MRZResult`, including when Close is tapped at the flip prompt, a static image fails to load, or the container is not found.
+- `toolbarButtonsConfig` `isHidden` now applies to the flash and camera switch buttons.
+- The UI customization types (`ThemeConfig`, `MessagesConfig`, `FormatSelectorConfig`, `ToolbarButtonsConfig`) are now exported, and all `ToolbarButtonConfig` properties are optional.
+- Repeated launches no longer leave behind orientation listeners or, after cancelling Load Image, hidden file inputs.
+
 ## 4.0.0 (05/22/2026)
 
 A major release with a redesigned scanner UI, a new image-extraction pipeline, multi-side scanning, first-class visa support, and a leaner API surface that drops the bundled result view in favor of consumer-rendered results.

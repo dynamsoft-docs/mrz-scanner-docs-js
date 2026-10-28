@@ -70,7 +70,7 @@ Yes. The scanner UI is responsive and designed for mobile capture. The requireme
 
 ### Does the MRZ Scanner work with React, Vue, or Angular?
 
-Yes. The SDK is framework-agnostic and ships ESM, CommonJS, and IIFE bundles along with TypeScript declarations, so it integrates with any modern web stack. Framework-specific examples are available in the [MRZ Scanner code gallery]({{ site.codegallery }}demo/index.html) and the [public sample repository](https://github.com/Dynamsoft/mrz-scanner-javascript).
+Yes. The SDK is framework-agnostic and ships ESM, CommonJS, and IIFE bundles along with TypeScript declarations, so it integrates with any modern web stack. Framework-specific examples are available in the [MRZ Scanner code gallery]({{ site.codegallery }}index.html#frameworks) and the [public sample repository](https://github.com/Dynamsoft/mrz-scanner-javascript).
 
 ## Privacy and data handling
 
@@ -94,23 +94,23 @@ In v4, `result.data.documentType` is an [`EnumMRZDocumentType`]({{ site.api }}en
 
 ### Why do I get a resource-initialization error when the scanner launches?
 
-This almost always means the SDK cannot find its engine assets. For npm-based installs, copy the three packages (`dynamsoft-mrz-scanner`, `dynamsoft-capture-vision-bundle`, `dynamsoft-capture-vision-data`) into your project's `public/` directory so they are served from `/`; the SDK's defaults locate every resource and you can omit `engineResourcePaths` entirely. If you need to host the assets elsewhere, set `engineResourcePaths` to `{ dcvBundle, dcvData }` URLs that point at each package's contents. See the [User Guide]({{ site.guides }}mrz-scanner.html) for the full resource hosting setup.
+This almost always means the SDK cannot find its engine assets. For npm-based installs, copy the three packages (`dynamsoft-mrz-scanner`, `dynamsoft-capture-vision-bundle`, `dynamsoft-capture-vision-data`) into your project's `public/` directory so they are served from `/`, and set `engineResourcePaths` to `{ dcvBundle, dcvData }` URLs that point at each package's contents. If you omit `engineResourcePaths`, the SDK loads DCV from the jsDelivr CDN instead, so your staged copies are not used. See the [User Guide]({{ site.guides }}mrz-scanner.html) for the full resource hosting setup.
 
 ### Why does `getDocumentImage(Opposite)` return `null`?
 
-`Opposite` is only populated when multi-side scanning ran, which happens for TD1 and TD2 ID cards with `returnPortraitImage: true` (the v4 default). For passports the portrait is on the same side as the MRZ, so `Opposite` always returns `null`. Disabling the flip flow with `returnPortraitImage: false` also means every `Opposite` getter call returns `null`, because the opposite side was never captured. Same rule applies to `getOriginalImage(Opposite)` when `returnOriginalImage: true`.
+`Opposite` is only populated when multi-side scanning ran, which happens for TD1 and TD2 ID cards with `returnPortraitImage: true` (the v4 default). For passports the portrait is on the same side as the MRZ, so `Opposite` always returns `null`. Disabling the flip flow with `returnPortraitImage: false` also means every `Opposite` getter call returns `null`, because the opposite side was never captured. Same rule applies to `getOriginalImage(Opposite)` unless `returnOriginalImage: false`.
 
 ## Result handling
 
 ### How do I use the scanned result?
 
-The simplest implementation uses the default UI and does not take action after scanning. You can customize the behavior by handling the result of the [`launch()`]({{ site.api }}mrz-scanner.html#launch) call, which returns a [`MRZResult`]({{ site.api }}mrz-scanner.html#mrzresult). The result carries the parsed MRZ data on `result.data` (separated into fields), the captured images via the [`getOriginalImage`]({{ site.api }}mrz-scanner.html#getoriginalimage), [`getDocumentImage`]({{ site.api }}mrz-scanner.html#getdocumentimage), and [`getPortraitImage`]({{ site.api }}mrz-scanner.html#getportraitimage) getters, and a `result.status` field that distinguishes success from cancellation.
+The simplest implementation uses the default UI and does not take action after scanning. You can customize the behavior by handling the result of the [`launch()`]({{ site.api }}mrz-scanner.html#launch) call, which returns a [`MRZResult`]({{ site.api }}mrz-scanner.html#mrzresult). The result carries the parsed MRZ data on `result.data` (separated into fields), the captured images via the [`getOriginalImage`]({{ site.api }}mrz-scanner.html#mrzresult), [`getDocumentImage`]({{ site.api }}mrz-scanner.html#mrzresult), and [`getPortraitImage`]({{ site.api }}mrz-scanner.html#mrzresult) getters, and a `result.status` field that distinguishes success from cancellation.
 
 ### What's the difference between the original image, the document image, and the portrait image?
 
 The result exposes three image getters, each returning a different representation of the captured frame:
 
-- **`result.getOriginalImage(side)`** returns the full unmodified camera frame. Off by default; set `returnOriginalImage: true` on the constructor config to receive it.
+- **`result.getOriginalImage(side)`** returns the full unmodified camera frame. On by default (`returnOriginalImage: true`); set `returnOriginalImage: false` on the constructor config to withhold it.
 - **`result.getDocumentImage(side)`** returns the deskewed and cropped document. On by default (`returnDocumentImage: true`). This is the closest equivalent to a "scanned page" image.
 - **`result.getPortraitImage()`** returns the photo crop. No `side` argument because each scan produces at most one portrait. On by default (`returnPortraitImage: true`), and this flag also gates whether multi-side scanning runs.
 
@@ -118,7 +118,7 @@ Each getter returns `null` when the corresponding image was not requested via th
 
 ### How do I tell whether the user cancelled or no MRZ was found?
 
-v4 collapses both cases into a missing `data` field, so the canonical check is `if (!result?.data)`. If you need to distinguish them, inspect `result.status`, which is now an `EnumResultStatus` value directly (not a wrapper object as it was in v3.x): `RS_CANCELLED` indicates user cancellation, `RS_FAILED` indicates no MRZ was detected, and `RS_SUCCESS` means `data` is present.
+Cancelled and failed scans both resolve without `data`, so a quick `if (!result?.data)` check catches them. To distinguish them, inspect `result.status`, which is now an `EnumResultStatus` value directly (not a wrapper object as it was in v3.x): `RS_CANCELLED` means the user closed the scanner, `RS_FAILED` means the scan could not complete (for example, a license error or an image that could not be read), and `RS_SUCCESS` means a result was produced. A live camera scan keeps looking until it finds an MRZ or the user closes it, so "no MRZ found" there shows up as `RS_CANCELLED`. A static image with no MRZ resolves `RS_SUCCESS` with an empty `data` object, so check for the parsed fields you need (for example `result.data.documentNumber`).
 
 ## Integration and deployment
 
