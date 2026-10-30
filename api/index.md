@@ -10,12 +10,12 @@ description: MRZ Scanner JavaScript Edition Documentation API Reference Index
 
 # API Reference Index
 
-The MRZ Scanner JavaScript Edition exposes one main class — **MRZScanner** — together with a focused set of configuration and result interfaces. The single entry point [**`MRZScanner`**](mrz-scanner.md#mrzscanner) drives the entire scanning workflow; its configuration is layered through [**`MRZScannerConfig`**](mrz-scanner.md#mrzscannerconfig) and the nested [**`MRZScannerViewConfig`**](mrz-scanner.md#mrzscannerviewconfig). Scan results are returned as [**`MRZResult`**](mrz-scanner.md#mrzresult) objects carrying parsed [**`MRZData`**](mrz-scanner.md#mrzdata) and any opted-in [**`MRZImage`**](mrz-scanner.md#mrzimage) crops.
+The MRZ Scanner JavaScript Edition exposes one main class — **MRZScanner** — together with a focused set of configuration and result interfaces. The single entry point [**`MRZScanner`**](mrz-scanner.md#mrzscanner) drives the entire scanning workflow; its configuration is layered through [**`MRZScannerConfig`**](mrz-scanner.md#mrzscannerconfig) and the nested [**`MRZScannerViewConfig`**](mrz-scanner.md#mrzscannerviewconfig). Scan results are returned as [**`MRZResult`**](mrz-scanner.md#mrzresult) objects carrying parsed [**`MRZData`**](mrz-scanner.md#mrzdata) and the captured [**`MRZImage`**](mrz-scanner.md#mrzimage) images (each can be turned off through its `return*Image` flag).
 
 Read through the [**full API reference**](mrz-scanner.md), or use the summarized lists below to jump directly to a specific class, interface, or enum.
 
 > [!NOTE]
-> Coming from **v3.x**? The API surface changed in v4.0 (the result view was removed, images moved to getter methods, and several fields and enums were renamed or retyped). See the [Migration Guide (v3.x to v4.0)]({{ site.guides }}mrz-scanner-upgrade-guide.html) for a field-by-field breakdown.
+> Coming from **v3.x**? The API surface changed in v4.0 (the result view was removed, images moved to getter methods, and several fields and enums were renamed or retyped). See the [Migration Guide (v3.x to v4.x)]({{ site.guides }}mrz-scanner-upgrade-guide.html) for a field-by-field breakdown.
 
 ## Classes
 

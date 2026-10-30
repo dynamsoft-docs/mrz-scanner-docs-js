@@ -11,7 +11,7 @@ permalink: /guides/mrz-scanner-static-image.html
 
 # Using the MRZ Scanner with Static Images and PDFs
 
-The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#mrzscannerview) for selecting photos from your device.
+The main [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.html) demonstrates scanning MRZs from a live camera feed, including the Load Image button in the [`MRZScannerView`]({{ site.guides }}mrz-scanner.html#understanding-the-mrzscannerview) for selecting photos from your device.
 
 The MRZ Scanner can read MRZs directly from static images and PDFs without requiring the default file picker. This guide shows you how to implement this functionality programmatically, supporting multiple image formats and PDF documents.
 
@@ -40,7 +40,7 @@ Here's the basic HTML structure:
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamsoft MRZ Scanner - Use File Input</title>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script> -->
     <!-- To use locally: -->
     <script src="../dist/mrz-scanner.bundle.js"></script>
 
@@ -92,7 +92,7 @@ Initialize the MRZ Scanner with custom configuration to handle static images and
 // Initialize the Dynamsoft MRZ Scanner
 const mrzscanner = new Dynamsoft.MRZScanner({
     license: "YOUR_LICENSE_KEY_HERE",
-    returnOriginalImage: true, // include the original frame on the result so we can display it
+    returnOriginalImage: true, // include the original frame on the result so we can display it (default)
     scannerViewConfig: {
         loadImageAcceptedTypes: "image/*,application/pdf",
         loadImageFileConverter: async (file) => {
@@ -112,7 +112,7 @@ const mrzscanner = new Dynamsoft.MRZScanner({
 
 Note the properties used here:
 
-- **`returnOriginalImage`** (on `MRZScannerConfig`): set to `true` so the result carries the original frame, retrievable via `result.getOriginalImage(side)`. It defaults to `false` in v4, so this opt-in is required if your UI displays the scanned input.
+- **`returnOriginalImage`** (on `MRZScannerConfig`): set explicitly here for clarity so the result carries the original frame, retrievable via `result.getOriginalImage(side)`. It defaults to `true`, so the original frame is returned unless you pass `false`.
 - **`loadImageAcceptedTypes`** (on [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig)): specifies accepted file formats (images and PDFs in this example).
 - **`loadImageFileConverter`** (on [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig)): converts PDFs to images before processing, as the scanner requires image input.
 
@@ -219,8 +219,10 @@ document.getElementById("initialFile").onchange = async function () {
 
 > [!NOTE]
 > The `launch()` method behavior differs based on the parameter:
-> - **No parameter or empty object** (`launch()` or `launch({})`): Opens the camera UI
+> - **No parameter** (`launch()`): Opens the camera UI
 > - **File parameter** (`launch(file)`): Processes the file directly without UI
+>
+> A file that contains no MRZ still resolves with an empty `data` object, so check for the fields you need (for example `result.data.documentNumber`), not just that `data` exists.
 
 ### Step 6: Displaying the Result
 

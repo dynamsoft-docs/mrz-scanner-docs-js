@@ -145,8 +145,8 @@ try {
 What's going on here:
 
 - **`license`** — replace `YOUR_LICENSE_KEY_HERE` with your trial or full key. An invalid license causes a launch error.
-- **`engineResourcePaths`** — tells the SDK where to find the DCV engine bundle and model data files. These paths are **required** when installing via npm. The values above assume the three Dynamsoft folders are staged under `public/` and served at `/` (per the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner)). Omitting `engineResourcePaths` causes a resource-initialization error at launch.
-- **`returnOriginalImage` / `returnDocumentImage` / `returnPortraitImage`** — control which image artifacts are attached to the result. `returnDocumentImage` and `returnPortraitImage` default to `true`; `returnOriginalImage` defaults to `false`. All three are set explicitly here so the result view can render every image kind. Setting `returnPortraitImage: false` also disables multi-side scanning. See the [User Guide]({{ site.guides }}mrz-scanner.html#multi-side-scanning) for details.
+- **`engineResourcePaths`** — tells the SDK where to find the DCV engine bundle and model data files. The values above assume the three Dynamsoft folders are staged under `public/` and served at `/` (per the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner)). If omitted, the SDK falls back to loading DCV from jsDelivr, so your staged copies are ignored.
+- **`returnOriginalImage` / `returnDocumentImage` / `returnPortraitImage`** — control which image artifacts are attached to the result. All three default to `true` (from v4.1.0; `returnOriginalImage: false` withholds the original frame). They are set explicitly here for clarity. Setting `returnPortraitImage: false` also disables multi-side scanning. See the [User Guide]({{ site.guides }}mrz-scanner.html#multi-side-scanning) for details.
 
 For the full list of configuration options, see the [MRZScannerConfig API]({{ site.api }}mrz-scanner.html#mrzscannerconfig).
 
@@ -280,7 +280,8 @@ function showResult() {
 // ─── Main result-rendering function ──────────────────────────────────────
 
 function displayResults(result) {
-  // Cancelled scans and scans with no detected MRZ resolve with no `data`
+  // Cancelled scans resolve with no `data`. A static image with no MRZ resolves
+  // RS_SUCCESS with an empty `data` object; check parsed fields if that matters.
   if (!result?.data) {
     document.getElementById("home-error").textContent =
       "No MRZ data detected. Please try again.";
@@ -351,7 +352,7 @@ Key APIs in use:
 
 - **`result.data`** — the parsed MRZ payload: `firstName`, `lastName`, `sex`, `age`, `nationality`, `documentType`, `documentNumber`, `issuingState`, `dateOfBirth`, `dateOfExpiry`, `mrzText`, and `optionalData1` / `optionalData2` when present. Dates are returned as `{ year, month, day }` objects.
 - **`result.getDocumentImage(side)`** — deskewed crop of the document for the given side. `Dynamsoft.EnumDocumentSide.MRZ` is the side carrying the MRZ; `EnumDocumentSide.Opposite` is the opposite side, populated only when multi-side scanning runs.
-- **`result.getOriginalImage(side)`** — the full unmodified frame for the given side. Only populated when `returnOriginalImage: true`.
+- **`result.getOriginalImage(side)`** — the full unmodified frame for the given side. Populated unless `returnOriginalImage: false`.
 - **`result.getPortraitImage()`** — the portrait crop, regardless of which side it was found on.
 - **`DSImageData.toCanvas()`** — converts the image into an `HTMLCanvasElement` ready to append to the DOM. `toBlob()` is also available if you'd rather upload or store the image.
 
