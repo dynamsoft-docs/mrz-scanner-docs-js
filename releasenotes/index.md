@@ -12,7 +12,7 @@ permalink: /releasenotes/index.html
 
 # Release Notes
 
-## 4.1.0 (MM/DD/2026)
+## 4.1.0 (10/30/2026)
 
 A drop-in update from 4.0.0 with no API changes.
 
