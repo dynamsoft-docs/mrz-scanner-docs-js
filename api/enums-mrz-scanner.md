@@ -83,9 +83,9 @@ enum EnumResultStatus {
 
 | Member | Value | Meaning |
 | --- | --- | --- |
-| `RS_SUCCESS` | `0` | The scan completed successfully and the result carries parsed data and any opted-in images. |
+| `RS_SUCCESS` | `0` | The scan completed successfully and the result carries parsed data and every image not disabled through the `return*Image` flags. |
 | `RS_CANCELLED` | `1` | The user closed the scanner without completing a scan. The result has no `data`. |
-| `RS_FAILED` | `2` | An error occurred during scanning. The result has no `data`. |
+| `RS_FAILED` | `2` | An error occurred during scanning. Also returned when a static image cannot be processed or a container reference is invalid. The result has no `data`. |
 
 ## EnumMRZData
 

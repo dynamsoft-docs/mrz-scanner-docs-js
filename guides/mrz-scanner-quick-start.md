@@ -52,10 +52,10 @@ The Quick Start loads the MRZ Scanner SDK from a CDN, so a single `<script>` tag
 
 ```html
 <!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
 
 <!-- or, unpkg -->
-<script src="https://unpkg.com/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
+<script src="https://unpkg.com/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
 ```
 
 > [!TIP]
@@ -72,7 +72,7 @@ Create a new file named `hello-world.html` anywhere on your machine (e.g. on you
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Dynamsoft MRZ Scanner - Hello World</title>
-		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
 	</head>
 	<body>
 		<h1>Dynamsoft MRZ Scanner</h1>
@@ -108,7 +108,7 @@ Create a new file named `hello-world.html` anywhere on your machine (e.g. on you
 Replace `YOUR_LICENSE_KEY_HERE` with the license key from [License](#license).
 
 > [!NOTE]
-> When the SDK is loaded from a CDN like jsDelivr or unpkg, it auto-resolves its UI templates, WebAssembly engine, and model data from that same CDN. No `engineResourcePaths` configuration is required for the Quick Start. For a production setup with the SDK installed via npm and resources self-hosted from your own origin, `engineResourcePaths` becomes required. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner) for that setup.
+> When `engineResourcePaths` is not set, the SDK loads its WebAssembly engine and model data from jsDelivr by default (even if the bundle itself comes from unpkg), and the UI and template are built into the bundle. No `engineResourcePaths` configuration is required for the Quick Start. For a production setup with the SDK installed via npm and resources self-hosted from your own origin, `engineResourcePaths` becomes required. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner) for that setup.
 
 ## Step 2: Open the File in Your Browser
 

@@ -3,9 +3,9 @@ layout: default-layout
 needAutoGenerateSidebar: true
 needGenerateH3Content: true
 noTitleIndex: false
-title: Migrating the MRZ Scanner JavaScript Edition from v3.x to v4.0
-keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Migration, Upgrade, v3.x, v4.0, Breaking Changes
-description: A step-by-step guide for migrating a production MRZ Scanner JavaScript Edition integration from v3.x to v4.0.
+title: Migrating the MRZ Scanner JavaScript Edition from v3.x to v4.x
+keywords: Documentation, MRZ Scanner, Dynamsoft MRZ Scanner JavaScript Edition, Migration, Upgrade, v3.x, v4.x, Breaking Changes
+description: A step-by-step guide for migrating a production MRZ Scanner JavaScript Edition integration from v3.x to v4.x.
 permalink: /guides/mrz-scanner-upgrade-guide.html
 ---
 
@@ -23,9 +23,9 @@ permalink: /guides/mrz-scanner-upgrade-guide.html
 }
 </style>
 
-# Migrating from v3.x to v4.0
+# Migrating from v3.x to v4.x
 
-This guide is written for teams already shipping the MRZ Scanner JavaScript Edition on any **v3.x** release and planning to move to **v4.0**. v4.0 is a major release: most config field renames are mechanical, but two architectural shifts (the removal of the built-in result view and a new image-extraction API) require code-level changes that the TypeScript compiler will surface and that your integration tests must cover.
+This guide is written for teams already shipping the MRZ Scanner JavaScript Edition on any **v3.x** release and planning to move to **v4.x**. v4 is a major release: most config field renames are mechanical, but two architectural shifts (the removal of the built-in result view and a new image-extraction API) require code-level changes that the TypeScript compiler will surface and that your integration tests must cover.
 
 > [!IMPORTANT]
 > Do not perform this migration as a drop-in dependency bump. Read at least the [TL;DR](#tldr) and the [Migration Checklist](#migration-checklist) end-to-end before changing any code, and exercise the full scan-to-result flow in a staging environment before promoting to production.
@@ -40,7 +40,7 @@ The table below ranks every breaking change by impact. Severity ▲ marks archit
 |----------|--------|------------------------------|
 | ▲ | [Result view removed](#the-built-in-result-view-is-gone) | `MRZResultView`, `MRZResultViewConfig`, `onDone`, `onCancel`, `showResultView` and the entire result-rendering UI are gone. Your app now renders results. |
 | ▲ | [Images via getter methods](#images-are-now-retrieved-via-getter-methods) | `result.originalImageResult` is gone. Use `result.getOriginalImage(side)`, `getDocumentImage(side)`, `getPortraitImage()`. |
-| ▲ | [`engineResourcePaths` restructured](#package-dependencies-and-engineresourcepaths) | `rootDirectory` and per-module paths (`std`, `dip`, `core`, …) are replaced by `dcvBundle` + `dcvData`. |
+| ▲ | [`engineResourcePaths` restructured](#package-dependencies-and-engineresourcepaths) | Per-module paths (`std`, `dip`, `core`, …) are replaced by `dcvBundle` + `dcvData`; `rootDirectory` still works. |
 | ○ | [`MRZData.documentType` silently changed](#mrzdatadocumenttype-silently-changed-shape) | Was a humanized string (`"Passport (TD3)"`); now an `EnumMRZDocumentType` value (`"td3_passport"`). Any string comparison breaks at runtime, not compile time. |
 | ○ | [`EnumMRZDocumentType` string values changed](#enummrzdocumenttype-string-values-changed) | `"passport"` → `"td3_passport"`, `"td1"` → `"td1_id"`, `"td2"` → `"td2_id"`. Enum-reference users are fine; raw-string users break silently. |
 | ▲ | [`MRZResult.status` shape changed](#mrzresult-shape-and-status) | Was `{ code, message }` object; now `EnumResultStatus` value directly. `result.status.code` throws. |
@@ -124,7 +124,8 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 const result = await mrzScanner.launch();
 
 if (!result?.data) {
-  // User cancelled, or no MRZ was found in a static image.
+  // User cancelled the scan. A static image with no MRZ resolves RS_SUCCESS with an
+  // empty data object, so check for the parsed fields you need (e.g. documentNumber).
   navigateHome();
   return;
 }
@@ -145,7 +146,8 @@ In v3.x, `result.status.code === Dynamsoft.EnumResultStatus.RS_CANCELLED` distin
 ```ts
 const result = await mrzScanner.launch();
 if (!result?.data) {
-  // Cancelled, or static-image input contained no detectable MRZ.
+  // Cancelled. A static image with no MRZ resolves RS_SUCCESS with an empty
+  // data object, so also check for the parsed fields you need.
   return;
 }
 ```
@@ -172,15 +174,15 @@ result.getPortraitImage(): MRZImage | null
 
 Three things are different:
 
-1. **Per-image opt-in.** v4 introduces three flags on `MRZScannerConfig` that control which images are produced and attached to the result. Set them on the constructor config:
+1. **Per-image flags.** v4 introduces three flags on `MRZScannerConfig` that control which images are produced and attached to the result. Set them on the constructor config:
 
     | Flag | Default | Retrieve with |
     |------|---------|----------------|
-    | `returnOriginalImage` | `false` | `result.getOriginalImage(side)` |
+    | `returnOriginalImage` | `true` | `result.getOriginalImage(side)` |
     | `returnDocumentImage` | `true`  | `result.getDocumentImage(side)` |
     | `returnPortraitImage` | `true`  | `result.getPortraitImage()` |
 
-    The v3.x equivalent of `result.originalImageResult` is `result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)`, but only if you opt in by setting `returnOriginalImage: true`.
+    The v3.x equivalent of `result.originalImageResult` is `result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)`. It is returned by default; set `returnOriginalImage: false` to withhold it (honoured from v4.1.0; v4.0.0 always returned it).
 
 2. **`EnumDocumentSide` is new.** `MRZ` selects the side that contains the MRZ text; `Opposite` selects the flipped side (only populated when multi-side scanning ran; see [multi-side scanning](#multi-side-scanning-on-by-default)).
 
@@ -201,7 +203,7 @@ if (canvas) imageContainer.appendChild(canvas);
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
   license: "YOUR_LICENSE_KEY_HERE",
-  returnOriginalImage: true,         // opt in (defaults to false)
+  returnOriginalImage: true,         // default; set false to withhold the original frame
   returnDocumentImage: true,         // deskewed crop, on by default
   returnPortraitImage: false,        // disable multi-side scanning if you don't need the portrait
 });
@@ -240,14 +242,14 @@ v3.x had two undocumented fields on `MRZResult` used by Dynamsoft Mobile Web Cap
 
 ## Package, dependencies, and `engineResourcePaths`
 
-The npm package name is unchanged (`dynamsoft-mrz-scanner`); only the version bumps to `4.0.0`. The peer-dependency packages and their layout under `node_modules/` did change.
+The npm package name is unchanged (`dynamsoft-mrz-scanner`); only the version bumps to `4.1.0` (any 4.x). The peer-dependency packages and their layout under `node_modules/` did change.
 
 ### Bump the dependency
 
 ```sh
-npm i dynamsoft-mrz-scanner@4.0.0 -E
+npm i dynamsoft-mrz-scanner@4.1.0 -E
 # or
-yarn add dynamsoft-mrz-scanner@4.0.0 -E
+yarn add dynamsoft-mrz-scanner@4.1.0 -E
 ```
 
 This installs two peer dependencies automatically: **`dynamsoft-capture-vision-bundle`** (the DCV engine: JavaScript plus WebAssembly) and **`dynamsoft-capture-vision-data`** (the DCV model, template, and parser data files). Together they replace the multiple per-module DCV packages that v3.x referenced individually.
@@ -270,12 +272,12 @@ If you load the SDK from a CDN, update the version segment of the URL:
 <script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@3.1.0/dist/mrz-scanner.bundle.js"></script>
 
 <!-- v4 -->
-<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.0.0/dist/mrz-scanner.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dynamsoft-mrz-scanner@4.1.0/dist/mrz-scanner.bundle.js"></script>
 ```
 
 ### Recommended: stage the folders and drop `engineResourcePaths` entirely
 
-v4's default resource resolution is built around the assumption that the three Dynamsoft folders are served at the same origin as your page, at `/`. Stage them into your project's `public/` directory and **you can delete `engineResourcePaths` from your config entirely**. The SDK's defaults find every resource.
+If you omit `engineResourcePaths`, v4 loads the DCV engine and data from the jsDelivr CDN (the same default as v3.x). To serve the assets yourself, stage the folders in `public/` and set `engineResourcePaths: { dcvBundle, dcvData }` to point at them.
 
 ```bash
 mkdir public
@@ -285,9 +287,13 @@ cp -R node_modules/dynamsoft-mrz-scanner \
 ```
 
 ```ts
-// v4 — with the folders staged in public/, this is sufficient:
+// v4 — with the folders staged in public/, point the SDK at them:
 const mrzScanner = new Dynamsoft.MRZScanner({
   license: "YOUR_LICENSE_KEY_HERE",
+  engineResourcePaths: {
+    dcvBundle: "/dynamsoft-capture-vision-bundle/dist/",
+    dcvData: "/dynamsoft-capture-vision-data/",
+  },
 });
 ```
 
@@ -589,7 +595,7 @@ For integrations with custom Capture Vision templates:
 - The `EnumMRZScanMode` keys are unchanged, **except** `Passport` was renamed to `TD3`. See [`EnumMRZScanMode`: `Passport` → `TD3`](#enummrzscanmode-passport--td3).
 - `DEFAULT_TEMPLATE_NAMES` (the default scan-mode → template-name map exported by the package) is still available.
 
-If you maintain a non-trivial custom template setup, contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for help validating your migration; the underlying DCV runtime upgrade in v4 (DCV 3.4.2001) may interact with parameter-level customizations that aren't visible in the MRZ Scanner surface.
+If you maintain a non-trivial custom template setup, contact the [Dynamsoft Technical Support Team](https://www.dynamsoft.com/company/contact/) for help validating your migration; the underlying DCV runtime upgrade in v4 (DCV 3.4.2001 in 4.0.0; DCV 3.6.3200 in 4.1.0) may interact with parameter-level customizations that aren't visible in the MRZ Scanner surface.
 
 ## New v4 features worth knowing about
 
@@ -597,7 +603,7 @@ These are additive and do not break v3.x code, but several materially change def
 
 ### Multi-side scanning, on by default
 
-`returnPortraitImage` defaults to `true`. For passports (TD3), the portrait sits on the same side as the MRZ, so the scan completes in one capture as before. For **TD1 and TD2 ID cards**, the portrait is on the opposite side of the MRZ, so the scanner now prompts the user to flip the document after the MRZ side is captured, then captures the portrait side. The total session takes longer and produces two images per side (deskewed crop plus optional original).
+`returnPortraitImage` defaults to `true`. For passports (TD3), the portrait sits on the same side as the MRZ, so the scan completes in one capture as before. For **TD1 and TD2 ID cards**, the portrait is on the opposite side of the MRZ, so the scanner now prompts the user to flip the document after the MRZ side is captured, then captures the portrait side. The total session takes longer and produces two images per side (deskewed crop plus the original frame, unless `returnOriginalImage: false`).
 
 If your existing v3.x flow assumes a single capture per scan (for example, your UI shows a "Scanning…" spinner that you dismiss as soon as `launch()` returns), the longer multi-side flow may surprise users on ID-card scans. Three options:
 
@@ -683,12 +689,12 @@ await mrzScanner.launch();
 ### v4
 
 ```ts
-// Stage the three Dynamsoft folders into your project's `public/` directory
-// so the SDK's defaults resolve every engine resource. No engineResourcePaths needed.
+// Omitting engineResourcePaths loads DCV from jsDelivr. To self-host, stage the
+// folders in public/ and set engineResourcePaths: { dcvBundle, dcvData }.
 const mrzScanner = new Dynamsoft.MRZScanner({
   license: "YOUR_LICENSE_KEY_HERE",
   mrzFormatType: ["td3_passport", "td1_id"],            // string values changed in v4
-  returnOriginalImage: true,                             // opt in for the original frame
+  returnOriginalImage: true,                             // default (true); shown for clarity
   // returnDocumentImage / returnPortraitImage default to true
   scannerViewConfig: {
     enableScanRegion: true,                              // renamed from showScanGuide
@@ -701,7 +707,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 const result = await mrzScanner.launch();
 
-if (!result?.data) {                                     // cancellation or no-MRZ check
+if (!result?.data) {                                     // cancellation check (a static image with no MRZ returns empty data)
   navigateHome();
   return;
 }
@@ -720,12 +726,12 @@ await submitToServer(result.data);
 Copy this into your tracking system and work through it linearly.
 
 <ol class="checkbox-list">
-  <li><input type="checkbox"> 1. Bump <code>dynamsoft-mrz-scanner</code> to <code>4.0.0</code>; remove any v3.x per-module DCV dependencies; verify the two peer packages installed.</li>
-  <li><input type="checkbox"> 2. Update CDN URLs to <code>@4.0.0</code> if applicable.</li>
-  <li><input type="checkbox"> 3. Stage the three Dynamsoft folders (<code>dynamsoft-mrz-scanner</code>, <code>dynamsoft-capture-vision-bundle</code>, <code>dynamsoft-capture-vision-data</code>) into your project's <code>public/</code> directory so they're served at <code>/</code>. With the folders staged, <strong>delete <code>engineResourcePaths</code> from your config</strong>. Only keep it (in the new <code>{ dcvBundle, dcvData }</code> shape) if you must serve the folders from a different origin or path prefix.</li>
+  <li><input type="checkbox"> 1. Bump <code>dynamsoft-mrz-scanner</code> to <code>4.1.0</code>; remove any v3.x per-module DCV dependencies; verify the two peer packages installed.</li>
+  <li><input type="checkbox"> 2. Update CDN URLs to <code>@4.1.0</code> if applicable.</li>
+  <li><input type="checkbox"> 3. Stage the three Dynamsoft folders (<code>dynamsoft-mrz-scanner</code>, <code>dynamsoft-capture-vision-bundle</code>, <code>dynamsoft-capture-vision-data</code>) into your project's <code>public/</code> directory so they're served at <code>/</code>, and set <code>engineResourcePaths</code> in the new <code>{ dcvBundle, dcvData }</code> shape to point at them. If you omit <code>engineResourcePaths</code>, the SDK loads DCV from jsDelivr instead.</li>
   <li><input type="checkbox"> 4. Remove <code>resultViewConfig</code>, <code>showResultView</code>, <code>onDone</code>, <code>onCancel</code> from your constructor config. Move the work each callback did into code that runs after <code>await mrzScanner.launch()</code>.</li>
   <li><input type="checkbox"> 5. Build a result UI in your application: parsed fields, document image, portrait image (if you keep <code>returnPortraitImage: true</code>), and any re-scan / done / cancel affordances your design system requires.</li>
-  <li><input type="checkbox"> 6. Replace <code>result.originalImageResult</code> reads with <code>result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)</code> (and add <code>returnOriginalImage: true</code> to your config if you need this image).</li>
+  <li><input type="checkbox"> 6. Replace <code>result.originalImageResult</code> reads with <code>result.getOriginalImage(Dynamsoft.EnumDocumentSide.MRZ)</code> (returned by default; set <code>returnOriginalImage: false</code> if you don't need it).</li>
   <li><input type="checkbox"> 7. If you display the deskewed document crop, use <code>result.getDocumentImage(side)</code>. If you display the portrait, use <code>result.getPortraitImage()</code>.</li>
   <li><input type="checkbox"> 8. Replace <code>result.status.code</code> with <code>result.status</code>. Replace <code>result.status.message</code> with your own enum-to-string mapping.</li>
   <li><input type="checkbox"> 9. Use <code>if (!result?.data)</code> as your cancellation / no-result branch.</li>
@@ -749,6 +755,6 @@ Copy this into your tracking system and work through it linearly.
 - **[v4 API Reference]({{ site.api }}mrz-scanner.html)**: full type definitions for `MRZScannerConfig`, `MRZScannerViewConfig`, `MRZResult`, and every sub-interface mentioned above.
 - **[v4 Enums Reference]({{ site.api }}enums-mrz-scanner.html)**: `EnumMRZDocumentType`, `EnumDocumentSide`, `EnumMRZData`, `EnumResultStatus`.
 - **[v3.x User Guide]({{ site.guides }}mrz-scanner-v3.1.html)** and **[v3.x API Reference]({{ site.api }}mrz-scanner-v3.1.html)**: preserved for reference during the migration.
-- **[Release Notes]({{ site.releasenotes }}index.html)**: the full v4.0.0 changelog.
+- **[Release Notes]({{ site.releasenotes }}index.html)**: the full v4.x changelogs.
 
 If you hit a migration scenario this guide doesn't cover, contact the [Dynamsoft Support Team](https://www.dynamsoft.com/company/contact/), particularly for custom-template setups, framework-specific build configurations, or Mobile Web Capture integration paths.

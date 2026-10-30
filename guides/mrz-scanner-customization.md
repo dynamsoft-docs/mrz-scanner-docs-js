@@ -35,13 +35,13 @@ This guide builds on the [MRZ Scanner User Guide]({{ site.guides }}mrz-scanner.h
 - [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig): top-level configuration passed to `new Dynamsoft.MRZScanner({ ... })`. Controls licensing, mount point, returned data, supported MRZ formats, and the engine resource paths.
 - [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewconfig): nested under `MRZScannerConfig.scannerViewConfig`. Controls the `MRZScannerView` UI: visible elements, on-screen messages, toolbar buttons, theme, and the static-image upload flow.
 
-Each example shows only the configuration changes needed. The `license` and `engineResourcePaths` fields (covered in the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner)) are omitted for brevity, but **both must be present on your real config** when installing via npm. Omitting `engineResourcePaths` causes a resource-initialization error at launch.
+Each example shows only the configuration changes needed. The `license` and `engineResourcePaths` fields (covered in the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner)) are omitted for brevity, but **both must be present on your real config** when self-hosting the SDK resources from an npm install. Without `engineResourcePaths`, the SDK loads the engine and model data from jsDelivr instead of your own origin.
 
 ## `MRZScannerConfig` Overview
 
 The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) interface is passed to the constructor when creating an `MRZScanner` instance. It contains the following properties:
 
-1. **`license`**: The license key. **Required**. If the license is undefined, invalid, or expired, the scanner displays an error and fails to launch. See the [License]({{ site.guides }}mrz-scanner.html#license) section of the User Guide to obtain a key.
+1. **`license`**: The license key. **Required** for production. If it is omitted or left as the placeholder, the SDK falls back to a time-limited public trial key. If it is invalid or expired, the scanner reports a license error and `launch()` resolves with `status: EnumResultStatus.RS_FAILED`. See the [License]({{ site.guides }}mrz-scanner.html#license) section of the User Guide to obtain a key.
 
 2. **`container`**: A DOM element (or selector string) that holds the entire MRZ Scanner UI. When not specified, the scanner appends its own full-viewport container to `<body>`.
 
@@ -49,13 +49,13 @@ The [**`MRZScannerConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerconfig) in
 
 4. **`utilizedTemplateNames`**: A map of scan-mode → template-name overrides for the bundled template. Only needed in conjunction with `templateFilePath`.
 
-5. **`engineResourcePaths`**: Locations of the DCV engine WebAssembly and data files. Required when installing via npm. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner) for the standard setup.
+5. **`engineResourcePaths`**: Locations of the DCV engine WebAssembly and data files. When omitted, they load from jsDelivr; set it to self-host them from your own origin. See the [User Guide]({{ site.guides }}mrz-scanner.html#step-2-initialize-the-scanner) for the standard setup.
 
 6. **`scannerViewConfig`**: Configuration for the `MRZScannerView`, which handles the live-camera scanning UI. See the [`MRZScannerViewConfig` Overview](#mrzscannerviewconfig-overview) below.
 
 7. **`mrzFormatType`**: The set of MRTD formats the scanner will recognize. By default, all supported formats are enabled. See [Setting Available MRTD Formats](#setting-available-mrtd-formats) for the accepted values.
 
-8. **`returnOriginalImage`** (default `false`): When `true`, includes the full unmodified frame on the result, retrievable via `result.getOriginalImage(side)`.
+8. **`returnOriginalImage`** (default `true`): Includes the full unmodified frame on the result, retrievable via `result.getOriginalImage(side)`. Set `false` to withhold it.
 
 9. **`returnDocumentImage`** (default `true`): When `true`, includes a deskewed crop of the document on the result, retrievable via `result.getDocumentImage(side)`.
 
@@ -95,14 +95,14 @@ The result object returned by `launch()` exposes up to three kinds of images per
 
 | Option | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `returnOriginalImage` | `boolean` | `false` | Include the full unmodified frame. Retrieved via `result.getOriginalImage(side)`. |
+| `returnOriginalImage` | `boolean` | `true` | Include the full unmodified frame. Retrieved via `result.getOriginalImage(side)`. |
 | `returnDocumentImage` | `boolean` | `true` | Include a deskewed crop of the document. Retrieved via `result.getDocumentImage(side)`. |
 | `returnPortraitImage` | `boolean` | `true` | Include a cropped portrait. Retrieved via `result.getPortraitImage()`. Also gates multi-side scanning. |
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
    license: "YOUR_LICENSE_KEY_HERE",
-   returnOriginalImage: true,   // include the raw frame
+   returnOriginalImage: true,   // include the raw frame (default)
    returnDocumentImage: true,   // include the deskewed document crop (default)
    returnPortraitImage: false,  // skip the portrait crop and disable multi-side scanning
 });
@@ -133,7 +133,7 @@ The [**`MRZScannerViewConfig`**]({{ site.api }}mrz-scanner.html#mrzscannerviewco
 
 9. **`loadImageFileConverter`**: Async callback that converts a non-image `File` (e.g. a PDF) into an image `Blob` before the scanner processes it. Required to support PDF uploads. See [Reading Static Images and PDFs](#reading-static-images-and-pdfs).
 
-10. **`flipDocumentTimeout`** (default `3000`): Milliseconds to pause after the MRZ side is captured before portrait-side scanning begins, giving the user time to flip the document. Only takes effect during multi-side scanning.
+10. **`flipDocumentTimeout`** (default `3000`): Length (ms) of the on-screen flip countdown shown after the MRZ side is captured. Scanning is not paused; a quick flip is captured immediately. Only takes effect during multi-side scanning.
 
 11. **`toolbarButtonsConfig`**: Per-button overrides (icon, label, className, visibility) for the seven scanner toolbar buttons. See [Customizing Toolbar Buttons](#customizing-toolbar-buttons).
 
@@ -155,7 +155,6 @@ const mrzScanner = new Dynamsoft.MRZScanner({
       showLoadImageButton: false,         // hide the gallery button in the toolbar; default true
       showFormatSelector: true,           // show the passport/ID/visa/all selector; default false
       showSoundToggle: false,             // hide the sound toggle button; default true
-      showPoweredByDynamsoft: false,      // hide the attribution badge; default true
       enableMultiFrameCrossFilter: false, // disable cross-frame verification for faster (but less accurate) scans; default true
 
       loadImageAcceptedTypes: "image/*,application/pdf", // accept PDFs as well as images
@@ -196,11 +195,11 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 
 ### Adjusting the Multi-Side Scanning Configuration
 
-Multi-side scanning runs whenever `returnPortraitImage` is `true` (the default) and the portrait is not on the same side as the MRZ. After the MRZ side is captured, the scanner pauses for `flipDocumentTimeout` milliseconds, prompts the user to flip the card, and then captures the opposite side.
+Multi-side scanning runs whenever `returnPortraitImage` is `true` (the default) and the portrait is not on the same side as the MRZ. After the MRZ side is captured, the scanner shows a flip prompt with a `flipDocumentTimeout` countdown and captures the opposite side as soon as it appears.
 
 | Option | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `flipDocumentTimeout` | `number` (ms) | `3000` | Pause duration after the MRZ side is captured, giving the user time to flip the document before portrait-side scanning begins. |
+| `flipDocumentTimeout` | `number` (ms) | `3000` | Length of the on-screen flip countdown shown after the MRZ side is captured. Scanning is not paused; a quick flip is captured immediately. |
 
 ```ts
 const mrzScanner = new Dynamsoft.MRZScanner({
@@ -269,7 +268,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 ```
 
 > [!NOTE]
-> The flash and flashOff buttons are still subject to device and browser support. Even if they are shown by configuration, they will only function on devices and browsers that expose the torch capability.
+> The flash and flashOff buttons are still subject to device and browser support. Even if they are shown by configuration, they will only function on devices and browsers that expose the torch capability. `flash.isHidden` and `cameraSwitch.isHidden` keep those buttons hidden even when the device supports torch or has more than one camera.
 
 ### Customizing the Format Selector
 
@@ -342,7 +341,7 @@ const mrzScanner = new Dynamsoft.MRZScanner({
 The scanner overlay reads its colors, typography, and spacing from a set of CSS custom properties. Override them via `themeConfig`, which is split into three groups:
 
 - **`colors`**: palette tokens for the primary UI, accents, backgrounds, text, the guide frame, and the loading spinner.
-- **`typography`**: font family and size tokens, with separate desktop overrides for the attribution badge and format buttons.
+- **`typography`**: font family and size tokens, with separate desktop overrides for the status badge and format buttons.
 - **`spacing`**: top bar height, guide frame width, and badge margin / border-radius tokens, also with desktop variants.
 
 Set only the tokens you want to override. Anything left out falls back to its default.
@@ -401,7 +400,7 @@ The MRZ Scanner JavaScript Edition exposes a focused but expressive set of custo
 
 - **Constrain the document formats** the scanner will recognize via `mrzFormatType`.
 - **Control which images the result carries** via the `returnOriginalImage` / `returnDocumentImage` / `returnPortraitImage` flags, and implicitly toggle multi-side scanning.
-- **Show or hide individual UI elements** of the scanner view (scan guide region, load-image button, format selector, sound toggle, attribution badge).
+- **Show or hide individual UI elements** of the scanner view (scan guide region, load-image button, format selector, sound toggle).
 - **Tune the multi-side flip workflow** via `flipDocumentTimeout`.
 - **Re-skin every toolbar button** (icon, label, class, visibility) via `toolbarButtonsConfig`.
 - **Localize every on-screen message** via `messagesConfig`.
